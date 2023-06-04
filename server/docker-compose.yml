@@ -1,0 +1,88 @@
+version: "3.3"
+
+networks:
+  myscoutee:
+    driver: bridge
+
+services:
+  # certbot:
+  #   image: ${CERT_BOT}
+  #   container_name: certbot
+  #   hostname: certbot
+  #   networks:
+  #     - myscoutee
+  #   volumes:
+  #     - ./data/certbot/conf:/etc/letsencrypt
+  #     - ./data/certbot/www:/var/www/certbot
+  nginx:
+    container_name: nginx
+    hostname: nginx
+    image: ${NGINX_IMAGE}
+    environment:
+      WAIT_FOR: profilemanagement:8080
+    ports:
+      - 80:80
+      - 443:443
+      - 27017-27019:27017-27019
+    volumes:
+      - ./docker/conf/nginx/conf/http:/etc/nginx/conf.d/
+      - ./docker/conf/nginx/conf/stream:/etc/nginx/stream_conf.d/
+      - ./docker/conf/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/conf/nginx/app/myscoutee:/usr/share/nginx/html
+      #- ./docker/scripts:/scripts
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+      #- "/etc/timezone:/etc/timezone:ro"
+      #- "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - myscoutee
+    depends_on:
+      - mongodb
+      #- certbot
+    #command: ["/scripts/wait-for-it.sh", "-t", "0", "profilemanagement:8080", "--", "nginx", "-g", "daemon off;"]
+  mongodb:
+    image: ${MONGO_IMAGE}
+    container_name: mongodb
+    hostname: mongodb
+    #restart: always
+    #entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    environment:
+      MONGO_INITDB_DATABASE: myscoutee_db
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpw
+    volumes:
+      - ./docker/conf/mongodb/:/docker-entrypoint-initdb.d
+      - ./data/mongodb/data:/data/db
+      - ./docker/scripts:/scripts
+      #- /etc/timezone:/etc/timezone:ro
+      #- /etc/localtime:/etc/localtime:ro
+    networks:
+      - myscoutee
+    # ports:
+    #   - 27017-27019:27017-27019
+  profilemanagement:
+    image: ${MYSCOUTEE_IMAGE}
+    # build:
+    #   context: projects/profile
+    container_name: myscoutee
+    hostname: myscoutee
+    environment:
+      MONGODB_HOST: "mongodb"
+      MONGODB_USERNAME: "guest"
+      MONGODB_PASSWORD: "guest"
+      NEO4J_USERNAME: "neo4j"
+      NEO4J_PASSWORD: "Retep1Ob2"
+      NEO4J_DATABASE: "neo4j"
+      NEO4J_URI: "bolt://neo4j:7687"
+      BOOTSTRAP_SERVERS: "kafka:9092"
+      SCHEMA_REGISRY_URL: "http://schemaregistry:8081"
+      QUEUE_HOST: "rabbitmq"
+      ADMIN_USER: "myscoutee@gmail.com"
+    volumes:
+      - ./data/profile/img:/tmp/img
+      #- /etc/timezone:/etc/timezone:ro
+      #- /etc/localtime:/etc/localtime:ro
+    networks:
+      - myscoutee
+    depends_on:
+      - mongodb
