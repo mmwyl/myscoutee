@@ -1,10 +1,11 @@
-package com.raxim.myscoutee.common.config.firebase
+package com.raxim.myscoutee.common.config.firebase;
 
-import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.BadCredentialsException;
 
-
-class FirebaseTokenInvalidException(msg: String?) : BadCredentialsException(msg) {
-    companion object {
-        private const val serialVersionUID = 789949671713648425L
+public class FirebaseTokenInvalidException extends BadCredentialsException {
+    public FirebaseTokenInvalidException(String msg) {
+        super(msg);
     }
+
+    private static final long serialVersionUID = 789949671713648425L;
 }

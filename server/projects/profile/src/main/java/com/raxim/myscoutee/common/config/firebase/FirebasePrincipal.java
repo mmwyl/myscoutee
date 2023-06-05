@@ -1,40 +1,59 @@
-package com.raxim.myscoutee.common.config.firebase
+package com.raxim.myscoutee.common.config.firebase;
 
-import com.raxim.myscoutee.profile.data.document.mongo.Profile
-import com.raxim.myscoutee.profile.data.document.mongo.Role
-import com.raxim.myscoutee.profile.data.document.mongo.User
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.UserDetails
+import com.raxim.myscoutee.profile.data.document.mongo.Role;
+import com.raxim.myscoutee.profile.data.document.mongo.User;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-class FirebasePrincipal(val user: User, private val roles: List<Role>) : UserDetails {
+public class FirebasePrincipal implements UserDetails {
+    private final User user;
+    private final List<Role> roles;
 
-    override fun getAuthorities(): List<SimpleGrantedAuthority> {
-        return roles.map { role ->
-            SimpleGrantedAuthority(role.role)
+    public FirebasePrincipal(User user, List<Role> roles) {
+        this.user = user;
+        this.roles = roles;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for (Role role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getRole()));
         }
+        return authorities;
     }
 
-    override fun getPassword(): String {
-        return ""
+    @Override
+    public String getPassword() {
+        return "";
     }
 
-    override fun getUsername(): String {
-        return user.email
+    @Override
+    public String getUsername() {
+        return user.getEmail();
     }
 
-    override fun isAccountNonExpired(): Boolean {
-        return true
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    override fun isAccountNonLocked(): Boolean {
-        return true
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    override fun isCredentialsNonExpired(): Boolean {
-        return true
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    override fun isEnabled(): Boolean {
-        return true
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

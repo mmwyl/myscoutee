@@ -1,114 +1,139 @@
-package com.raxim.myscoutee.common.config.firebase
+package com.raxim.myscoutee.common.config.firebase;
 
-import com.google.firebase.auth.FirebaseAuth
-import com.raxim.myscoutee.common.config.ConfigProperties
-import com.raxim.myscoutee.profile.data.document.mongo.Profile
-import com.raxim.myscoutee.profile.data.document.mongo.Role
-import com.raxim.myscoutee.profile.data.document.mongo.User
-import com.raxim.myscoutee.profile.repository.mongo.*
-import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.stereotype.Service
-import java.util.*
+import com.google.firebase.auth.FirebaseAuth;
+import com.raxim.myscoutee.common.config.ConfigProperties;
+import com.raxim.myscoutee.profile.data.document.mongo.Profile;
+import com.raxim.myscoutee.profile.data.document.mongo.Role;
+import com.raxim.myscoutee.profile.data.document.mongo.User;
+import com.raxim.myscoutee.profile.repository.mongo.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Service
-class FirebaseService(
-    private val profileRepository: ProfileRepository,
-    private val userRepository: UserRepository,
-    private val roleRepository: RoleRepository,
-    private val groupRepository: GroupRepository,
-    private val config: ConfigProperties,
-    private val linkRepository: LinkRepository
-) {
-    fun parseToken(firebaseToken: String?): FirebaseTokenHolder {
-        require(firebaseToken!!.isNotBlank()) { "FirebaseTokenBlank" }
-        return try {
-            val decodedToken = FirebaseAuth.getInstance().verifyIdToken(firebaseToken)
-            FirebaseTokenHolder(decodedToken)
-        } catch (e: Exception) {
-            throw FirebaseTokenInvalidException(e.message)
+public class FirebaseService {
+    private final ProfileRepository profileRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final GroupRepository groupRepository;
+    private final ConfigProperties config;
+    private final LinkRepository linkRepository;
+
+    public FirebaseService(
+            ProfileRepository profileRepository,
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            GroupRepository groupRepository,
+            ConfigProperties config,
+            LinkRepository linkRepository
+    ) {
+        this.profileRepository = profileRepository;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.groupRepository = groupRepository;
+        this.config = config;
+        this.linkRepository = linkRepository;
+    }
+
+    public FirebaseTokenHolder parseToken(String firebaseToken) {
+        require(firebaseToken != null && !firebaseToken.isBlank(), "FirebaseTokenBlank");
+        try {
+            com.google.firebase.auth.FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(firebaseToken);
+            return new FirebaseTokenHolder(decodedToken);
+        } catch (Exception e) {
+            throw new FirebaseTokenInvalidException(e.getMessage());
         }
     }
 
-    fun loadUserByUsername(username: String, xLink: String?): UserDetails {
-        var user = this.userRepository.findUserByEmail(username)
-        val profileSaved: List<Profile>
+    public UserDetails loadUserByUsername(String username, String xLink) {
+        User user = this.userRepository.findUserByEmail(username);
+        List<Profile> profileSaved;
 
         if (user == null) {
-            val group = if (config.adminUser == username) {
-                val groups = this.groupRepository.findSystemGroups()
-                val profiles = groups.map { group ->
-                    Profile(group = group.id)
-                }
+            Group group;
+            if (config.getAdminUser().equals(username)) {
+                List<Group> groups = this.groupRepository.findSystemGroups();
+                List<Profile> profiles = groups.stream()
+                        .map(group -> new Profile(group.getId()))
+                        .toList();
 
-                profileSaved = this.profileRepository.saveAll(profiles)
+                profileSaved = this.profileRepository.saveAll(profiles);
 
-                val roles = profileSaved.map { profile ->
-                    Role(UUID.randomUUID(), profile.id!!, "ROLE_ADMIN")
-                }
+                List<Role> roles = profileSaved.stream()
+                        .map(profile -> new Role(UUID.randomUUID(), profile.getId(), "ROLE_ADMIN"))
+                        .toList();
 
-                this.roleRepository.saveAll(roles)
-                groups.first { group -> group.type == "b" }
+                this.roleRepository.saveAll(roles);
+                group = groups.stream().filter(g -> g.getType().equals("b")).findFirst().orElse(null);
             } else {
+                List<Group> groups = new ArrayList<>(this.groupRepository.findSystemGroups());
+                List<Profile> profiles = groups.stream()
+                        .map(group -> new Profile(group.getId()))
+                        .toList();
 
-                val groups =
-                    this.groupRepository.findSystemGroups().toMutableList()
+                profileSaved = this.profileRepository.saveAll(profiles);
 
-                val profiles = groups.map { group ->
-                    Profile(group = group.id)
-                }
+                List<Role> roles = profileSaved.stream()
+                        .map(profile -> new Role(UUID.randomUUID(), profile.getId(), "ROLE_USER"))
+                        .toList();
+                this.roleRepository.saveAll(roles);
 
-                profileSaved = this.profileRepository.saveAll(profiles)
-
-                val roles = profileSaved.map { profile ->
-                    Role(UUID.randomUUID(), profile.id!!, "ROLE_USER")
-                }
-                this.roleRepository.saveAll(roles)
-
-                groups.first { group -> group.type == "d" }
+                group = groups.stream().filter(g -> g.getType().equals("d")).findFirst().orElse(null);
             }
 
-            val profile = profileSaved.find { profile -> profile.group == group.id }
-            val userToSave =
-                User(UUID.randomUUID(), username, Date(), group.id, profile, profiles = profileSaved.toMutableSet())
-            user = this.userRepository.save(userToSave)
+            Profile profile = profileSaved.stream()
+                    .filter(p -> Objects.equals(p.getGroup(), group.getId()))
+                    .findFirst().orElse(null);
+
+            User userToSave = new User(
+                    UUID.randomUUID(),
+                    username,
+                    new Date(),
+                    group.getId(),
+                    profile,
+                    new HashSet<>(profileSaved)
+            );
+            user = this.userRepository.save(userToSave);
         }
 
         if (xLink != null) {
-            this.linkRepository.findByKey(UUID.fromString(xLink)).map { link ->
-                val usedBy = link.usedBys.filter { usedBy -> usedBy == username }
+            this.linkRepository.findByKey(UUID.fromString(xLink)).ifPresent(link -> {
+                List<String> usedBy = link.getUsedBys().stream()
+                        .filter(u -> u.equals(username))
+                        .toList();
+
                 if (usedBy.isEmpty()) {
-                    when (link.type) {
-                        "g" -> {
-                            val group = this.groupRepository.findById(link.refId!!)
-                            if (group.isPresent) {
-                                val profile = Profile(group = group.get().id)
-                                val profileSaved = this.profileRepository.save(profile)
+                    if ("g".equals(link.getType())) {
+                        Optional<Group> optionalGroup = this.groupRepository.findById(link.getRefId());
+                        if (optionalGroup.isPresent()) {
+                            Group group = optionalGroup.get();
+                            Profile profile = new Profile(group.getId());
+                            Profile profileSaved = this.profileRepository.save(profile);
 
-                                val role = Role(UUID.randomUUID(), profileSaved.id!!, "ROLE_USER")
-                                this.roleRepository.save(role)
+                            Role role = new Role(UUID.randomUUID(), profileSaved.getId(), "ROLE_USER");
+                            this.roleRepository.save(role);
 
-                                user.profiles?.add(profile)
-                                val userNew = user.copy(group = group.get().id, profile = profile)
-                                this.userRepository.save(userNew)
-                            }
+                            user.getProfiles().add(profile);
+                            User userNew = user.withGroup(group.getId()).withProfile(profile);
+                            this.userRepository.save(userNew);
                         }
-                        else -> {
-
-                        }
+                    } else {
+                        // Handle other types of links
                     }
 
-                    link.usedBys.add(username)
-                    this.linkRepository.save(link)
+                    link.getUsedBys().add(username);
+                    this.linkRepository.save(link);
                 }
-            }
+            });
         }
 
-        val roles = user.profile?.let { profile ->
-            this.roleRepository.findRoleByProfile(
-                profile.id!!
-            )
-        } ?: emptyList()
+        List<Role> roles = user.getProfile() != null
+                ? this.roleRepository.findRoleByProfile(user.getProfile().getId())
+                : List.of();
 
-        return FirebasePrincipal(user, roles);
+        return new FirebasePrincipal(user, roles);
     }
 }

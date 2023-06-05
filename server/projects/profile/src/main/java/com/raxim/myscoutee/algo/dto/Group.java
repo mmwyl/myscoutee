@@ -1,7 +1,6 @@
 package com.raxim.myscoutee.algo.dto;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Group {

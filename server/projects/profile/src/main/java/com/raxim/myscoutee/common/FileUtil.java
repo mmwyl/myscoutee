@@ -1,11 +1,15 @@
 package com.raxim.myscoutee.common;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.springframework.util.FileCopyUtils;
 
@@ -77,5 +81,33 @@ public class FileUtil {
         String fullDir = fullDirBuilder.toString();
 
         return new Pair<>(separator, fullDir);
+    }
+
+    public static void save(InputStream inputStream, String fileName) throws IOException {
+        try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(fileName))) {
+            byte[] buffer = new byte[inputStream.available()];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        }
+    }
+
+    public static void delete(String fileName, String sub) throws IOException {
+        Pair<String,String> sep1TmpDir = FileUtil.tempToPath(fileName, false);
+        String sep1 = sep1TmpDir.getKey();
+        String tmpDir = sep1TmpDir.getValue();
+        File tmpFile = new File(tmpDir + sep1 + "_" + fileName + sub);
+
+        if (tmpFile.exists()) {
+            Pair<String,String> sep2FullDir = FileUtil.uuidToPath(fileName, true);
+            String sep2 = sep2FullDir.getKey();
+            String fullDir = sep2FullDir.getValue();
+            File sourceFile = tmpFile;
+            Files.copy(sourceFile.toPath(), new File(fullDir + sep2 + "_" + fileName + sub).toPath(),
+                    StandardCopyOption.REPLACE_EXISTING);
+                    
+            sourceFile.delete();
+        }
     }
 }
