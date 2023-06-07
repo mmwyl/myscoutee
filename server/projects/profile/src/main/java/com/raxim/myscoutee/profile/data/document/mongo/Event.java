@@ -11,9 +11,14 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @QueryEntity
 @Document(collection = "events")
@@ -183,5 +188,6 @@ public class Event {
 
     public void setPositions(List<GeoJsonPoint> positions) {
         this.positions = positions;
-    }
+    }    
+    
 }

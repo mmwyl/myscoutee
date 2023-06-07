@@ -140,6 +140,10 @@ public class Promotion {
         return createdDate;
     }
 
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
     public UUID getCreatedBy() {
         return createdBy;
     }

@@ -1,19 +1,30 @@
 package com.raxim.myscoutee.common.config.firebase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseToken;
-import com.raxim.myscoutee.common.config.ConfigProperties;
-import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.Role;
-import com.raxim.myscoutee.profile.data.document.mongo.User;
-import com.raxim.myscoutee.profile.repository.mongo.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
+import com.raxim.myscoutee.common.config.properties.ConfigProperties;
+import com.raxim.myscoutee.profile.data.document.mongo.Group;
+import com.raxim.myscoutee.profile.data.document.mongo.Profile;
+import com.raxim.myscoutee.profile.data.document.mongo.Role;
+import com.raxim.myscoutee.profile.data.document.mongo.User;
 
 @Service
 public class FirebaseService {
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_USER = "ROLE_USER";
+
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -27,8 +38,7 @@ public class FirebaseService {
             RoleRepository roleRepository,
             GroupRepository groupRepository,
             ConfigProperties config,
-            LinkRepository linkRepository
-    ) {
+            LinkRepository linkRepository) {
         this.profileRepository = profileRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -56,7 +66,11 @@ public class FirebaseService {
 
                 List<Role> roles = new ArrayList<>();
                 for (Profile profile : profileSaved) {
-                    Role role = new Role(UUID.randomUUID(), profile.getId(), "ROLE_ADMIN");
+
+                    Role role = new Role();
+                    role.setId(UUID.randomUUID());
+                    role.setProfileId(profile.getId());
+                    role.setRole(ROLE_ADMIN);
                     roles.add(role);
                 }
 
@@ -77,7 +91,10 @@ public class FirebaseService {
 
                 List<Role> roles = new ArrayList<>();
                 for (Profile profile : profileSaved) {
-                    Role role = new Role(UUID.randomUUID(), profile.getId(), "ROLE_USER");
+                    Role role = new Role();
+                    role.setId(UUID.randomUUID());
+                    role.setProfileId(profile.getId());
+                    role.setRole(ROLE_USER);
                     roles.add(role);
                 }
                 this.roleRepository.saveAll(roles);
@@ -85,14 +102,24 @@ public class FirebaseService {
                 group = groups.stream().filter(g -> g.getType().equals("d")).findFirst().orElse(null);
             }
 
-            Profile profile = profileSaved.stream().filter(p -> Objects.equals(p.getGroup(), group.getId())).findFirst().orElse(null);
-            User userToSave = new User(UUID.randomUUID(), username, new Date(), group.getId(), profile, new HashSet<>(profileSaved));
+            Profile profile = profileSaved.stream().filter(p -> Objects.equals(p.getGroup(), group.getId())).findFirst()
+                    .orElse(null);
+
+            User userToSave = new User();
+            userToSave.setId(UUID.randomUUID());
+            userToSave.setEmail(username);
+            userToSave.setCreatedDate(new Date());
+            userToSave.setGroup(group.getId());
+            userToSave.setProfile(profile);
+            userToSave.setProfiles(new HashSet<>(profileSaved));
+
             user = this.userRepository.save(userToSave);
         }
 
         if (xLink != null) {
             this.linkRepository.findByKey(UUID.fromString(xLink)).ifPresent(link -> {
-                List<String> usedBy = link.getUsedBys().stream().filter(u -> Objects.equals(u, username)).collect(Collectors.toList());
+                List<String> usedBy = link.getUsedBys().stream().filter(u -> Objects.equals(u, username))
+                        .collect(Collectors.toList());
                 if (usedBy.isEmpty()) {
                     switch (link.getType()) {
                         case "g":
@@ -120,7 +147,8 @@ public class FirebaseService {
             });
         }
 
-        List<Role> roles = user.getProfile() != null ? this.roleRepository.findRoleByProfile(user.getProfile().getId()) : Collections.emptyList();
+        List<Role> roles = user.getProfile() != null ? this.roleRepository.findRoleByProfile(user.getProfile().getId())
+                : Collections.emptyList();
 
         return new FirebasePrincipal(user, roles);
     }

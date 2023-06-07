@@ -13,6 +13,11 @@ public class RangeLocal {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime end;
 
+    public RangeLocal(LocalDateTime start, LocalDateTime end) {
+        this.start = start;
+        this.end = end;
+    }
+
     public LocalDateTime getStart() {
         return start;
     }

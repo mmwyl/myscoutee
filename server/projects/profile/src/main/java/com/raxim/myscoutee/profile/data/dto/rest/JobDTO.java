@@ -15,6 +15,10 @@ public class JobDTO {
     @JsonIgnore
     private List<Object> offset;
 
+    public JobDTO(Job job) {
+        this.job = job;
+    }
+
     public Job getJob() {
         return job;
     }

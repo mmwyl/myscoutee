@@ -1,14 +1,14 @@
 package com.raxim.myscoutee.common.config.firebase.dto;
 
-import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.Role;
-import com.raxim.myscoutee.profile.data.document.mongo.User;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.raxim.myscoutee.profile.data.document.mongo.Role;
+import com.raxim.myscoutee.profile.data.document.mongo.User;
 
 public class FirebasePrincipal implements UserDetails {
     private final User user;
@@ -26,6 +26,10 @@ public class FirebasePrincipal implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    public User getUser() {
+        return user;
+    }
+    
     @Override
     public String getPassword() {
         return "";

@@ -28,6 +28,10 @@ public class ProfileDTO {
     @JsonProperty(value = "role")
     private String role;
 
+    public ProfileDTO(Profile profile) {
+        this.profile = profile;
+    }
+
     public Profile getProfile() {
         return profile;
     }

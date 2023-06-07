@@ -1,4 +1,4 @@
-package com.raxim.myscoutee.common.file;
+package com.raxim.myscoutee.common.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

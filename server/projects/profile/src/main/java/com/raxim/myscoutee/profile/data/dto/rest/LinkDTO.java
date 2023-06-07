@@ -12,6 +12,11 @@ public class LinkDTO {
     @JsonProperty(value = "info")
     private LinkInfoDTO info;
 
+    public LinkDTO(Link link, LinkInfoDTO info) {
+        this.link = link;
+        this.info = info;
+    }
+
     public Link getLink() {
         return link;
     }
