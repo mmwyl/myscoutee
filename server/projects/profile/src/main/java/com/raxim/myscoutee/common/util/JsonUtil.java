@@ -1,4 +1,4 @@
-package com.raxim.myscoutee.profile.util;
+package com.raxim.myscoutee.common.util;
 
 import java.io.IOException;
 

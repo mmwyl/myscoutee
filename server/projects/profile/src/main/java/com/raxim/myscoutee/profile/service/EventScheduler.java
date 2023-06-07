@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Notification;
 import com.raxim.myscoutee.common.config.firebase.FirebaseAuthenticationToken;
+import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.exception.InvalidScheduleSettingsException;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.ScheduleSetting;
 import com.raxim.myscoutee.algo.dto.Bound;
 import com.raxim.myscoutee.profile.repository.mongo.ScheduleSettingRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
-import com.raxim.myscoutee.profile.util.JsonUtil;
 
 import java.util.List;
 import java.util.Set;

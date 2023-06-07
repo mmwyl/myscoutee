@@ -15,6 +15,10 @@ public class IdeaDTO {
     @JsonIgnore
     private List<Object> offset;
 
+    public IdeaDTO(Idea idea) {
+        this.idea = idea;
+    }
+
     public Idea getIdea() {
         return idea;
     }

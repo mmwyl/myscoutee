@@ -11,6 +11,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
@@ -23,7 +24,6 @@ import com.raxim.myscoutee.profile.data.document.mongo.Slot;
 import com.raxim.myscoutee.profile.data.dto.rest.IdeaDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.JobDTO;
 import com.raxim.myscoutee.profile.util.EventUtil;
-import com.raxim.myscoutee.profile.util.JsonUtil;
 
 @Service
 public class CampaignService {
@@ -237,7 +237,7 @@ public class CampaignService {
 
         Idea savedIdea = this.ideaRepository.save(ideaToSave);
 
-        return new Idea(savedIdea);
+        return new IdeaDTO(savedIdea);
     }
 
     public List<JobDTO> getJobs(UUID profileId, Integer step, Object[] tOffset) {

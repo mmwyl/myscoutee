@@ -13,12 +13,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.common.util.FileUtil;
+import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Car;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.School;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileStatusDTO;
-import com.raxim.myscoutee.profile.util.JsonUtil;
 import com.raxim.myscoutee.profile.util.ProfileUtil;
 
 //val reqGroupId = UUID.fromString(groupId)
