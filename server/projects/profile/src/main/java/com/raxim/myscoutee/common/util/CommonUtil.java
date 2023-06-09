@@ -24,7 +24,8 @@ public class CommonUtil {
     public static final String[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
             "Nov", "Dec" };
 
-    public static final Pattern dateRegex = Pattern.compile("((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[\\s\\S]*(?:(?:1|2)[0-9]{3}))[\\s\\S]?[\u2010-\u2015\\-]?[\\s\\S]?((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)?[\\s\\S]*(?:(?:1|2)[0-9]{3}))?[\\s\\S]?");
+    public static final Pattern dateRegex = Pattern.compile(
+            "((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[\\s\\S]*(?:(?:1|2)[0-9]{3}))[\\s\\S]?[\u2010-\u2015\\-]?[\\s\\S]?((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)?[\\s\\S]*(?:(?:1|2)[0-9]{3}))?[\\s\\S]?");
 
     private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
             .appendPattern("MMM yyyy")
@@ -77,11 +78,16 @@ public class CommonUtil {
         }
     }
 
-    public static String asUUID(String string) {
-        byte[] bytes = Base64.getDecoder().decode(string);
+    public static String asUUID(String base64) {
+        byte[] bytes = Base64.getDecoder().decode(base64);
         UUID uuid = new BsonBinary(BsonBinarySubType.UUID_LEGACY, bytes)
                 .asUuid(UuidRepresentation.JAVA_LEGACY);
         return uuid.toString();
+    }
+
+    public static String asBase64(UUID uuid) {
+        byte[] data = new BsonBinary(uuid, UuidRepresentation.JAVA_LEGACY).getData();
+        return Base64.getEncoder().encodeToString(data);
     }
 
     public static Point point(GeoJsonPoint point) {
