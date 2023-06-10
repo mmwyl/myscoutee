@@ -4,21 +4,13 @@
                 "_id": "?0"
             }
         },
-    
         {
-            "$match": {
-                "info.members": { "$elemMatch": { "code": "?1" } }
-            }
+            "$unwind": "$members"
         },
-    
-        {
-            "$unwind": "$info.members"
-        },
-    
         {
             "$lookup": {
                 "from": "profiles",
-                "let": { "p_id": "$info.members.profile.$id", "p_members": "$info.members" },
+                "let": { "p_id": "$members.profile.$id", "p_members" : "$members" },
                 "pipeline": [
                     {
                         "$match": {
@@ -39,11 +31,9 @@
                 "as": "profiles"
             }
         },
-    
         {
             "$unwind": "$profiles"
         },
-    
         {
             "$group": {
                 "_id": "$profiles._id",
@@ -52,10 +42,34 @@
                 }
             }
         },
-    
+        {
+            "$match": {
+                "$expr": {
+                    "$and": [
+                        { "$gt": [{ "$ifNull": ["$data.createdDate", "ISODate()"] }, { "$toDate": ":#{#offset[1]}" }] },
+                        { "$in": ["$data.status", ":#{#status}"] },
+                        { "$gte": ["$data.status", ":#{#offset[0]}"] }
+                    ]
+                }
+            }
+        },
+        {
+            "$sort": {
+                "data.status": 1,
+                "data.createdDate": -1
+            }
+        },
+        {
+            "$limit": "?1"
+        },
         {
             "$replaceRoot": {
-                "newRoot": { "member": "$data" }
+                "newRoot": {
+                    "$mergeObjects": [
+                        { "member": "$data" },
+                        { "offset": ["$data.status", "$data.createdDate"] }
+                    ]
+                }
             }
         }
     ]

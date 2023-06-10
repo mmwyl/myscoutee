@@ -1,43 +1,40 @@
 [
-    "{\n" +
-            "        \$match: {\n" +
-            "            \$expr: { \$eq: ['\$createdBy', ?0] }\n" +
-            "        }\n" +
-            "    }",
+        {
+            "$match": {
+                "$expr": { "$eq": ["$createdBy", "?0"] }
+            }
+        },
+        {
+            "$lookup": {
+                "from": "groups",
+                "localField": "refId",
+                "foreignField": "_id",
+                "as": "ref"
+            }
+        },
+        {
+            "$unwind": "$ref"
+        },
+        {
+            "$group": {
+                "_id": "$refId",
+                "type": { "$first": "$type" },
+                "name": { "$first": "$ref.name" },
+                "data": {
+                    "$sum": {
+                        "$size": "$usedBys"
+                    }
+                }
+            }
+        },
+        {
+            "$replaceRoot": {
+                "newRoot": {
+                    "$mergeObjects": [
+                        { "ref": "$_id", "type": "$type", "cnt": "$data", "name": "$name" }
+                    ]
+                }
+            }
+        }
+    ]
     
-    "{\n" +
-            "        \$lookup: {\n" +
-            "            from: 'groups',\n" +
-            "            localField: 'refId',\n" +
-            "            foreignField: '_id',\n" +
-            "            as: 'ref'\n" +
-            "        }\n" +
-            "    }",
-
-    "{\n" +
-            "        \$unwind: '\$ref'\n" +
-            "    }",
-
-    
-
-    "{\n" +
-            "        \$group: {\n" +
-            "            '_id': '\$refId',\n" +
-            "            'type': {\$first: '\$type'},\n" +
-            "            'name': {\$first: '\$ref.name'},\n" +
-            "            'data': {\n" +
-            "                \$sum: {\n" +
-            "                    \$size: '\$usedBys'\n" +
-            "                }\n" +
-            "            },\n" +
-            "        }\n" +
-            "    }",
-
-    "{\n" +
-            "        \$replaceRoot: { \n" +
-            "            'newRoot': { \n" +
-            "                \$mergeObjects: [{'ref': '\$_id', 'type': '\$type', 'cnt': '\$data', 'name': '\$name'}]\n" +
-            "            }\n" +
-            "        }\n" +
-            "    }"
-]

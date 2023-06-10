@@ -1,45 +1,47 @@
 [
-    "{ \n" +
-            "        \$geoNear : \n" +
-            "        { \n" +
-            "            near : ?1, \n" +
-            "            spherical     : true, \n" +
-            "            minDistance   : :#{#offset[0]}, \n" +
-            "            distanceField : 'distance', \n" +
-            "            distanceMultiplier: 0.001, \n" +
-            "            query         : { 'status': 'R', 'group': ?4 } \n" +
-            "        } \n" +
-            "    }",
-
-    "{ \n" +
-            "        \$match: { \n" +
-            "            \$expr: { \n" +
-            "                \$and: [ \n" +
-            "                    {\$gt: [ {\$ifNull: [ '\$createdDate', ISODate()]}, { \$toDate: :#{#offset[1]} }]}, \n" +
-            "                ] \n" +
-            "            } \n" +
-            "        } \n" +
-            "    }",
-
-    "{ \n" +
-            "        \$addFields: { \n" +
-            "            'groupKey': {\$multiply: [{\$floor : [{\$divide : ['\$distance', ?3]}]}, ?3]}, \n" +
-            "        } \n" +
-            "    }",
-
-    "{ \n" +
-            "        \$sort: { \n" +
-            "            'groupKey': 1, 'distance': 1, 'createdDate': -1\n" +
-            "        } \n" +
-            "    }",
-
-    "{ \$limit : ?2 }",
-
-    "{ \n" +
-            "        \$replaceRoot: {  \n" +
-            "            'newRoot': {  \n" +
-            "                \$mergeObjects: [{'event': '\$\$ROOT'}, { groupKey: '\$groupKey', offset: ['\$distance', '\$createdDate'] } ] \n" +
-            "            } \n" +
-            "        } \n" +
-            "    }"
-]
+        {
+            "$geoNear": {
+                "near": "?1",
+                "spherical": true,
+                "minDistance": ":#{#offset[0]}",
+                "distanceField": "distance",
+                "distanceMultiplier": 0.001,
+                "query": { "status": "R", "group": "?4" }
+            }
+        },
+    
+        {
+            "$match": {
+                "$expr": {
+                    "$and": [
+                        {"$gt": [{"$ifNull": ["$createdDate", "ISODate()"]}, {"$toDate": ":#{#offset[1]}"}]}
+                    ]
+                }
+            }
+        },
+    
+        {
+            "$addFields": {
+                "groupKey": {"$multiply": [{"$floor": [{"$divide": ["$distance", "?3"]}]}, "?3"]}
+            }
+        },
+    
+        {
+            "$sort": {
+                "groupKey": 1,
+                "distance": 1,
+                "createdDate": -1
+            }
+        },
+    
+        { "$limit": "?2" },
+    
+        {
+            "$replaceRoot": {
+                "newRoot": {
+                    "$mergeObjects": [{"event": "$$ROOT"}, {"groupKey": "$groupKey", "offset": ["$distance", "$createdDate"]}]
+                }
+            }
+        }
+    ]
+    

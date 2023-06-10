@@ -1,101 +1,90 @@
 [
-    "{\n" +
-            "        \$match: {\n" +
-            "            \$expr: {\n" +
-            "                \$and: [\n" +
-            "                    {\$in: [ '\$_id', :#{#eventIds} ] }\n" +
-            "                ]\n" +
-            "            }\n" +
-            "        },\n" +
-            "    }",
-
-    "{\n" +
-            "        \$unwind: '\$info.members'\n" +
-            "    }",
-
-    "{\n" +
-            "        \$match: {\n" +
-            "            \$expr: {\n" +
-            "                \$or: [\n" +
-            "                    {\$eq: [ '\$info.members.status', 'A'] }\n" +
-            "                    {\$eq: [ '\$info.members.status', 'I'] }\n" +
-            "                ]\n" +
-            "            }\n" +
-            "        },\n" +
-            "    }",
-    "{\n" +
-            "        \$lookup:\n" +
-            "        {\n" +
-            "            from: 'profiles',\n" +
-            "            let: { 'p_id': '\$info.members.profile.\$id', 'p_members' : '\$info.members' },\n" +
-            "            pipeline: [\n" +
-            "                {\n" +
-            "                    \$match: {\n" +
-            "                        \$expr: {\n" +
-            "                            \$and: [\n" +
-            "                                {\$eq: ['\$\$p_id', '\$_id']},\n" +
-            "                                {\$eq: [ '\$status', 'A']}\n" +
-            "                            ]\n" +
-            "                        }\n" +
-            "                    },\n" +
-            "                },\n" +
-            "            ],\n" +
-            "            as: 'profiles',\n" +
-            "        }\n" +
-            "    }",
-
-    "{\n" +
-            "        \$unwind: '\$profiles'\n" +
-            "    }",
-
-    "{\n" +
-            "        \$lookup:\n" +
-            "        {\n" +
-            "            from: 'users',\n" +
-            "            let: { 'p_id': '\$profiles._id' },\n" +
-            "            pipeline: [\n" +
-            "                {\n" +
-            "                    \$match: {\n" +
-            "                        \$expr: {\n" +
-            "                            \$in: ['\$\$p_id', '\$profiles.\$id']\n" +
-            "                        }\n" +
-            "                    },\n" +
-            "                }\n" +
-            "            ],\n" +
-            "            as: 'users',\n" +
-            "        }\n" +
-            "    }",
-
-    "{\n" +
-            "        \$unwind: '\$users'\n" +
-            "    }",
-
-    "{\n" +
-            "        \$lookup:\n" +
-            "        {\n" +
-            "            from: 'tokens',\n" +
-            "            let: { 'u_id': '\$users._id' },\n" +
-            "            pipeline: [\n" +
-            "                {\n" +
-            "                    \$match: {\n" +
-            "                        \$expr: {\n" +
-            "                            \$eq: ['\$\$u_id', '\$uuid']\n" +
-            "                        }\n" +
-            "                    },\n" +
-            "                }\n" +
-            "            ],\n" +
-            "            as: 'tokens',\n" +
-            "        }\n" +
-            "    }",
-
-    "{\n" +
-            "        \$unwind: '\$tokens'\n" +
-            "    }",
-
-    "{ \n" +
-            "        \$replaceRoot: {  \n" +
-            "            'newRoot': '\$tokens' \n" +
-            "        } \n" +
-            "    }"
-
-]
+        {
+            "$match": {
+                "$expr": {
+                    "$and": [
+                        { "$in": [ "$_id", ":#{#eventIds}" ] }
+                    ]
+                }
+            }
+        },
+        {
+            "$unwind": "$info.members"
+        },
+        {
+            "$match": {
+                "$expr": {
+                    "$or": [
+                        { "$eq": [ "$info.members.status", "A"] },
+                        { "$eq": [ "$info.members.status", "I"] }
+                    ]
+                }
+            }
+        },
+        {
+            "$lookup": {
+                "from": "profiles",
+                "let": { "p_id": "$info.members.profile.$id", "p_members": "$info.members" },
+                "pipeline": [
+                    {
+                        "$match": {
+                            "$expr": {
+                                "$and": [
+                                    { "$eq": [ "$$p_id", "$_id" ] },
+                                    { "$eq": [ "$status", "A" ] }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "as": "profiles"
+            }
+        },
+        {
+            "$unwind": "$profiles"
+        },
+        {
+            "$lookup": {
+                "from": "users",
+                "let": { "p_id": "$profiles._id" },
+                "pipeline": [
+                    {
+                        "$match": {
+                            "$expr": {
+                                "$in": [ "$$p_id", "$profiles.$id" ]
+                            }
+                        }
+                    }
+                ],
+                "as": "users"
+            }
+        },
+        {
+            "$unwind": "$users"
+        },
+        {
+            "$lookup": {
+                "from": "tokens",
+                "let": { "u_id": "$users._id" },
+                "pipeline": [
+                    {
+                        "$match": {
+                            "$expr": {
+                                "$eq": [ "$$u_id", "$uuid" ]
+                            }
+                        }
+                    }
+                ],
+                "as": "tokens"
+            }
+        },
+        {
+            "$unwind": "$tokens"
+        },
+        {
+            "$replaceRoot": {
+                "newRoot": "$tokens"
+            }
+        }
+    ]
+    

@@ -1,52 +1,52 @@
 [
-    "{\n" +
-            "        \$match: {\n" +
-            "            '_id': ?0\n" +
-            "        }\n" +
-            "}",
-
-    "{\n" +
-            "        \$lookup: {\n" +
-            "            from: 'feedbacks',\n" +
-            "            localField: 'feedbacks.\$id',\n" +
-            "            foreignField: '_id',\n" +
-            "            as: 'feedbacks'\n" +
-            "        }\n" +
-            "}",
-
-    "{\n" +
-            "        \$unwind: '\$feedbacks'\n" +
-            "}",
-
-    "{\n" +
-            "        \$group: {\n" +
-            "            '_id': '\$feedbacks._id',\n" +
-            "            data: { '\$first': '\$feedbacks' },\n" +
-            "        }\n" +
-            "}",
-
-    "{\n" +
-            "        \$match: {\n" +
-            "            \$expr: \n" +
-            "            {\n" +
-            "                \$gt: [ {\$ifNull: [ '\$data.createdDate', ISODate()]}, { \$toDate: :#{#offset[0]} }],\n" +
-            "            },\n" +
-            "        }\n" +
-            "}",
-
-    "{\n" +
-            "        \$sort: {\n" +
-            "            'data.createdDate': -1\n" +
-            "        }\n" +
-            "}",
-
-    "{ \$limit : ?1 }",
-
-    "{\n" +
-            "        \$replaceRoot: { \n" +
-            "            'newRoot': { \n" +
-            "                \$mergeObjects: [{'feedback': '\$data'}, { offset: ['\$data.createdDate'] } ]\n" +
-            "            }\n" +
-            "        }\n" +
-            "}"
-]
+        {
+            "$match": {
+                "_id": "?0"
+            }
+        },
+    
+        {
+            "$lookup": {
+                "from": "feedbacks",
+                "localField": "feedbacks.$id",
+                "foreignField": "_id",
+                "as": "feedbacks"
+            }
+        },
+    
+        {
+            "$unwind": "$feedbacks"
+        },
+    
+        {
+            "$group": {
+                "_id": "$feedbacks._id",
+                "data": { "$first": "$feedbacks" }
+            }
+        },
+    
+        {
+            "$match": {
+                "$expr": {
+                    "$gt": [ { "$ifNull": [ "$data.createdDate", "ISODate()" ] }, { "$toDate": ":#{#offset[0]}" } ]
+                }
+            }
+        },
+    
+        {
+            "$sort": {
+                "data.createdDate": -1
+            }
+        },
+    
+        { "$limit": "?1" },
+    
+        {
+            "$replaceRoot": {
+                "newRoot": {
+                    "$mergeObjects": [ { "feedback": "$data" }, { "offset": ["$data.createdDate"] } ]
+                }
+            }
+        }
+    ]
+    

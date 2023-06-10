@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
-import com.raxim.myscoutee.exception.InvalidScheduleSettingsException;
+import com.raxim.myscoutee.profile.exception.InvalidScheduleSettingsException;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 import com.raxim.myscoutee.profile.service.EventScheduler;
 

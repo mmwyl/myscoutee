@@ -1,4 +1,4 @@
-package com.raxim.myscoutee.exception;
+package com.raxim.myscoutee.profile.exception;
 
 public class InvalidScheduleSettingsException extends Exception {
 }

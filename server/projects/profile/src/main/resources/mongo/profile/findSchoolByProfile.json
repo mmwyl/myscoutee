@@ -1,42 +1,38 @@
 [
-    "{\n" +
-            "        \$match: {\n" +
-            "            '_id': ?0\n" +
-            "        }\n" +
-            "}",
-
-    "{\n" +
-            "        \$unwind: '\$schools'\n" +
-            "    }",
-
-    "{\n" +
-            "        \$lookup:\n" +
-            "        {\n" +
-            "            from: 'schools',\n" +
-            "            let: { 's_id': '\$schools.\$id' },\n" +
-            "            pipeline: [\n" +
-            "                {\n" +
-            "                    \$match: {\n" +
-            "                        \$expr: {\n" +
-            "                            \$and: [ \n" +
-            "                                { \$eq: ['\$status', 'A'] },\n" +
-            "                                { \$eq: ['\$\$s_id', ?1] }\n" +
-            "                            ]\n" +
-            "                        }\n" +
-            "                    },\n" +
-            "                },\n" +
-            "            ],\n" +
-            "            as: 'schools'\n" +
-            "        }\n" +
-            "    }",
-
-    "{\n" +
-            "        \$unwind: '\$schools'\n" +
-            "    }",
-
-    "{\n" +
-            "        \$replaceRoot: { \n" +
-            "            'newRoot': '\$schools'\n" +
-            "        }\n" +
-            "    }"
-]
+        {
+            "$match": {
+                "_id": "?0"
+            }
+        },
+        {
+            "$unwind": "$schools"
+        },
+        {
+            "$lookup": {
+                "from": "schools",
+                "let": { "s_id": "$schools.$id" },
+                "pipeline": [
+                    {
+                        "$match": {
+                            "$expr": {
+                                "$and": [
+                                    { "$eq": ["$status", "A"] },
+                                    { "$eq": ["$$s_id", "?1"] }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "as": "schools"
+            }
+        },
+        {
+            "$unwind": "$schools"
+        },
+        {
+            "$replaceRoot": {
+                "newRoot": "$schools"
+            }
+        }
+    ]
+    
