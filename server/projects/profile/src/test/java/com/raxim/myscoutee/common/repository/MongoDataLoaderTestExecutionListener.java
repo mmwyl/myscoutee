@@ -4,8 +4,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.UUID;
 
+import org.bson.BsonBinary;
+import org.bson.BsonBinarySubType;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -40,7 +46,8 @@ public class MongoDataLoaderTestExecutionListener extends AbstractTestExecutionL
         if (dataAnnotation != null) {
             String[] jsonFiles = dataAnnotation.value();
             for (String jsonFile : jsonFiles) {
-                loadJsonData(testContext, jsonFile);
+                //loadJsonData(testContext, jsonFile);
+                insertOne(testContext, jsonFile);
             }
         }
     }
@@ -54,37 +61,40 @@ public class MongoDataLoaderTestExecutionListener extends AbstractTestExecutionL
         Document[] documents = objectMapper.readValue(jsonData, Document[].class);
 
         MongoCollection<Document> collection = mongoTemplate.getCollection(getFileName(filePath));
-        
+
         Document index = new Document("position", "2dsphere");
         collection.createIndex(index);
 
         collection.insertMany(Arrays.asList(documents), new InsertManyOptions().ordered(false));
     }
-    /*
-     * 
-     * 
-     * Document index = new Document("position", "2dsphere");
-     * collection.createIndex(index);
-     * 
-     * Document document = new Document();
-     * document.put("_id", UUID.fromString("2e7b0c6c-57e6-4c0a-98c0-516abed677ab"));
-     * document.put("name", "dating");
-     * document.put("type", "d");
-     * document.put("visibility", "public");
-     * document.put("system", false);
-     * document.put("desc", "Dating");
-     * document.put("position", new Document("type", "Point")
-     * .append("coordinates", Arrays.asList(47.497912, 19.040235)));
-     * 
-     * DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
-     * Instant instant = Instant.from(formatter.parse("2023-06-12T12:30:00Z"));
-     * Date date = Date.from(instant);
-     * document.put("createdDate", date);
-     * document.put("createdBy",
-     * UUID.fromString("2e7b0c6c-57e6-4c0a-98c0-516abed677ab"));
-     * 
-     * collection.insertOne(document);
-     */
+
+    public void insertOne(TestContext testContext, String jsonFile) {
+        Path filePath = getResourcePath(jsonFile);
+        
+        MongoCollection<Document> collection = mongoTemplate.getCollection(getFileName(filePath));
+
+        Document index = new Document("position", "2dsphere");
+        collection.createIndex(index);
+
+        Document document = new Document();
+        document.put("_id", new BsonBinary(BsonBinarySubType.UUID_LEGACY, "9LgfL1AomJ0udg==".getBytes()));
+        document.put("name", "dating");
+        document.put("type", "d");
+        document.put("visibility", "public");
+        document.put("system", false);
+        document.put("desc", "Dating");
+        document.put("position", new Document("type", "Point")
+                .append("coordinates", Arrays.asList(47.497912, 19.040235)));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+        Instant instant = Instant.from(formatter.parse("2023-06-12T12:30:00Z"));
+        Date date = Date.from(instant);
+        document.put("createdDate", date);
+        document.put("createdBy",
+                UUID.fromString("2e7b0c6c-57e6-4c0a-98c0-516abed677ab"));
+
+        collection.insertOne(document);
+    }
 
     private Path getResourcePath(String jsonFile) {
         String resourcePath = getClass().getClassLoader().getResource(jsonFile).getPath();
