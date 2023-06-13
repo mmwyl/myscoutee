@@ -6,26 +6,50 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bson.BsonBinary;
 import org.bson.BsonBinarySubType;
+import org.bson.BsonType;
 import org.bson.Document;
+import org.bson.UuidRepresentation;
+import org.bson.codecs.BsonTypeClassMap;
+import org.bson.codecs.BsonValueCodecProvider;
+import org.bson.codecs.Codec;
+import org.bson.codecs.CollectionCodecProvider;
+import org.bson.codecs.DocumentCodecProvider;
+import org.bson.codecs.IterableCodecProvider;
+import org.bson.codecs.MapCodecProvider;
+import org.bson.codecs.ValueCodecProvider;
+import org.bson.codecs.configuration.CodecRegistries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.InsertManyOptions;
 
 public class MongoDataLoaderTestExecutionListener extends AbstractTestExecutionListener {
+
+    private final static BsonTypeClassMap TYPE_MAP = new BsonTypeClassMap(Map.of(BsonType.BINARY, UUID.class));
+    private static final Codec<Document> UUID_CODEC = CodecRegistries
+            .withUuidRepresentation(CodecRegistries.fromProviders(Arrays.asList(new ValueCodecProvider(),
+                    new CollectionCodecProvider(TYPE_MAP), new IterableCodecProvider(TYPE_MAP),
+                    new BsonValueCodecProvider(), new DocumentCodecProvider(TYPE_MAP),
+                    new MapCodecProvider(TYPE_MAP))),
+                    UuidRepresentation.JAVA_LEGACY)
+            .get(Document.class);
+
     private boolean setupRequired = true;
 
     @Autowired
@@ -46,11 +70,18 @@ public class MongoDataLoaderTestExecutionListener extends AbstractTestExecutionL
         if (dataAnnotation != null) {
             String[] jsonFiles = dataAnnotation.value();
             for (String jsonFile : jsonFiles) {
-                //loadJsonData(testContext, jsonFile);
-                insertOne(testContext, jsonFile);
+                loadJsonData(testContext, jsonFile);
+                // insertOne(testContext, jsonFile);
             }
         }
     }
+
+    @Override
+	public void afterTestMethod(TestContext testContext) throws Exception {
+		mongoTemplate.getCollectionNames().forEach(collectionName -> {
+            mongoTemplate.remove(new Query(), collectionName);
+        });
+	}
 
     private void loadJsonData(TestContext testContext, String jsonFile) throws IOException {
         Path filePath = getResourcePath(jsonFile);
@@ -58,19 +89,28 @@ public class MongoDataLoaderTestExecutionListener extends AbstractTestExecutionL
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        Document[] documents = objectMapper.readValue(jsonData, Document[].class);
+        Object[] documentArray = objectMapper.readValue(jsonData, Object[].class);
+
+        List<Object> documentObjects = Arrays.asList(documentArray);
+
+        List<Document> documents = new ArrayList<>();
+        for (Object docuObject : documentObjects) {
+            String docuString = objectMapper.writeValueAsString(docuObject);
+            Document document = Document.parse(docuString, UUID_CODEC);
+            documents.add(document);
+        }
 
         MongoCollection<Document> collection = mongoTemplate.getCollection(getFileName(filePath));
 
         Document index = new Document("position", "2dsphere");
         collection.createIndex(index);
 
-        collection.insertMany(Arrays.asList(documents), new InsertManyOptions().ordered(false));
+        collection.insertMany(documents, new InsertManyOptions().ordered(false));
     }
 
     public void insertOne(TestContext testContext, String jsonFile) {
         Path filePath = getResourcePath(jsonFile);
-        
+
         MongoCollection<Document> collection = mongoTemplate.getCollection(getFileName(filePath));
 
         Document index = new Document("position", "2dsphere");
