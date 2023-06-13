@@ -1,0 +1,823 @@
+[
+    {
+        "_id": {
+            "$binary": "vldSpDImQDm8GnsRzFMYJQ==",
+            "$type": "03"
+        },
+        "firstName": "Sophia",
+        "gender": "w",
+        "birthday": {
+            "$date": "1990-09-15T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 165,
+        "physique": "Slim",
+        "languages": [
+            "English",
+            "Spanish"
+        ],
+        "religion": "Christian",
+        "profession": "Teacher",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.496587,
+                19.044607
+            ]
+        },
+        "status": "F",
+        "createdDate": {
+            "$date": "2022-11-01T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 75,
+        "lastLogin": {
+            "$date": "2023-06-10T09:15:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
+            "$type": "03"
+        },
+        "firstName": "Oliver",
+        "gender": "m",
+        "birthday": {
+            "$date": "1993-02-18T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 175,
+        "physique": "Average",
+        "languages": [
+            "English",
+            "French"
+        ],
+        "religion": "None",
+        "profession": "Software Engineer",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.506953,
+                19.019821
+            ]
+        },
+        "status": "A",
+        "createdDate": {
+            "$date": "2022-09-20T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 90,
+        "lastLogin": {
+            "$date": "2023-06-11T15:30:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "L3VWbLpPSeuZZcjIFMQjUQ==",
+            "$type": "03"
+        },
+        "firstName": "Ava",
+        "gender": "w",
+        "birthday": {
+            "$date": "1992-05-03T00:00:00Z"
+        },
+        "smoker": true,
+        "marital": "Married",
+        "hasChild": true,
+        "height": 160,
+        "physique": "Curvy",
+        "languages": [
+            "English",
+            "Spanish",
+            "Italian"
+        ],
+        "religion": "Christian",
+        "profession": "Nurse",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.495215,
+                19.032341
+            ]
+        },
+        "status": "P",
+        "createdDate": {
+            "$date": "2022-12-05T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 82,
+        "lastLogin": {
+            "$date": "2023-06-09T08:45:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "8r2G5Lj5TmmGtJ3xBX0QZQ==",
+            "$type": "03"
+        },
+        "firstName": "Lucas",
+        "gender": "m",
+        "birthday": {
+            "$date": "1991-12-30T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 180,
+        "physique": "Athletic",
+        "languages": [
+            "English",
+            "German"
+        ],
+        "religion": "None",
+        "profession": "Engineer",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.500870,
+                19.028995
+            ]
+        },
+        "status": "S",
+        "createdDate": {
+            "$date": "2022-10-10T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 75,
+        "lastLogin": {
+            "$date": "2023-06-10T09:15:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "0eEFqfhyTPyMFU6R2cD4BQ==",
+            "$type": "03"
+        },
+        "firstName": "Emma",
+        "gender": "w",
+        "birthday": {
+            "$date": "1994-07-20T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 165,
+        "physique": "Slim",
+        "languages": [
+            "English",
+            "Spanish"
+        ],
+        "religion": "Christian",
+        "profession": "Teacher",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.502316,
+                19.082017
+            ]
+        },
+        "status": "D",
+        "createdDate": {
+            "$date": "2022-11-01T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 75,
+        "lastLogin": {
+            "$date": "2023-06-10T09:15:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "1Dc2E84Bfi8a6C6NyO+e5g==",
+            "$type": "03"
+        },
+        "firstName": "Ethan",
+        "gender": "m",
+        "birthday": {
+            "$date": "1995-03-12T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 175,
+        "physique": "Average",
+        "languages": [
+            "English",
+            "Spanish"
+        ],
+        "religion": "None",
+        "profession": "Graphic Designer",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.508699,
+                19.052418
+            ]
+        },
+        "status": "F",
+        "createdDate": {
+            "$date": "2022-08-23T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 80,
+        "lastLogin": {
+            "$date": "2023-06-12T12:30:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "xwe5I2hsjEK3vRoAC3LncQ==",
+            "$type": "03"
+        },
+        "firstName": "Evelyn",
+        "gender": "w",
+        "birthday": {
+            "$date": "1992-09-28T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 160,
+        "physique": "Slim",
+        "languages": [
+            "English",
+            "French",
+            "Spanish"
+        ],
+        "religion": "Christian",
+        "profession": "Marketing Manager",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.513468,
+                19.045366
+            ]
+        },
+        "status": "A",
+        "createdDate": {
+            "$date": "2022-11-10T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 95,
+        "lastLogin": {
+            "$date": "2023-06-13T09:45:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "2y2DXeZ9g0+8kPQ5JcFF9Q==",
+            "$type": "03"
+        },
+        "firstName": "Mia",
+        "gender": "w",
+        "birthday": {
+            "$date": "1993-06-05T00:00:00Z"
+        },
+        "smoker": true,
+        "marital": "Divorced",
+        "hasChild": true,
+        "height": 170,
+        "physique": "Curvy",
+        "languages": [
+            "English"
+        ],
+        "religion": "Christian",
+        "profession": "Writer",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.492288,
+                19.029219
+            ]
+        },
+        "status": "P",
+        "createdDate": {
+            "$date": "2022-12-15T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 75,
+        "lastLogin": {
+            "$date": "2023-06-11T18:20:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "4eSWO5YOTU+kK8UDWioPHw==",
+            "$type": "03"
+        },
+        "firstName": "Noah",
+        "gender": "m",
+        "birthday": {
+            "$date": "1990-11-18T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 185,
+        "physique": "Athletic",
+        "languages": [
+            "English",
+            "German"
+        ],
+        "religion": "None",
+        "profession": "Engineer",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.496694,
+                19.064839
+            ]
+        },
+        "status": "I",
+        "createdDate": {
+            "$date": "2022-10-05T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 70,
+        "lastLogin": {
+            "$date": "2023-06-11T10:10:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "7ZczdySDQSuomlg9Hr0wZw==",
+            "$type": "03"
+        },
+        "firstName": "Charlotte",
+        "gender": "w",
+        "birthday": {
+            "$date": "1994-04-02T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 168,
+        "physique": "Slim",
+        "languages": [
+            "English",
+            "Spanish"
+        ],
+        "religion": "Christian",
+        "profession": "Teacher",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.517824,
+                19.027502
+            ]
+        },
+        "status": "D",
+        "createdDate": {
+            "$date": "2022-11-25T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 85,
+        "lastLogin": {
+            "$date": "2023-06-12T07:55:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "DXrGLUv8QPq5x/jGSGSNBA==",
+            "$type": "03"
+        },
+        "firstName": "Olivia",
+        "gender": "w",
+        "birthday": {
+            "$date": "1992-06-25T00:00:00Z"
+        },
+        "smoker": true,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 170,
+        "physique": "Slim",
+        "languages": [
+            "English",
+            "German"
+        ],
+        "religion": "None",
+        "profession": "Software Engineer",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.490408,
+                19.060876
+            ]
+        },
+        "status": "S",
+        "createdDate": {
+            "$date": "2022-10-05T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 70,
+        "lastLogin": {
+            "$date": "2023-06-13T13:45:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "sAGVEajTS4+CWS8FT6AqFw==",
+            "$type": "03"
+        },
+        "firstName": "Liam",
+        "gender": "m",
+        "birthday": {
+            "$date": "1991-04-17T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 175,
+        "physique": "Average",
+        "languages": [
+            "English",
+            "Italian"
+        ],
+        "religion": "Christian",
+        "profession": "Teacher",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.497590,
+                19.063601
+            ]
+        },
+        "status": "A",
+        "createdDate": {
+            "$date": "2022-08-28T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 85,
+        "lastLogin": {
+            "$date": "2023-06-13T18:30:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "gGNCQZd0Rpudn/8rIKnRZg==",
+            "$type": "03"
+        },
+        "firstName": "Victoria",
+        "gender": "w",
+        "birthday": {
+            "$date": "1994-11-09T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 168,
+        "physique": "Average",
+        "languages": [
+            "English",
+            "Spanish"
+        ],
+        "religion": "None",
+        "profession": "Graphic Designer",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.492881,
+                19.033433
+            ]
+        },
+        "status": "D",
+        "createdDate": {
+            "$date": "2022-11-03T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 60,
+        "lastLogin": {
+            "$date": "2023-06-13T22:15:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "4zqEl+gWRSK/FL1Ef7vVZw==",
+            "$type": "03"
+        },
+        "firstName": "Benjamin",
+        "gender": "m",
+        "birthday": {
+            "$date": "1996-09-08T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 180,
+        "physique": "Athletic",
+        "languages": [
+            "English",
+            "French"
+        ],
+        "religion": "None",
+        "profession": "Architect",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.508092,
+                19.065688
+            ]
+        },
+        "status": "F",
+        "createdDate": {
+            "$date": "2022-12-10T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 75,
+        "lastLogin": {
+            "$date": "2023-06-13T11:20:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "LL3G2ZVOTqi79fIs5WbYLg==",
+            "$type": "03"
+        },
+        "firstName": "Amelia",
+        "gender": "w",
+        "birthday": {
+            "$date": "1993-07-19T00:00:00Z"
+        },
+        "smoker": true,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 165,
+        "physique": "Curvy",
+        "languages": [
+            "English",
+            "Portuguese"
+        ],
+        "religion": "Christian",
+        "profession": "Nurse",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.513779,
+                19.053785
+            ]
+        },
+        "status": "A",
+        "createdDate": {
+            "$date": "2022-09-28T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 90,
+        "lastLogin": {
+            "$date": "2023-06-13T16:10:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "UaWssXgJRo6Yy5Gyq3Af0A==",
+            "$type": "03"
+        },
+        "firstName": "Alexander",
+        "gender": "m",
+        "birthday": {
+            "$date": "1993-09-22T00:00:00Z"
+        },
+        "smoker": true,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 175,
+        "physique": "Average",
+        "languages": [
+            "English",
+            "Spanish"
+        ],
+        "religion": "Christian",
+        "profession": "Architect",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.511253,
+                19.038420
+            ]
+        },
+        "status": "A",
+        "createdDate": {
+            "$date": "2022-11-15T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 82,
+        "lastLogin": {
+            "$date": "2023-06-13T15:30:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "GmgnIuLVSe28aBzLISwXQA==",
+            "$type": "03"
+        },
+        "firstName": "Lily",
+        "gender": "w",
+        "birthday": {
+            "$date": "1994-07-11T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 160,
+        "physique": "Slim",
+        "languages": [
+            "English",
+            "French"
+        ],
+        "religion": "None",
+        "profession": "Writer",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.499303,
+                19.049715
+            ]
+        },
+        "status": "A",
+        "createdDate": {
+            "$date": "2022-12-05T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 88,
+        "lastLogin": {
+            "$date": "2023-06-13T16:45:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "F3naOhA9SGSdw46FEY7EoA==",
+            "$type": "03"
+        },
+        "firstName": "James",
+        "gender": "m",
+        "birthday": {
+            "$date": "1990-03-05T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Married",
+        "hasChild": true,
+        "height": 182,
+        "physique": "Athletic",
+        "languages": [
+            "English",
+            "German"
+        ],
+        "religion": "Christian",
+        "profession": "Business Consultant",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.504196,
+                19.031043
+            ]
+        },
+        "status": "I",
+        "createdDate": {
+            "$date": "2022-09-25T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 92,
+        "lastLogin": {
+            "$date": "2023-06-13T17:30:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "Gz2mxt9RQ0i7jM/dAc8l2w==",
+            "$type": "03"
+        },
+        "firstName": "Mason",
+        "gender": "m",
+        "birthday": {
+            "$date": "1992-12-10T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 178,
+        "physique": "Average",
+        "languages": [
+            "English",
+            "Spanish"
+        ],
+        "religion": "Christian",
+        "profession": "Accountant",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.508984,
+                19.060749
+            ]
+        },
+        "status": "S",
+        "createdDate": {
+            "$date": "2022-08-20T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 78,
+        "lastLogin": {
+            "$date": "2023-06-13T18:15:00Z"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "P2ZOCvchRFu76WVhKcU/Kg==",
+            "$type": "03"
+        },
+        "firstName": "Isabella",
+        "gender": "w",
+        "birthday": {
+            "$date": "1993-05-28T00:00:00Z"
+        },
+        "smoker": true,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 170,
+        "physique": "Curvy",
+        "languages": [
+            "English",
+            "French"
+        ],
+        "religion": "None",
+        "profession": "Marketing Manager",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.505739,
+                19.042915
+            ]
+        },
+        "status": "D",
+        "createdDate": {
+            "$date": "2022-10-01T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 95,
+        "lastLogin": {
+            "$date": "2023-06-13T19:00:00Z"
+        }
+    }
+]

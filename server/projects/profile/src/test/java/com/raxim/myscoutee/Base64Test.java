@@ -15,16 +15,16 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
 import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
 
 public class Base64Test {
 
-    @Disabled
     @Test
     public void base64() {
         System.out.println(UUID.fromString("ce0e1cec-f698-4888-aedf-b1dc9aa2596f").toString());
-        System.out.println(UUID.fromString("30/Awa250nrw1WKr37makg=="));
+        System.out.println(CommonUtil.asUUID("NkaorobBPrNUDApiL0o1tg=="));
     }
 
     @Test

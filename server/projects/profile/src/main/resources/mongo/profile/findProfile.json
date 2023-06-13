@@ -5,7 +5,6 @@
                 "spherical": true,
                 "minDistance": ":#{#offset[0]}",
                 "distanceField": "distance",
-                "distanceMultiplier": 0.001,
                 "query": {
                     "_id": { "$nin": ["?4"] },
                     "gender": "?5",
@@ -125,7 +124,7 @@
         },
         {
             "$addFields": {
-                "groupKey": { "$multiply": [{ "$floor": { "$divide": ["$distance", 5] } }, 5] }
+                "groupKey": { "$multiply": [{ "$floor": { "$divide": ["$distance", ":#{#step}"] } }, ":#{#step}"] }
             }
         },
         {
@@ -142,7 +141,7 @@
                 "newRoot": {
                     "$mergeObjects": [
                         { "profile": "$$ROOT" },
-                        { "rate": "$likes.rate", "groupKey": "$groupKey", "offset": ["$groupKey", "$likes.rate", "$likes.distance", { "$toDate": "Date()" }] }
+                        { "rate": "$likes.rate", "groupKey": "$groupKey", "offset": [{ "$ceil" : "$distance"}, "$likes.rate", { "$ifNull": ["$likes.distance", 0] }, "ISODate()" ] }
                     ]
                 }
             }

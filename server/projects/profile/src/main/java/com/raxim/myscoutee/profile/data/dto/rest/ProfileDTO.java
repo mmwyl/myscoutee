@@ -82,4 +82,10 @@ public class ProfileDTO {
     public void setRole(String role) {
         this.role = role;
     }
+
+    @Override
+    public String toString() {
+        return "ProfileDTO [profile=" + profile + ", groupKey=" + groupKey + ", rate=" + rate + ", ref=" + ref
+                + ", offset=" + offset + ", role=" + role + "]";
+    }
 }
