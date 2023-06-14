@@ -42,7 +42,7 @@ public class EventGeneratorService {
         Optional<Schedule> schedule = scheduleRepository.findByKey(RANDOM_GROUP);
         Date lastRunningTime = schedule.map(Schedule::getLastRunDate).orElse(new Date());
 
-        // rates should be harmonic mean
+        // rates should be harmonic mean, findBothAll should query by 1000 records (configurable)
         List<Like> likesBoth = likeRepository.findBothAll(lastRunningTime.toString(), 1.5);
 
         List<Edge> edges = new ArrayList<>();
