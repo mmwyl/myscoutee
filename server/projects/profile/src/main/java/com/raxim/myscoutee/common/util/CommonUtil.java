@@ -1,12 +1,14 @@
 package com.raxim.myscoutee.common.util;
 
 import java.net.URLDecoder;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -58,6 +60,12 @@ public class CommonUtil {
         date = LocalDate.parse(dateString, formatter);
 
         return LocalDateTime.of(date.getYear(), date.getMonth(), 1, 0, 0).truncatedTo(ChronoUnit.DAYS);
+    }
+
+    public static String asISO(Date date) {
+        Instant instant = date.toInstant();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+        return formatter.format(instant);
     }
 
     public static String decode(String string) {

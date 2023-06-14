@@ -13,6 +13,7 @@ import com.raxim.myscoutee.algo.dto.Bound;
 import com.raxim.myscoutee.profile.repository.mongo.ScheduleSettingRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -113,7 +114,7 @@ public class EventScheduler {
 
         Bound bound = JsonUtil.jsonToObject(scheduleSetting.getFlags(), Bound.class, objectMapper);
 
-        List<Set<Profile>> profilesByGroup = eventGeneratorService.generate(bound);
+        List<Set<Profile>> profilesByGroup = eventGeneratorService.generate(bound, new Date());
         eventService.saveEvents(profilesByGroup);
 
         com.google.firebase.messaging.Message message = com.google.firebase.messaging.Message.builder()

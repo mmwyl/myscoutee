@@ -36,11 +36,11 @@ public class LikeRepositoryTest {
         assertEquals(2, likes.size());
 
         Like like1 = likes.get(0);
-        assertEquals("Oliver", like1.getFrom().getFirstName());
-        assertEquals("Mia", like1.getTo().getFirstName());
-        
+        assertEquals("Evelyn", like1.getFrom().getFirstName());
+        assertEquals("Liam", like1.getTo().getFirstName());
+
         Like like2 = likes.get(1);
-        assertEquals("Evelyn", like2.getFrom().getFirstName());
-        assertEquals("Liam", like2.getTo().getFirstName());
+        assertEquals("Oliver", like2.getFrom().getFirstName());
+        assertEquals("Mia", like2.getTo().getFirstName());
     }
 }

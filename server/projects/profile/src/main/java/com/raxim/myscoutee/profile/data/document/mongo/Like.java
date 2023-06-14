@@ -15,7 +15,7 @@ import java.util.UUID;
 public class Like {
 
     // generate UUID in the format below: 
-    // _id : { $binary: $(random UUID with 16 characters in base64 format), $type: "3"}
+    // _id : { $binary: $(random UUID with the lenght of 16 characters in base64 format), $type: "3"}
     @Id
     @JsonProperty(value = "id")
     private UUID id;
@@ -41,7 +41,7 @@ public class Like {
 
     /* the value of the 'rate' field is random between 1 and 10*/
     @JsonProperty(value = "rate")
-    private Integer rate;
+    private Double rate;
 
     /* 'createdBy' is same value as from */
     @DBRef
@@ -56,7 +56,7 @@ public class Like {
     // 'distance' should not be included in the json 
     // in queries there are more rows, and it will be the average, taking care of the "double" flag also
     @JsonProperty(value = "distance")
-    private Long distance; // 20*(20-abs(rate1-rate2)) + profile difference
+    private Long distance = 1L; // 20*(20-abs(rate1-rate2)) + profile difference
 
     /* 'ref' should not be included in the json
     */
@@ -97,11 +97,11 @@ public class Like {
         this.to = to;
     }
 
-    public Integer getRate() {
+    public Double getRate() {
         return rate;
     }
 
-    public void setRate(Integer rate) {
+    public void setRate(Double rate) {
         this.rate = rate;
     }
 

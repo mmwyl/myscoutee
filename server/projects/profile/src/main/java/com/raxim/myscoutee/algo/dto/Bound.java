@@ -4,6 +4,11 @@ public class Bound {
     private int minGroupSize;
     private int maxGroupSize;
 
+    public Bound(int minGroupSize, int maxGroupSize) {
+        this.minGroupSize = minGroupSize;
+        this.maxGroupSize = maxGroupSize;
+    }
+
     public Bound() {
         // Default constructor
     }

@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.springframework.data.util.Pair;
 import org.springframework.util.FileCopyUtils;
@@ -88,5 +90,20 @@ public class FileUtil {
         System.arraycopy(array, 0, newArray, 0, array.length);
         newArray[array.length] = element;
         return newArray;
+    }
+
+    public static Path getResourcePath(Object obj, String jsonFile) {
+        String resourcePath = obj.getClass().getClassLoader().getResource(jsonFile).getPath();
+        return Paths.get(resourcePath);
+    }
+
+    public static String getFileName(Path path) {
+        String filenameWithExtension = path.getFileName().toString();
+        int dotIndex = filenameWithExtension.lastIndexOf(".");
+        if (dotIndex != -1) {
+            return filenameWithExtension.substring(0, dotIndex);
+        } else {
+            return filenameWithExtension;
+        }
     }
 }

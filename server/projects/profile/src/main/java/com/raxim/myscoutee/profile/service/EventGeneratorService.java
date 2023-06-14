@@ -1,5 +1,7 @@
 package com.raxim.myscoutee.profile.service;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ import com.raxim.myscoutee.algo.dto.Edge;
 import com.raxim.myscoutee.algo.dto.GroupAlgo;
 import com.raxim.myscoutee.algo.dto.Node;
 import com.raxim.myscoutee.algo.dto.Range;
+import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Schedule;
@@ -38,18 +41,18 @@ public class EventGeneratorService {
         this.nodes = new HashMap<>();
     }
 
-    public List<Set<Profile>> generate(Bound flags) {
+    public List<Set<Profile>> generate(Bound flags, Date lastRunningDate) {
         Optional<Schedule> schedule = scheduleRepository.findByKey(RANDOM_GROUP);
-        Date lastRunningTime = schedule.map(Schedule::getLastRunDate).orElse(new Date());
+        Date lastRunningTime = schedule.map(Schedule::getLastRunDate).orElse(lastRunningDate);
 
         // rates should be harmonic mean, findBothAll should query by 1000 records (configurable)
-        List<Like> likesBoth = likeRepository.findBothAll(lastRunningTime.toString(), 1.5);
+        List<Like> likesBoth = likeRepository.findBothAll(CommonUtil.asISO(lastRunningTime), 1.5);
 
         List<Edge> edges = new ArrayList<>();
         for (Like likeBoth : likesBoth) {
             Node fromNode = new Node(likeBoth.getFrom().getId().toString(), likeBoth.getFrom().getGender());
             Node toNode = new Node(likeBoth.getTo().getId().toString(), likeBoth.getTo().getGender());
-            long weight = (long) ((1 / (2 / likeBoth.getRate())) * likeBoth.getDistance());
+            long weight = (long) (likeBoth.getRate() * likeBoth.getDistance());
             edges.add(new Edge(fromNode, toNode, weight));
         }
 

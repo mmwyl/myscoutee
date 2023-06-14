@@ -39,6 +39,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.InsertManyOptions;
+import com.raxim.myscoutee.common.util.FileUtil;
+import com.raxim.myscoutee.common.util.JsonUtil;
 
 public class MongoDataLoaderTestExecutionListener extends AbstractTestExecutionListener {
 
@@ -78,14 +80,14 @@ public class MongoDataLoaderTestExecutionListener extends AbstractTestExecutionL
     }
 
     @Override
-	public void afterTestMethod(TestContext testContext) throws Exception {
-		mongoTemplate.getCollectionNames().forEach(collectionName -> {
+    public void afterTestMethod(TestContext testContext) throws Exception {
+        mongoTemplate.getCollectionNames().forEach(collectionName -> {
             mongoTemplate.remove(new Query(), collectionName);
         });
-	}
+    }
 
     private void loadJsonData(TestContext testContext, String jsonFile) throws IOException {
-        Path filePath = getResourcePath(jsonFile);
+        Path filePath = FileUtil.getResourcePath(this, jsonFile);
         String jsonData = new String(Files.readAllBytes(filePath));
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -102,7 +104,7 @@ public class MongoDataLoaderTestExecutionListener extends AbstractTestExecutionL
             documents.add(document);
         }
 
-        MongoCollection<Document> collection = mongoTemplate.getCollection(getFileName(filePath));
+        MongoCollection<Document> collection = mongoTemplate.getCollection(FileUtil.getFileName(filePath));
 
         Document index = new Document("position", "2dsphere");
         collection.createIndex(index);
@@ -111,9 +113,9 @@ public class MongoDataLoaderTestExecutionListener extends AbstractTestExecutionL
     }
 
     public void insertOne(TestContext testContext, String jsonFile) {
-        Path filePath = getResourcePath(jsonFile);
+        Path filePath = FileUtil.getResourcePath(this, jsonFile);
 
-        MongoCollection<Document> collection = mongoTemplate.getCollection(getFileName(filePath));
+        MongoCollection<Document> collection = mongoTemplate.getCollection(FileUtil.getFileName(filePath));
 
         Document index = new Document("position", "2dsphere");
         collection.createIndex(index);
@@ -136,20 +138,5 @@ public class MongoDataLoaderTestExecutionListener extends AbstractTestExecutionL
                 UUID.fromString("2e7b0c6c-57e6-4c0a-98c0-516abed677ab"));
 
         collection.insertOne(document);
-    }
-
-    private Path getResourcePath(String jsonFile) {
-        String resourcePath = getClass().getClassLoader().getResource(jsonFile).getPath();
-        return Paths.get(resourcePath);
-    }
-
-    private String getFileName(Path path) {
-        String filenameWithExtension = path.getFileName().toString();
-        int dotIndex = filenameWithExtension.lastIndexOf(".");
-        if (dotIndex != -1) {
-            return filenameWithExtension.substring(0, dotIndex);
-        } else {
-            return filenameWithExtension;
-        }
     }
 }

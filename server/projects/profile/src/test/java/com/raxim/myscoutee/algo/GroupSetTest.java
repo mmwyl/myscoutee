@@ -104,12 +104,15 @@ public class GroupSetTest extends AbstractAlgoTest {
         assertEquals(2, nodeInfos.get("1").getDegree());
         assertEquals(1, nodeInfos.get("2").getDegree());
 
+        System.out.println("non-balanced group");
+        
         Range range = new Range(2, 3);
         GroupSet groupSet = new GroupSet(nodeRepository, range);
         groupSet.forEach(group -> {
             System.out.println(group);
         });
 
+        System.out.println("balanced group");
         nodeRepository = new NodeRepository();
         graph = load("algo/graph3.json");
         nodeRepository.addAll(graph.getEdges());

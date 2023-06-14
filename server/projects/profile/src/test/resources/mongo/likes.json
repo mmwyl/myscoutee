@@ -4,7 +4,7 @@
             "$binary": "QVzopgl2TUiN9zD3CJIJAQ==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -37,7 +37,7 @@
             "$binary": "wKnFYIM7T4K2D0sbUUlx4Q==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -70,7 +70,7 @@
             "$binary": "mAA22S10TuCrw8by0mzVFg==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -103,7 +103,7 @@
             "$binary": "4Ah/gcAbR+4uUs9O6HjYNg==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -136,7 +136,7 @@
             "$binary": "Ks5heI+lTAWHfL09POZcGA==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -169,7 +169,7 @@
             "$binary": "a6pqzk5XSLW11KJgmZ5dww==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -202,7 +202,7 @@
             "$binary": "Uz8VAYgkT4CwQZFTtNUxRw==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -235,7 +235,7 @@
             "$binary": "aS1N/AqRTnKlucSoT0+bEw==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -268,7 +268,7 @@
             "$binary": "MbZTpqHJRFm2YmlKxcA94A==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -301,7 +301,7 @@
             "$binary": "x2O4eJGJQw2FB9K7xosPlw==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -334,7 +334,7 @@
             "$binary": "Dq6e4L8uR0Oc9vhGq6+mRA==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -367,7 +367,7 @@
             "$binary": "i1dY4hyJTBKfyfZQeOuZ1w==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -400,7 +400,7 @@
             "$binary": "eZ2FqRQWRQGxyZ6E9sE4Cg==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -433,7 +433,7 @@
             "$binary": "3D5yd/N7QbSB1FAWAFiQYQ==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -466,7 +466,7 @@
             "$binary": "6z3+gLV0SA2dojYqamKsVQ==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -499,7 +499,7 @@
             "$binary": "lX23UHEtQxyBfY5Iu3CoBg==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -532,7 +532,7 @@
             "$binary": "mVp5SEmET5ePbZCpXUuBJg==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -565,7 +565,7 @@
             "$binary": "wrXgqH5QSa6vMfBytF2gEg==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -598,7 +598,7 @@
             "$binary": "SGNl7FGaQgazJWovOPkwtg==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -631,7 +631,7 @@
             "$binary": "RVwtbrDoS8q9nFd7T0wUgA==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -664,7 +664,7 @@
             "$binary": "HRMnY7V4S0+T6akvN8QG8w==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -697,7 +697,7 @@
             "$binary": "tn2IS5XzQbySKq/Mew7dAg==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -730,7 +730,7 @@
             "$binary": "Rv4KETRkRY+5rszEGI9Tyw==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -763,7 +763,7 @@
             "$binary": "IDRQRbpWQgqzKNcL5FrLQw==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -796,7 +796,7 @@
             "$binary": "Tt67v6KvQGGfN9Qzn3Fuxw==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -829,7 +829,7 @@
             "$binary": "ZsgqUI0ZQsOyjvK6OEO+kA==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -862,7 +862,7 @@
             "$binary": "EiLX6xdtSh+htHzaxWs2yA==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -895,7 +895,7 @@
             "$binary": "lJ2Bt1TSR5OKL6lPhtC9JQ==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -928,7 +928,7 @@
             "$binary": "dtH7H3kmRxiZdQ/SmRn86Q==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -961,7 +961,7 @@
             "$binary": "kUEDJ/cPQrAlB1rKoKc+lQ==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -994,7 +994,7 @@
             "$binary": "7WjwG0DRQ2+GTLXuqt/m7A==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -1027,7 +1027,7 @@
             "$binary": "3vROvM6mSf6pqpkNnTbK1w==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -1060,7 +1060,7 @@
             "$binary": "d6sgzBDVRsa9AMujm43H9A==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {
@@ -1093,7 +1093,7 @@
             "$binary": "7LV3tmsNS2uu7+IkG7Buzw==",
             "$type": "03"
         },
-        "double": false,
+        "isDouble": false,
         "from": {
             "$ref": "profiles",
             "$id": {

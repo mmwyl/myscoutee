@@ -12,7 +12,7 @@ public class LikeDTO {
     private String to;
 
     @JsonProperty(value = "rate")
-    private Integer rate;
+    private Double rate;
 
     @JsonProperty(value = "ref")
     private String ref;
@@ -33,11 +33,11 @@ public class LikeDTO {
         this.to = to;
     }
 
-    public Integer getRate() {
+    public Double getRate() {
         return rate;
     }
 
-    public void setRate(Integer rate) {
+    public void setRate(Double rate) {
         this.rate = rate;
     }
 
