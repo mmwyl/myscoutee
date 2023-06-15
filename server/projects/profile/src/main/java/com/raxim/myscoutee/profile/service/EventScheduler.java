@@ -109,7 +109,7 @@ public class EventScheduler {
         Authentication auth = new FirebaseAuthenticationToken("scheduler", "");
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        ScheduleSetting scheduleSetting = scheduleSettingRepository.findByKey(EventGeneratorService.RANDOM_GROUP)
+        ScheduleSetting scheduleSetting = scheduleSettingRepository.findByKey(EventGeneratorService.SCHEDULE_RANDOM_GROUP)
                 .orElseThrow(InvalidScheduleSettingsException::new);
 
         Bound bound = JsonUtil.jsonToObject(scheduleSetting.getFlags(), Bound.class, objectMapper);

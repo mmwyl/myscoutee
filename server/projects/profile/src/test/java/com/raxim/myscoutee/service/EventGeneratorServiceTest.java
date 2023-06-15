@@ -58,7 +58,7 @@ public class EventGeneratorServiceTest {
                                 .map(entry -> new LikeGroupDTO(entry.getKey(), entry.getValue()))
                                 .collect(Collectors.toList());
 
-                when(scheduleRepository.findByKey(EventGeneratorService.RANDOM_GROUP))
+                when(scheduleRepository.findByKey(EventGeneratorService.SCHEDULE_RANDOM_GROUP))
                                 .thenReturn(Optional.of(new Schedule(0L, 1000L)));
                 when(likeRepository.findBothAll(0L, 1000L))
                                 .thenReturn(likesBoth);
