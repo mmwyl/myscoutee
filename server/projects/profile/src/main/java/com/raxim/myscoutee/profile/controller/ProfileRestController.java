@@ -1,12 +1,5 @@
 package com.raxim.myscoutee.profile.controller;
 
-import static java.lang.Math.asin;
-import static java.lang.Math.atan2;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
-import static java.lang.Math.toRadians;
-
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -20,7 +13,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
+import com.raxim.myscoutee.common.util.DistanceUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.School;
@@ -40,7 +33,7 @@ import com.raxim.myscoutee.profile.data.dto.rest.LikeDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
-import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 @RepositoryRestController
 @RequestMapping("profiles")
@@ -48,41 +41,11 @@ public class ProfileRestController {
 
     private final ProfileRepository profileRepository;
     private final LikeRepository likeRepository;
-    private final UserRepository userRepository;
-
-    private static final String WOMAN = "w";
-    private static final String MAN = "m";
 
     public ProfileRestController(ProfileRepository profileRepository,
-            LikeRepository likeRepository,
-            UserRepository userRepository) {
+            LikeRepository likeRepository) {
         this.profileRepository = profileRepository;
         this.likeRepository = likeRepository;
-        this.userRepository = userRepository;
-    }
-
-    private static class DistanceUtil {
-        private static final double EARTH_RADIUS = 6370986.0; // meters
-
-        public static double haversine(GeoJsonPoint a, GeoJsonPoint b) {
-            double dLat = toRadians(b.getX() - a.getX());
-            double dLon = toRadians(b.getY() - a.getY());
-            double lat1 = toRadians(a.getX());
-            double lat2 = toRadians(b.getX());
-            double dist = sin(dLat / 2) * sin(dLat / 2) + sin(dLon / 2) * sin(dLon / 2) * cos(lat1) * cos(lat2);
-            double c = 2 * asin(sqrt(dist));
-            return EARTH_RADIUS * c;
-        }
-
-        public static double vincenty(GeoJsonPoint a, GeoJsonPoint b) {
-            double dLat = toRadians(b.getX() - a.getX());
-            double dLon = toRadians(b.getY() - a.getY());
-            double lat1 = toRadians(a.getX());
-            double lat2 = toRadians(b.getX());
-            double dist = sin(dLat / 2) * sin(dLat / 2) + cos(lat1) * cos(lat2) * sin(dLon / 2) * sin(dLon / 2);
-            double c = 2 * atan2(sqrt(dist), sqrt(1 - dist));
-            return EARTH_RADIUS * c;
-        }
     }
 
     @GetMapping("/{id}")
@@ -155,7 +118,7 @@ public class ProfileRestController {
                 Profile profileFrom = profiles.stream().filter(p -> p.getId().equals(from)).findFirst().orElse(null);
                 Profile profileTo = profiles.stream().filter(p -> p.getId().equals(to)).findFirst().orElse(null);
 
-                if (profileFrom.getGender().equals(WOMAN)) {
+                if (profileFrom.getGender().equals(AppConstants.WOMAN)) {
                     Profile tProfileFrom = profileFrom;
                     profileFrom = profileTo;
                     profileTo = tProfileFrom;

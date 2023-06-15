@@ -23,6 +23,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Schedule;
 import com.raxim.myscoutee.profile.data.dto.rest.LikeGroupDTO;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ScheduleRepository;
+import com.raxim.myscoutee.profile.util.AppConstants;
 import com.raxim.myscoutee.profile.util.LikeUtil;
 
 @Service
@@ -66,7 +67,7 @@ public class EventGeneratorService {
         nodeRepository.addAll(edges);
 
         Range range = new Range(flags.getMinGroupSize(), flags.getMaxGroupSize());
-        BGroupSet groupSet = new BGroupSet(nodeRepository, range, List.of("m", "w"));
+        BGroupSet groupSet = new BGroupSet(nodeRepository, range, List.of(AppConstants.MAN, AppConstants.WOMAN));
 
         List<Set<Profile>> profileList = new ArrayList<>();
         for (GroupAlgo group : groupSet) {
