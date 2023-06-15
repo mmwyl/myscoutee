@@ -45,7 +45,7 @@ public class GroupRepositoryTest {
         }
 
         @Test
-        void testShouldEmpthy() {
+        void testShouldEmpty() {
                 List<Group> groups = groupRepository.findAll();
                 assertEquals(1, groups.size());
         }
