@@ -41,7 +41,7 @@ public class ProfileRepositoryTest {
 
         @Test
         public void testShouldFindProfilesNotRatedForOliver() {
-                double typeNonRated = 0.0;
+                double direction = 0.0;
                 int step = 1000;
                 int limit = 2;
 
@@ -49,18 +49,19 @@ public class ProfileRepositoryTest {
                                 LOCATION_DEFAULT, OFFSET_START_DEFAULT, limit,
                                 step, UUID_PROFILE_OLIVER, "w",
                                 UUID_GROUP_DATING,
-                                typeNonRated, 0);
+                                direction, 0);
 
                 assertEquals(1, profiles.size());
 
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(2000.0, profile1.getGroupKey());
                 assertEquals("Amelia", profile1.getProfile().getFirstName());
+                assertEquals(0d, profile1.getRate());
         }
 
         @Test
         public void testShouldFindProfilesNotRatedForLiamInTwoPages() {
-                double typeNonRated = 0.0;
+                double direction = 0.0;
                 int step = 1000;
                 int limit = 2;
 
@@ -68,17 +69,19 @@ public class ProfileRepositoryTest {
                                 LOCATION_DEFAULT, OFFSET_START_DEFAULT, limit,
                                 step, UUID_PROFILE_LIAM, "w",
                                 UUID_GROUP_DATING,
-                                typeNonRated, 0);
+                                direction, 0);
 
                 assertEquals(2, profiles.size());
 
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(1000.0, profile1.getGroupKey());
                 assertEquals("Mia", profile1.getProfile().getFirstName());
+                assertEquals(0d, profile1.getRate());
 
                 ProfileDTO profile2 = profiles.get(1);
                 assertEquals(2000.0, profile2.getGroupKey());
                 assertEquals("Amelia", profile2.getProfile().getFirstName());
+                assertEquals(0d, profile2.getRate());
 
                 Object[] nextOffset = profile2.getOffset().toArray();
 
@@ -86,18 +89,19 @@ public class ProfileRepositoryTest {
                                 LOCATION_DEFAULT, nextOffset, limit,
                                 step, UUID_PROFILE_LIAM, "w",
                                 UUID_GROUP_DATING,
-                                typeNonRated, 0);
+                                direction, 0);
 
                 assertEquals(1, profiles.size());
 
                 profile1 = profiles.get(0);
                 assertEquals(2000.0, profile1.getGroupKey());
                 assertEquals("Charlotte", profile1.getProfile().getFirstName());
+                assertEquals(0d, profile1.getRate());
         }
 
         @Test
         public void testShouldFindProfilesRateGiveForOliver() {
-                double typeRateGive = 1.0;
+                double direction = 1.0;
                 int step = 1000;
                 int limit = 2;
 
@@ -105,18 +109,19 @@ public class ProfileRepositoryTest {
                                 LOCATION_DEFAULT, OFFSET_START_DEFAULT, limit,
                                 step, UUID_PROFILE_OLIVER, "w",
                                 UUID_GROUP_DATING,
-                                typeRateGive, 0);
+                                direction, 0);
 
                 assertEquals(1, profiles.size());
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(2000.0, profile1.getGroupKey());
                 assertEquals("Charlotte", profile1.getProfile().getFirstName());
+                assertEquals(9d, profile1.getRate());
         }
 
         @Test
         @DisplayName("Find Profiles Rate Receive For Oliver with Larger Page Size Than the Result")
         public void testShouldFindProfilesRateReceiveForOliver() {
-                double typeRateGive = 2.0;
+                double direction = 2.0;
                 int step = 1000;
                 int limit = 3;
 
@@ -124,23 +129,25 @@ public class ProfileRepositoryTest {
                                 LOCATION_DEFAULT, OFFSET_START_DEFAULT, limit,
                                 step, UUID_PROFILE_OLIVER, "w",
                                 UUID_GROUP_DATING,
-                                typeRateGive, 0);
+                                direction, 0);
 
                 assertEquals(2, profiles.size());
 
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(1000.0, profile1.getGroupKey());
                 assertEquals("Lily", profile1.getProfile().getFirstName());
+                assertEquals(6d, profile1.getRate());
 
                 ProfileDTO profile2 = profiles.get(1);
                 assertEquals(1000.0, profile2.getGroupKey());
                 assertEquals("Evelyn", profile2.getProfile().getFirstName());
+                assertEquals(2d, profile2.getRate());
         }
 
         @Test
         @DisplayName("Find Profiles Rate Both For Oliver")
         public void testShouldFindProfilesRateBothForOliver() {
-                double typeRateGive = 1.5;
+                double direction = 1.5;
                 int step = 1000;
                 int limit = 3;
 
@@ -148,12 +155,13 @@ public class ProfileRepositoryTest {
                                 LOCATION_DEFAULT, OFFSET_START_DEFAULT, limit,
                                 step, UUID_PROFILE_OLIVER, "w",
                                 UUID_GROUP_DATING,
-                                typeRateGive, 0);
+                                direction, 0);
 
                 assertEquals(1, profiles.size());
 
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(1000.0, profile1.getGroupKey());
                 assertEquals("Mia", profile1.getProfile().getFirstName());
+                assertEquals(6.461538461538462d, profile1.getRate());
         }
 }

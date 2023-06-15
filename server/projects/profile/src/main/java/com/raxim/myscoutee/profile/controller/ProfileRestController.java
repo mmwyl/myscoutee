@@ -165,7 +165,7 @@ public class ProfileRestController {
 
                 mLike = new Like();
                 mLike.setId(UUID.randomUUID());
-                mLike.setDouble(isDouble);
+                mLike.setStatus(isDouble ? "D" : "A");
                 mLike.setFrom(profileFrom);
                 mLike.setTo(profileTo);
                 mLike.setRate(like.getRate());

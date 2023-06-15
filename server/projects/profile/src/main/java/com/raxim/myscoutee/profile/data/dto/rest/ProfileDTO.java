@@ -17,7 +17,7 @@ public class ProfileDTO {
     private Object groupKey;
 
     @JsonProperty(value = "rate")
-    private Integer rate;
+    private Double rate;
 
     @JsonProperty(value = "ref")
     private UUID ref;
@@ -51,11 +51,11 @@ public class ProfileDTO {
         this.groupKey = groupKey;
     }
 
-    public Integer getRate() {
+    public Double getRate() {
         return rate;
     }
 
-    public void setRate(Integer rate) {
+    public void setRate(Double rate) {
         this.rate = rate;
     }
 

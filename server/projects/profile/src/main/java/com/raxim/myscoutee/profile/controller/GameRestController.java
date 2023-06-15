@@ -254,7 +254,7 @@ public class GameRestController {
             // nullify rate received
             List<ProfileDTO> profiles = fProfiles.stream().map(fProfile -> {
                 ProfileDTO clonedProfile = JsonUtil.clone(fProfile, objectMapper);
-                clonedProfile.setRate(0);
+                clonedProfile.setRate(0d);
                 return clonedProfile;
             })
                     .collect(Collectors.toList());

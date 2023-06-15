@@ -8,7 +8,8 @@
                 "query": {
                     "_id": { "$nin": ["?4"] },
                     "gender": "?5",
-                    "group": "?6"
+                    "group": "?6",
+                    "status": "A"
                 }
             }
         },
@@ -25,24 +26,14 @@
                                         "$and": [
                                             { "$eq": ["$from.$id", "$$p_id"] },
                                             { "$eq": ["$to.$id", "?4"] },
-                                            {
-                                                "$eq": [
-                                                    { "$ifNull": ["$ref", 0] },
-                                                    0
-                                                ]
-                                            }
+                                            { "$eq": ["$type", "P" ] }
                                         ]
                                     },
                                     {
                                         "$and": [
                                             { "$eq": ["$to.$id", "$$p_id"] },
                                             { "$eq": ["$from.$id", "?4"] },
-                                            {
-                                                "$eq": [
-                                                    { "$ifNull": ["$ref", 0] },
-                                                    0
-                                                ]
-                                            }
+                                            { "$eq": ["$type", "P" ] }
                                         ]
                                     }
                                 ]
@@ -51,10 +42,10 @@
                     },
                     {
                         "$group": {
-                            "_id": "$$p_id",
+                            "_id": null,
                             "distance": { "$avg": "$distance" },
                             "ref": { "$first": { "$ifNull": ["$ref", 0] } },
-                            "type": {
+                            "direction": {
                                 "$avg": {
                                     "$switch": {
                                         "branches": [
@@ -62,7 +53,7 @@
                                                 "case": {
                                                     "$and": [
                                                         { "$eq": ["$to.$id", "?4"] },
-                                                        { "$eq": ["$double", false] }
+                                                        { "$in": ["$status", ["A", "P", "G"] ] }
                                                     ]
                                                 },
                                                 "then": 2
@@ -71,7 +62,7 @@
                                                 "case": {
                                                     "$and": [
                                                         { "$eq": ["$from.$id", "?4"] },
-                                                        { "$eq": ["$double", false] }
+                                                        { "$in": ["$status", ["A", "P", "G"] ] }
                                                     ]
                                                 },
                                                 "then": 1
@@ -88,18 +79,45 @@
                                             {
                                                 "case": {
                                                     "$and": [
-                                                        { "$eq": ["$createdBy.$id", "?4"] },
-                                                        { "$eq": ["$double", false] }
+                                                        { "$in": ["$status", ["A", "P", "G"] ] }
                                                     ]
                                                 },
-                                                "then": "$rate"
+                                                "then": { "$divide": [ 1, "$rate" ]}
                                             }
                                         ],
                                         "default": 0
                                     }
                                 }
                             },
+                            "rate_d": {
+                                "$sum": {
+                                    "$switch": {
+                                        "branches": [
+                                            {
+                                                "case": {
+                                                    "$and": [
+                                                        { "$eq": ["$status", "D" ] }
+                                                    ]
+                                                },
+                                                "then": { "$divide": [ "$rate", 10 ]}
+                                            }
+                                        ],
+                                        "default": 0
+                                    }
+                                }
+                            },
+                            "num": {
+                                "$sum": {
+                                        "$cond": [ { "$in": ["$status", ["A", "P", "G"] ] }, 1, 0 ]
+                                }
+                            },
                             "createdDate": { "$max": "$createdDate" }
+                        }
+                    },
+                    {
+                        "$set":
+                        {
+                            "rate": { "$add": [ { "$divide": ["$num", "$rate"] }, "$rate_d"] }
                         }
                     }
                 ],
@@ -113,15 +131,15 @@
             "$match": {
                 "$expr": {
                     "$and": [
-                        { "$eq": ["$status", "A"] },
-                        { "$eq": [{ "$ifNull": ["$likes.type", 0] }, ":#{#type}"] },
-                        { "$gt": [{ "$ifNull": ["$likes.createdDate", "ISODate()"] }, { "$toDate": ":#{#offset[3]}" }] },
-                        { "$gte": [{ "$ifNull": ["$likes.distance", { "$abs": { "$subtract": ["$score", "?8"] } }] }, ":#{#offset[1]}"] },
-                        { "$gte": [{ "$ifNull": ["$distance", 0] }, ":#{#offset[2]}"] }
+                        { "$eq": [{ "$ifNull": ["$likes.direction", 0] }, ":#{#direction}"] },
+                        { "$gte": [{ "$ifNull": ["$likes.rate", 0] }, ":#{#offset[1]}"] },
+                        { "$gte": [{ "$ifNull": ["$likes.distance", { "$abs": { "$subtract": ["$score", "?8"] } }] }, ":#{#offset[2]}"] },
+                        { "$gt": [{ "$ifNull": ["$createdDate", "ISODate()"] }, { "$toDate": ":#{#offset[3]}" }] }
                     ]
                 }
             }
         },
+        { "$limit": "?2" },
         {
             "$addFields": {
                 "groupKey": { "$multiply": [{ "$floor": { "$divide": ["$distance", ":#{#step}"] } }, ":#{#step}"] }
@@ -133,15 +151,14 @@
             }
         },
         {
-            "$sort": { "groupKey": 1, "likes.rate": -1, "likes.distance": 1 }
+            "$sort": { "groupKey": 1, "likes.rate": -1, "likes.distance": 1, "createdDate": -1 }
         },
-        { "$limit": "?2" },
         {
             "$replaceRoot": {
                 "newRoot": {
                     "$mergeObjects": [
                         { "profile": "$$ROOT" },
-                        { "rate": "$likes.rate", "groupKey": "$groupKey", "offset": [{ "$ceil" : "$distance"}, "$likes.rate", { "$ifNull": ["$likes.distance", 0] }, "ISODate()" ] }
+                        { "rate": "$likes.rate", "groupKey": "$groupKey", "offset": [{ "$ceil" : "$distance"}, "$likes.rate", { "$ifNull": ["$likes.distance", 0] }, "$createdDate" ] }
                     ]
                 }
             }

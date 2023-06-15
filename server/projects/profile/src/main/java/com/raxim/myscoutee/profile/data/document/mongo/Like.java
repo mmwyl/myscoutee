@@ -20,10 +20,6 @@ public class Like {
     @JsonProperty(value = "id")
     private UUID id;
 
-    // double, single rate
-    @JsonProperty(value = "double")
-    private Boolean isDouble;
-
     /*
      * 'from' is the relevant profile which likes the 'to' pls. use ref tag in binary type 3
      */
@@ -63,7 +59,55 @@ public class Like {
     @JsonIgnore
     private UUID ref;
 
+    /*
+     * A (active)
+     * P (pending, both has been rated)
+     * G (for Pending records, random events can be generated)
+     * D (double rate -> the relation has been rated by an other person, to suggest the like)
+     */
+    @JsonIgnore
+    private String status;
+
+    /*
+     * P (profile)
+     * I (idea)
+     * J (job)
+     */
+    @JsonIgnore
+    private String type;
+
+    /*
+     * same value for (from, to) = (to,from), to make the ordering easier in the queries,
+     * it might be replaced by ObjectId, to make better indexes
+     */
+    @JsonIgnore
+    private UUID hash;
+
     // Getters and Setters
+
+    public UUID getHash() {
+        return hash;
+    }
+
+    public void setHash(UUID hash) {
+        this.hash = hash;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public UUID getId() {
         return id;
@@ -71,14 +115,6 @@ public class Like {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public Boolean getDouble() {
-        return isDouble;
-    }
-
-    public void setDouble(Boolean isDouble) {
-        this.isDouble = isDouble;
     }
 
     public Profile getFrom() {
