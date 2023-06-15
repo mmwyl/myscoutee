@@ -158,7 +158,7 @@
                 "newRoot": {
                     "$mergeObjects": [
                         { "profile": "$$ROOT" },
-                        { "rate": "$likes.rate", "groupKey": "$groupKey", "offset": [{ "$ceil" : "$distance"}, "$likes.rate", { "$ifNull": ["$likes.distance", 0] }, "$createdDate" ] }
+                        { "rate": "$likes.rate", "groupKey": "$groupKey", "offset": ["$distance", "$likes.rate", { "$ifNull": ["$likes.distance", 0] }, "$createdDate" ] }
                     ]
                 }
             }
