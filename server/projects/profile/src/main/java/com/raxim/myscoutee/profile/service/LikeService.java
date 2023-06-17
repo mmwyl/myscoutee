@@ -87,6 +87,7 @@ public class LikeService {
                         .findFirst()
                         .orElse(null);
             } else {
+                //TODO: maybe generate by range, hence avoid to check db several times
                 cnt = sequenceRepository.nextValue("likes").getCnt();
             }
 

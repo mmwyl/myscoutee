@@ -6,9 +6,6 @@
                     "createdBy.$id": "?0"
                 },
                 {
-                    "type": "P"
-                },
-                {
                     "from": {
                         "$in": "?#{#likes.![from]}"
                     }

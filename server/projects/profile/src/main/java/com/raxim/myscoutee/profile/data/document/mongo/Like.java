@@ -67,7 +67,6 @@ public class Like {
 
     /*
      * A (active)
-     * P (pending, both has been rated)
      * G (for Pending records, random events can be generated)
      * D (double rate -> the relation has been rated by an other person, to suggest
      * the like)
