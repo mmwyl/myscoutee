@@ -27,6 +27,20 @@
         }
     },
     {
+        "$lookup": {
+            "from": "likes",
+            "localField": "cnt",
+            "foreignField": "cnt",
+            "as": "allLikes"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$allLikes",
+            "preserveNullAndEmptyArrays": true
+        }
+    },
+    {
         "$group": {
             "_id": "$cnt",
             "likes": {

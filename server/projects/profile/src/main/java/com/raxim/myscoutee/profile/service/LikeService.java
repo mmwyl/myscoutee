@@ -16,6 +16,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.LikeDTO;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
+import com.raxim.myscoutee.profile.repository.mongo.SequenceRepository;
 import com.raxim.myscoutee.profile.util.LikeUtil;
 
 @Service
@@ -23,10 +24,14 @@ public class LikeService {
 
     private final ProfileRepository profileRepository;
     private final LikeRepository likeRepository;
+    private final SequenceRepository sequenceRepository;
 
-    public LikeService(ProfileRepository profileRepository, LikeRepository likeRepository) {
+    public LikeService(ProfileRepository profileRepository,
+            LikeRepository likeRepository,
+            SequenceRepository sequenceRepository) {
         this.profileRepository = profileRepository;
         this.likeRepository = likeRepository;
+        this.sequenceRepository = sequenceRepository;
     }
 
     public List<LikeDTO> saveLikes(Profile profile, List<LikeDTO> pfLikes) {
@@ -37,7 +42,7 @@ public class LikeService {
             return like;
         }).toList();
 
-        // load likes
+        // load likes, add + parameter based on like type (Person,Job,Idea)
         List<LikeGroup> dbLikeGroups = likeRepository.findByParty(profile.getId(),
                 likeDTOs);
 
@@ -58,6 +63,8 @@ public class LikeService {
 
         // likeDTOs to likes
         List<LikeForGroup> likes = likeDTOs.stream().flatMap(likeDTO -> {
+            // filter out LikeGroups being touched by the likes -> double rates are in
+            // different like group
             LikeGroup likeGroup = dbLikeGroups.stream()
                     .filter(dbLikeGroup -> dbLikeGroup.getLikes()
                             .stream()
@@ -66,17 +73,21 @@ public class LikeService {
                     .findFirst().orElse(null);
 
             LikeForGroup mLike = null;
-            LikeForGroup mReverseLike = null;
+
+            Long cnt = null;
             if (likeGroup != null) {
-                mLike = likeGroup.getLikes().stream()
-                        .filter(like -> LikeUtil.isEqual(likeDTO, like)).findFirst().orElse(null);
-
-                mReverseLike = likeGroup.getLikes().stream()
-                        .filter(like -> LikeUtil.isReverseEqual(likeDTO, like)).findFirst().orElse(null);
-
-                if (mReverseLike != null && mLike == null) {
-                    mReverseLike.setStatus("P");
+                List<LikeForGroup> mLikes = likeGroup.getLikes();
+                if (mLikes != null) {
+                    cnt = mLikes.get(0).getCnt();
                 }
+
+                mLike = mLikes.stream()
+                        .filter(dbLike -> LikeUtil.isEqual(likeDTO, dbLike)
+                                && profile.getId().equals(dbLike.getCreatedBy().getId()))
+                        .findFirst()
+                        .orElse(null);
+            } else {
+                cnt = sequenceRepository.nextValue("likes").getCnt();
             }
 
             if (mLike != null) {
@@ -90,18 +101,19 @@ public class LikeService {
 
                 mLike = new LikeForGroup();
                 mLike.setId(UUID.randomUUID());
-                mLike.setStatus(isDouble ? "D" : mReverseLike != null ? "P" : "A");
+                mLike.setStatus(isDouble ? "D" : "A");
                 mLike.setFrom(profileFrom);
                 mLike.setTo(profileTo);
                 mLike.setCreatedBy(createdBy);
                 mLike.setCreatedDate(new Date());
                 mLike.setRef(likeDTO.getRef());
                 mLike.setType(likeDTO.getType());
+                mLike.setCnt(cnt);
 
                 mLike.setRate(likeDTO.getRate());
                 mLike.setDistance(LikeUtil.calcDistance(profileFrom, profile));
             }
-            return Stream.of(mLike, mReverseLike);
+            return Stream.of(mLike);
         }).filter(likeForGroup -> likeForGroup != null).toList();
 
         // save likes

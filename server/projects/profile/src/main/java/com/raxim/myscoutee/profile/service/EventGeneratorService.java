@@ -87,8 +87,8 @@ public class EventGeneratorService {
         List<Like> likesBoth = likeGroups
                 .stream().map(group -> {
                     List<LikeForGroup> likesWithStatusP = group.getLikes().stream()
-                            .filter(like -> "P".equals(like.getStatus())).toList();
-                    if (!likesWithStatusP.isEmpty()) {
+                            .filter(like -> "A".equals(like.getStatus())).toList();
+                    if (likesWithStatusP.size() == 2) {
                         Like firstLike = likesWithStatusP.get(0);
 
                         List<Double> ratesForStatusP = likesWithStatusP

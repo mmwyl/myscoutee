@@ -45,7 +45,9 @@ public class LikeRepositoryTest {
                 List<LikeGroup> pLikes = likes.stream().filter(
                                 like -> like.getLikes()
                                                 .stream()
-                                                .anyMatch(pLike -> "P".equals(pLike.getStatus())))
+                                                .filter(pLike -> "P".equals(pLike.getStatus())
+                                                                || "A".equals(pLike.getStatus()))
+                                                .count() == 2)
                                 .toList();
                 assertEquals(2, pLikes.size());
 

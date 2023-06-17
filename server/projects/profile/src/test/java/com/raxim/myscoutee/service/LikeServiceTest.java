@@ -25,15 +25,18 @@ import com.raxim.myscoutee.profile.data.document.mongo.Like;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.ProfileForGroup;
+import com.raxim.myscoutee.profile.data.document.mongo.Sequence;
 import com.raxim.myscoutee.profile.data.dto.rest.LikeDTO;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
+import com.raxim.myscoutee.profile.repository.mongo.SequenceRepository;
 import com.raxim.myscoutee.profile.service.LikeService;
 
 @ExtendWith(MockitoExtension.class)
 public class LikeServiceTest {
 
     private static final UUID UUID_PROFILE_SOPHIA = UUID.fromString("39402632-a452-57be-2518-53cc117b1abc");
+    private static final String SEQENCE_KEY = "likes";
 
     @InjectMocks
     private LikeService likeService;
@@ -44,6 +47,9 @@ public class LikeServiceTest {
     @Mock
     private LikeRepository likeRepository;
 
+    @Mock
+    private SequenceRepository sequenceRepository;
+
     @Captor
     private ArgumentCaptor<List<Like>> captorLikes;
 
@@ -52,16 +58,20 @@ public class LikeServiceTest {
         LikeDTO[] likeArray = JsonUtil.loadJson(this, "rest/likesForGroupSave.json", LikeDTO[].class);
         Profile[] profileArray = JsonUtil.loadJson(this, "rest/profiles.json", ProfileForGroup[].class);
 
+        final Sequence sequence = new Sequence(SEQENCE_KEY, 2L);
         LikeGroup[] likeGroupsArray = JsonUtil.loadJson(this, "mongo/likeGroups.json", LikeGroup[].class);
 
         List<LikeDTO> likes = Arrays.asList(likeArray);
         List<LikeGroup> likeGroups = Arrays.asList(likeGroupsArray);
         List<Profile> profiles = Arrays.asList(profileArray);
 
-        when(likeRepository.findByParty(eq(UUID_PROFILE_SOPHIA), anyList()))
-                .thenReturn(likeGroups);
-        when(profileRepository.findAllById(anySet()))
-                .thenReturn(profiles);
+        when(likeRepository.findByParty(eq(UUID_PROFILE_SOPHIA), anyList())).thenReturn(likeGroups);
+        when(profileRepository.findAllById(anySet())).thenReturn(profiles);
+        when(sequenceRepository.nextValue(eq(SEQENCE_KEY))).thenAnswer(invocation -> {
+            long cnt = sequence.getCnt();
+            sequence.setCnt(++cnt);
+            return sequence;
+        });
 
         // Sophia is the first profile
         likeService.saveLikes(profiles.get(0), likes);
@@ -69,40 +79,35 @@ public class LikeServiceTest {
         Mockito.verify(likeRepository).saveAll(captorLikes.capture());
         List<Like> capturedLikes = captorLikes.getValue();
 
-        assertEquals(5, capturedLikes.size());
-
-        // cnt implementation!!!
+        assertEquals(4, capturedLikes.size());
 
         Like like1 = capturedLikes.get(0);
         assertEquals("Sophia", like1.getFrom().getFirstName());
         assertEquals("Oliver", like1.getTo().getFirstName());
-        assertEquals("P", like1.getStatus());
+        assertEquals("A", like1.getStatus());
         assertEquals(8d, like1.getRate());
+        assertEquals(1, like1.getCnt());
 
         Like like2 = capturedLikes.get(1);
-        assertEquals("Oliver", like2.getFrom().getFirstName());
-        assertEquals("Sophia", like2.getTo().getFirstName());
-        assertEquals("P", like2.getStatus());
-        assertEquals(7d, like2.getRate());
-        assertEquals(1, like2.getCnt());
+        assertEquals("Sophia", like2.getFrom().getFirstName());
+        assertEquals("Ethan", like2.getTo().getFirstName());
+        assertEquals("A", like2.getStatus());
+        assertEquals(9d, like2.getRate());
+        assertEquals(3, like2.getCnt());
 
         Like like3 = capturedLikes.get(2);
         assertEquals("Sophia", like3.getFrom().getFirstName());
-        assertEquals("Ethan", like3.getTo().getFirstName());
+        assertEquals("Noah", like3.getTo().getFirstName());
         assertEquals("A", like3.getStatus());
-        assertEquals(9d, like3.getRate());
+        assertEquals(2d, like3.getRate());
+        assertEquals(2, like3.getCnt());
 
         Like like4 = capturedLikes.get(3);
-        assertEquals("Sophia", like4.getFrom().getFirstName());
-        assertEquals("Noah", like4.getTo().getFirstName());
-        assertEquals("A", like4.getStatus());
-        assertEquals(2d, like4.getRate());
-
-        Like like5 = capturedLikes.get(4);
-        assertEquals("Lucas", like5.getFrom().getFirstName());
-        assertEquals("Emma", like5.getTo().getFirstName());
-        assertEquals("D", like5.getStatus());
-        assertEquals(6d, like5.getRate());
+        assertEquals("Lucas", like4.getFrom().getFirstName());
+        assertEquals("Emma", like4.getTo().getFirstName());
+        assertEquals("D", like4.getStatus());
+        assertEquals(6d, like4.getRate());
+        assertEquals(4, like4.getCnt());
 
     }
 }

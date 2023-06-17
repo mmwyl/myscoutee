@@ -34,7 +34,10 @@ public class EventGeneratorServiceTest {
 
         private static final Bound FLAGS_DEFAULT = new Bound(2, 3);
 
-        private static final UUID UUID_PROFILE_LUCAS = UUID.fromString("694ef9b8-e486-bdf2-6510-7d05f19db486");
+        private static final UUID UUID_PROFILE_LIAM = UUID.fromString("8f4bd3a8-1195-01b0-172a-a04f052f5982");
+        private static final UUID UUID_PROFILE_EMMA = UUID.fromString("fc4c72f8-a905-e1d1-05f8-c0d9914e158c");
+
+        private static final UUID UUID_PROFILE_OLIVER = UUID.fromString("534ccc6b-2547-4bf0-ad91-dca739943ea4");
         private static final UUID UUID_PROFILE_AVA = UUID.fromString("eb494fba-6c56-752f-5123-c414c8c86599");
 
         private static final UUID UUID_PROFILE_ETHAN = UUID.fromString("2f7e01ce-1336-37d4-e69e-efc88d2ee81a");
@@ -66,23 +69,32 @@ public class EventGeneratorServiceTest {
 
                 List<Set<Profile>> profilesByGroup = eventGeneratorService.generate(FLAGS_DEFAULT);
 
-                assertEquals(2, profilesByGroup.size());
+                assertEquals(3, profilesByGroup.size());
 
                 // group1
                 Set<Profile> group1 = profilesByGroup.get(0);
                 assertEquals(2, group1.size());
 
-                List<UUID> expectedUuidsForGroup1 = List.of(UUID_PROFILE_LUCAS, UUID_PROFILE_AVA);
+                List<UUID> expectedUuidsForGroup1 = List.of(UUID_PROFILE_LIAM, UUID_PROFILE_EMMA);
                 assertTrue(expectedUuidsForGroup1.stream().allMatch(
                                 id -> group1.stream().anyMatch(
                                                 group -> group.getId().equals(id))));
 
+                // group1
                 Set<Profile> group2 = profilesByGroup.get(1);
                 assertEquals(2, group2.size());
 
-                List<UUID> expectedUuidsForGroup2 = List.of(UUID_PROFILE_ETHAN, UUID_PROFILE_SOPHIA);
+                List<UUID> expectedUuidsForGroup2 = List.of(UUID_PROFILE_ETHAN, UUID_PROFILE_AVA);
                 assertTrue(expectedUuidsForGroup2.stream().allMatch(
                                 id -> group2.stream().anyMatch(
+                                                group -> group.getId().equals(id))));
+
+                Set<Profile> group3 = profilesByGroup.get(2);
+                assertEquals(2, group3.size());
+
+                List<UUID> expectedUuidsForGroup3 = List.of(UUID_PROFILE_SOPHIA, UUID_PROFILE_OLIVER);
+                assertTrue(expectedUuidsForGroup3.stream().allMatch(
+                                id -> group3.stream().anyMatch(
                                                 group -> group.getId().equals(id))));
 
         }
