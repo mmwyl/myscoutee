@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -25,8 +24,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.algo.dto.Bound;
 import com.raxim.myscoutee.common.config.JsonConfig;
+import com.raxim.myscoutee.data.mongo.TestLike;
+import com.raxim.myscoutee.data.mongo.TestProfile;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
-import com.raxim.myscoutee.profile.data.document.mongo.LikeForGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Schedule;
@@ -65,8 +65,12 @@ public class EventGeneratorServiceTest {
 
         @Test
         public void testShouldGetBalancedGroup() throws IOException {
-                LikeForGroup[] likeArray = TestJsonUtil.loadJson(this, "algo/likes.json",
-                                LikeForGroup[].class, objectMapper);
+                // json property override
+                objectMapper.addMixIn(Profile.class, TestProfile.class);
+                objectMapper.addMixIn(Like.class, TestLike.class);
+
+                Like[] likeArray = TestJsonUtil.loadJson(this, "algo/likes.json",
+                                Like[].class, objectMapper);
 
                 List<LikeGroup> likesBoth = Arrays.asList(likeArray)
                                 .stream().collect(Collectors.groupingBy(Like::getCnt))

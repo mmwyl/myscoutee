@@ -12,12 +12,12 @@ public class LikeGroup {
     private long _id;
 
     @JsonProperty(value = "likes")
-    private List<LikeForGroup> likes;
+    private List<Like> likes;
 
     public LikeGroup() {
     }
 
-    public LikeGroup(long _id, List<LikeForGroup> likes) {
+    public LikeGroup(long _id, List<Like> likes) {
         this._id = _id;
         this.likes = likes;
     }
@@ -30,11 +30,11 @@ public class LikeGroup {
         this._id = _id;
     }
 
-    public List<LikeForGroup> getLikes() {
+    public List<Like> getLikes() {
         return likes;
     }
 
-    public void setLikes(List<LikeForGroup> likes) {
+    public void setLikes(List<Like> likes) {
         this.likes = likes;
     }
 }

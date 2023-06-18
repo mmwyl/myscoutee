@@ -1,5 +1,6 @@
 package com.raxim.myscoutee.profile.data.document.mongo;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
@@ -99,7 +100,7 @@ public class EventItem {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonProperty(value = "createdDate")
-    private Date createdDate = new Date();
+    private LocalDateTime createdDate = LocalDateTime.now();
 
     // Add getters and setters for all fields
 
@@ -271,11 +272,11 @@ public class EventItem {
         this.priority = priority;
     }
 
-    public Date getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 }

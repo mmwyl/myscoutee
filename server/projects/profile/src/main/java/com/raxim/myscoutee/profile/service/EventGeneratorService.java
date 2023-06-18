@@ -20,7 +20,6 @@ import com.raxim.myscoutee.algo.dto.Node;
 import com.raxim.myscoutee.algo.dto.Range;
 import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
-import com.raxim.myscoutee.profile.data.document.mongo.LikeForGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Schedule;
@@ -54,6 +53,14 @@ public class EventGeneratorService {
                 .orElse(new Bound(6, 12));
 
         List<LikeGroup> likeGroups = likeRepository.findAll(lastIdx, batchSize);
+        /*
+         * filter out all the edges between profiles being added to the same group, and
+         * save it to G
+         */
+        /*
+         * that likes should show that certain people met with each other, can't met
+         * again
+         */
 
         List<Like> likesBoth = reduceLikeGroups(likeGroups);
 
@@ -94,7 +101,7 @@ public class EventGeneratorService {
     private List<Like> reduceLikeGroups(List<LikeGroup> likeGroups) {
         List<Like> likesBoth = likeGroups
                 .stream().map(group -> {
-                    List<LikeForGroup> likesWithStatusP = group.getLikes().stream()
+                    List<Like> likesWithStatusP = group.getLikes().stream()
                             .filter(like -> "A".equals(like.getStatus())).toList();
                     if (likesWithStatusP.size() == 2) {
                         Like firstLike = likesWithStatusP.get(0);

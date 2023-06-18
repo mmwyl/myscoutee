@@ -25,10 +25,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.common.config.JsonConfig;
+import com.raxim.myscoutee.data.mongo.TestLike;
+import com.raxim.myscoutee.data.mongo.TestProfile;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.ProfileForGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Sequence;
 import com.raxim.myscoutee.profile.data.dto.rest.LikeDTO;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
@@ -65,10 +66,13 @@ public class LikeServiceTest {
 
     @Test
     public void testShouldAllLikesSave() throws IOException {
+        objectMapper.addMixIn(Profile.class, TestProfile.class);
+        objectMapper.addMixIn(Like.class, TestLike.class);
+
         LikeDTO[] likeArray = TestJsonUtil.loadJson(this, "rest/likesForGroupSave.json",
                 LikeDTO[].class, objectMapper);
         Profile[] profileArray = TestJsonUtil.loadJson(this, "rest/profiles.json",
-                ProfileForGroup[].class,
+                TestProfile[].class,
                 objectMapper);
         LikeGroup[] likeGroupsArray = TestJsonUtil.loadJson(this, "mongo/likeGroups.json",
                 LikeGroup[].class,

@@ -1,6 +1,6 @@
 package com.raxim.myscoutee.profile.data.document.mongo;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,7 +70,7 @@ public class Event {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonProperty(value = "createdDate")
-    private Date createdDate;
+    private LocalDateTime createdDate = LocalDateTime.now();
 
     @JsonProperty(value = "createdBy")
     private UUID createdBy;
@@ -160,11 +160,11 @@ public class Event {
         this.type = type;
     }
 
-    public Date getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 

@@ -11,6 +11,11 @@ import com.raxim.myscoutee.algo.dto.GroupAlgo;
 import com.raxim.myscoutee.algo.dto.Node;
 import com.raxim.myscoutee.algo.exception.NodeTypeMissingError;
 
+/*
+ * BGroupSet takescare of the type of the nodes also, not just the weight of the edge!
+ * It should be extended with shadow likes (that likes can be used to put same people together again
+ * balanced and shadow -> BSHGroupSetIterator - the change should be in the GroupSetIterator which balanced iterator depends on)
+ */
 public class BGroupSetIterator implements Iterator<GroupAlgo> {
     private ConcurrentMap<String, LinkedBlockingDeque<Node>> nodesByType;
     private volatile int partition = -1;

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonUtil {
+    public static final String ISO_DATE_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+
     public static <T> T jsonToObject(String jsonString, Class<T> targetClass, ObjectMapper objectMapper) {
         try {
             return objectMapper.readValue(jsonString, targetClass);

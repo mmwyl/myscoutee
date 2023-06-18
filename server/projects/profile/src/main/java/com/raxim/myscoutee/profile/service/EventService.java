@@ -149,7 +149,7 @@ public class EventService {
             clonedEvent.setId(UUID.randomUUID());
             clonedEvent.setStatus("U");
             clonedEvent.setRef(event);
-            clonedEvent.setCreatedDate(new Date());
+            //clonedEvent.setCreatedDate(LocalDateTime.now());
 
             Event savedEvent = eventRepository.save(clonedEvent);
 
@@ -200,7 +200,7 @@ public class EventService {
                 event.setGroup(profile.getGroup());
                 event.setStatus(status);
                 event.setCreatedBy(profile.getId());
-                event.setCreatedDate(new Date());
+                //event.setCreatedDate(LocalDateTime.now());
                 return Optional.of(event);
             } else {
                 return Optional.empty();
@@ -248,6 +248,7 @@ public class EventService {
         List<EventItem> eventItems = membersByGroup.stream()
                 .map(members -> {
                     EventItem eventItem = new EventItem();
+                    eventItem.setId(UUID.randomUUID());
                     eventItem.setType("g");
                     eventItem.setCategory("l");
                     eventItem.setName("Generated Event!");
@@ -268,6 +269,7 @@ public class EventService {
         List<Event> events = eventItemsSaved.stream()
                 .map(eventItemSaved -> {
                     Event event = new Event();
+                    event.setId(UUID.randomUUID());
                     event.setInfo(eventItemSaved);
                     event.setItems(new ArrayList<>(Collections.singletonList(eventItemSaved)));
                     event.setStatus("A");

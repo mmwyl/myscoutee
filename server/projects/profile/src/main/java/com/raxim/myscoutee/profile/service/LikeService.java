@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
-import com.raxim.myscoutee.profile.data.document.mongo.LikeForGroup;
+import com.raxim.myscoutee.profile.data.document.mongo.Like;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Sequence;
@@ -43,18 +43,18 @@ public class LikeService {
             return like;
         }).toList();
 
-        List<LikeForGroup> likes = handleLikes(profile, likeDTOs);
+        List<Like> likes = handleLikes(profile, likeDTOs);
 
-        List<LikeForGroup> likesWithCnt = generateNewCounters(likes);
+        List<Like> likesWithCnt = generateNewCounters(likes);
 
         // save likes
-        List<LikeForGroup> likesSaved = likeRepository.saveAll(likesWithCnt);
+        List<Like> likesSaved = likeRepository.saveAll(likesWithCnt);
 
         List<LikeDTO> likesAll = toLikeDTOs(likesSaved);
         return likesAll;
     }
 
-    private List<LikeForGroup> handleLikes(Profile profile, List<LikeDTO> likeDTOs) {
+    private List<Like> handleLikes(Profile profile, List<LikeDTO> likeDTOs) {
         // load likes, add + parameter based on like type (Person,Job,Idea)
         List<LikeGroup> dbLikeGroups = likeRepository.findByParty(profile.getId(),
                 likeDTOs);
@@ -75,7 +75,7 @@ public class LikeService {
         Profile createdBy = profiles.get(profile.getId());
 
         // likeDTOs to likes
-        List<LikeForGroup> likes = likeDTOs.stream().flatMap(likeDTO -> {
+        List<Like> likes = likeDTOs.stream().flatMap(likeDTO -> {
             // filter out LikeGroups being touched by the likes -> double rates are in
             // different like group
             LikeGroup likeGroup = dbLikeGroups.stream()
@@ -85,11 +85,11 @@ public class LikeService {
                                     || LikeUtil.isReverseEqual(likeDTO, dbLike)))
                     .findFirst().orElse(null);
 
-            LikeForGroup mLike = null;
+            Like mLike = null;
 
             Long cnt = null;
             if (likeGroup != null) {
-                List<LikeForGroup> mLikes = likeGroup.getLikes();
+                List<Like> mLikes = likeGroup.getLikes();
                 if (mLikes != null) {
                     cnt = mLikes.get(0).getCnt();
                 }
@@ -110,7 +110,7 @@ public class LikeService {
 
                 boolean isDouble = !likeDTO.getFrom().equals(profile.getId());
 
-                mLike = new LikeForGroup();
+                mLike = new Like();
                 mLike.setId(UUID.randomUUID());
                 mLike.setStatus(isDouble ? "D" : "A");
                 mLike.setFrom(profileFrom);
@@ -129,7 +129,7 @@ public class LikeService {
         return likes;
     }
 
-    private List<LikeDTO> toLikeDTOs(List<LikeForGroup> likesSaved) {
+    private List<LikeDTO> toLikeDTOs(List<Like> likesSaved) {
         // return the updated likes
         List<LikeDTO> likesAll = likesSaved.stream()
                 .map(like -> {
@@ -151,13 +151,13 @@ public class LikeService {
         return likesAll;
     }
 
-    private List<LikeForGroup> generateNewCounters(List<LikeForGroup> likes) {
+    private List<Like> generateNewCounters(List<Like> likes) {
         // update cnt values
         long newLikesNum = likes.stream().filter(like -> like.getCnt() == null).count();
         long newCnt = sequenceRepository.nextValue("likes", newLikesNum).getCnt();
         Sequence oldSequence = new Sequence("likes", newCnt - newLikesNum);
 
-        List<LikeForGroup> likesWithCnt = likes.stream().map(like -> {
+        List<Like> likesWithCnt = likes.stream().map(like -> {
             if (like.getCnt() == null) {
                 long cnt = oldSequence.getCnt();
                 ++cnt;
