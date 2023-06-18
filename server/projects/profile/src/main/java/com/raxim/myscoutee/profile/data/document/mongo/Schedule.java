@@ -30,9 +30,21 @@ public class Schedule {
     @JsonProperty(value = "batchSize")
     private long batchSize;
 
-    public Schedule(long lastIdx, long batchSize) {
+    @JsonProperty(value = "flags")
+    private String flags;
+
+    public Schedule(long lastIdx, long batchSize, String flags) {
         this.lastIdx = lastIdx;
         this.batchSize = batchSize;
+        this.flags = flags;
+    }
+
+    public String getFlags() {
+        return flags;
+    }
+
+    public void setFlags(String flags) {
+        this.flags = flags;
     }
 
     public Schedule() {

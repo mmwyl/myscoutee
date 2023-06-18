@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.algo.BGroupSet;
 import com.raxim.myscoutee.algo.NodeRepository;
 import com.raxim.myscoutee.algo.dto.Bound;
@@ -17,6 +18,7 @@ import com.raxim.myscoutee.algo.dto.Edge;
 import com.raxim.myscoutee.algo.dto.GroupAlgo;
 import com.raxim.myscoutee.algo.dto.Node;
 import com.raxim.myscoutee.algo.dto.Range;
+import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeForGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
@@ -34,16 +36,22 @@ public class EventGeneratorService {
 
     private final ScheduleRepository scheduleRepository;
     private final LikeRepository likeRepository;
+    private final ObjectMapper objectMapper;
 
-    public EventGeneratorService(ScheduleRepository scheduleRepository, LikeRepository likeRepository) {
+    public EventGeneratorService(ScheduleRepository scheduleRepository,
+            LikeRepository likeRepository,
+            ObjectMapper objectMapper) {
         this.scheduleRepository = scheduleRepository;
         this.likeRepository = likeRepository;
+        this.objectMapper = objectMapper;
     }
 
-    public List<Set<Profile>> generate(Bound flags) {
+    public List<Set<Profile>> generate() {
         Optional<Schedule> schedule = scheduleRepository.findByKey(SCHEDULE_RANDOM_GROUP);
         long lastIdx = schedule.map(Schedule::getLastIdx).orElse(0L);
         long batchSize = schedule.map(Schedule::getBatchSize).orElse(1000L);
+        Bound flags = schedule.map(sch -> JsonUtil.jsonToObject(sch.getFlags(), Bound.class, objectMapper))
+                .orElse(new Bound(6, 12));
 
         List<LikeGroup> likeGroups = likeRepository.findAll(lastIdx, batchSize);
 

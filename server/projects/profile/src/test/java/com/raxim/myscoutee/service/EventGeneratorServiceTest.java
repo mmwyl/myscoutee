@@ -16,10 +16,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.algo.dto.Bound;
-import com.raxim.myscoutee.common.util.JsonUtil;
+import com.raxim.myscoutee.common.config.JsonConfig;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeForGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
@@ -28,8 +33,10 @@ import com.raxim.myscoutee.profile.data.document.mongo.Schedule;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ScheduleRepository;
 import com.raxim.myscoutee.profile.service.EventGeneratorService;
+import com.raxim.myscoutee.util.TestJsonUtil;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({ SpringExtension.class })
+@ContextConfiguration(classes = JsonConfig.class)
 public class EventGeneratorServiceTest {
 
         private static final Bound FLAGS_DEFAULT = new Bound(2, 3);
@@ -52,9 +59,14 @@ public class EventGeneratorServiceTest {
         @Mock
         private LikeRepository likeRepository;
 
+        @Autowired
+        @Spy
+        private ObjectMapper objectMapper;
+
         @Test
         public void testShouldGetBalancedGroup() throws IOException {
-                LikeForGroup[] likeArray = JsonUtil.loadJson(this, "algo/likes.json", LikeForGroup[].class);
+                LikeForGroup[] likeArray = TestJsonUtil.loadJson(this, "algo/likes.json",
+                                LikeForGroup[].class, objectMapper);
 
                 List<LikeGroup> likesBoth = Arrays.asList(likeArray)
                                 .stream().collect(Collectors.groupingBy(Like::getCnt))
@@ -62,12 +74,17 @@ public class EventGeneratorServiceTest {
                                 .map(entry -> new LikeGroup(entry.getKey(), entry.getValue()))
                                 .collect(Collectors.toList());
 
+                String flags = TestJsonUtil.jsonToString(FLAGS_DEFAULT,
+                                objectMapper);
+                Optional<Schedule> scheduleResp = Optional.of(
+                                new Schedule(0L, 1000L,
+                                                flags));
                 when(scheduleRepository.findByKey(EventGeneratorService.SCHEDULE_RANDOM_GROUP))
-                                .thenReturn(Optional.of(new Schedule(0L, 1000L)));
+                                .thenReturn(scheduleResp);
                 when(likeRepository.findAll(0L, 1000L))
                                 .thenReturn(likesBoth);
 
-                List<Set<Profile>> profilesByGroup = eventGeneratorService.generate(FLAGS_DEFAULT);
+                List<Set<Profile>> profilesByGroup = eventGeneratorService.generate();
 
                 assertEquals(3, profilesByGroup.size());
 

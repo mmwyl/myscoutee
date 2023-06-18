@@ -18,9 +18,13 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.raxim.myscoutee.common.util.JsonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.raxim.myscoutee.common.config.JsonConfig;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
@@ -31,8 +35,10 @@ import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.SequenceRepository;
 import com.raxim.myscoutee.profile.service.LikeService;
+import com.raxim.myscoutee.util.TestJsonUtil;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({ SpringExtension.class })
+@ContextConfiguration(classes = JsonConfig.class)
 public class LikeServiceTest {
 
     private static final UUID UUID_PROFILE_SOPHIA = UUID.fromString("39402632-a452-57be-2518-53cc117b1abc");
@@ -53,13 +59,20 @@ public class LikeServiceTest {
     @Captor
     private ArgumentCaptor<List<Like>> captorLikes;
 
+    @Autowired
+    @Spy
+    private ObjectMapper objectMapper;
+
     @Test
     public void testShouldAllLikesSave() throws IOException {
-        LikeDTO[] likeArray = JsonUtil.loadJson(this, "rest/likesForGroupSave.json", LikeDTO[].class);
-        Profile[] profileArray = JsonUtil.loadJson(this, "rest/profiles.json", ProfileForGroup[].class);
-
-        final Sequence sequence = new Sequence(SEQENCE_KEY, 2L + 2L); // two existing and two new group
-        LikeGroup[] likeGroupsArray = JsonUtil.loadJson(this, "mongo/likeGroups.json", LikeGroup[].class);
+        LikeDTO[] likeArray = TestJsonUtil.loadJson(this, "rest/likesForGroupSave.json",
+                LikeDTO[].class, objectMapper);
+        Profile[] profileArray = TestJsonUtil.loadJson(this, "rest/profiles.json",
+                ProfileForGroup[].class,
+                objectMapper);
+        LikeGroup[] likeGroupsArray = TestJsonUtil.loadJson(this, "mongo/likeGroups.json",
+                LikeGroup[].class,
+                objectMapper);
 
         List<LikeDTO> likes = Arrays.asList(likeArray);
         List<LikeGroup> likeGroups = Arrays.asList(likeGroupsArray);
@@ -67,6 +80,8 @@ public class LikeServiceTest {
 
         when(likeRepository.findByParty(eq(UUID_PROFILE_SOPHIA), anyList())).thenReturn(likeGroups);
         when(profileRepository.findAllById(anySet())).thenReturn(profiles);
+
+        final Sequence sequence = new Sequence(SEQENCE_KEY, 2L + 2L); // two existing and two new group
         when(sequenceRepository.nextValue(eq(SEQENCE_KEY), eq(2L))).thenReturn(sequence);
 
         // Sophia is the first profile

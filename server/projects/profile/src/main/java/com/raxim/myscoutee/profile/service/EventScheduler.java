@@ -1,19 +1,5 @@
 package com.raxim.myscoutee.profile.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Notification;
-import com.raxim.myscoutee.common.config.firebase.FirebaseAuthenticationToken;
-import com.raxim.myscoutee.common.util.JsonUtil;
-import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.ScheduleSetting;
-import com.raxim.myscoutee.profile.exception.InvalidScheduleSettingsException;
-import com.raxim.myscoutee.algo.dto.Bound;
-import com.raxim.myscoutee.profile.repository.mongo.ScheduleSettingRepository;
-import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
-
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +7,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Notification;
+import com.raxim.myscoutee.common.config.firebase.FirebaseAuthenticationToken;
+import com.raxim.myscoutee.profile.data.document.mongo.Profile;
+import com.raxim.myscoutee.profile.repository.mongo.ScheduleSettingRepository;
+import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 
 @Service
 public class EventScheduler {
@@ -48,7 +43,7 @@ public class EventScheduler {
     public void autoGenerateRooms() {
         try {
             generateEvents();
-        } catch (FirebaseMessagingException | InvalidScheduleSettingsException e) {
+        } catch (FirebaseMessagingException e) {
             e.printStackTrace();
         }
     }
@@ -67,7 +62,7 @@ public class EventScheduler {
         Authentication auth = new FirebaseAuthenticationToken("scheduler", "");
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        userRepository.findDeviceWithProfileStatusAll(lastTime, new String[]{"A"})
+        userRepository.findDeviceWithProfileStatusAll(lastTime, new String[] { "A" })
                 .forEach(topic -> {
                     String topicName = topic.getName().replace(" ", "_");
                     try {
@@ -75,10 +70,11 @@ public class EventScheduler {
                     } catch (FirebaseMessagingException e) {
                         e.printStackTrace();
                     }
-                    System.out.println(topic.getTokens().size() + " tokens were subscribed successfully from " + topic.getName());
+                    System.out.println(
+                            topic.getTokens().size() + " tokens were subscribed successfully from " + topic.getName());
                 });
 
-        userRepository.findDeviceWithProfileStatusAll(lastTime, new String[]{"I", "F", "S", "P"})
+        userRepository.findDeviceWithProfileStatusAll(lastTime, new String[] { "I", "F", "S", "P" })
                 .forEach(topic -> {
                     String topicName = topic.getName().replace(" ", "_");
                     try {
@@ -86,7 +82,8 @@ public class EventScheduler {
                     } catch (FirebaseMessagingException e) {
                         e.printStackTrace();
                     }
-                    System.out.println(topic.getTokens().size() + " tokens were unsubscribed successfully from " + topic.getName());
+                    System.out.println(topic.getTokens().size() + " tokens were unsubscribed successfully from "
+                            + topic.getName());
                 });
 
         // only test!!!
@@ -94,8 +91,7 @@ public class EventScheduler {
                 .setNotification(
                         Notification.builder()
                                 .setTitle("Meet with Strangers - Notification has been activated!")
-                                .build()
-                )
+                                .build())
                 .setTopic("Dating")
                 .build();
 
@@ -105,31 +101,29 @@ public class EventScheduler {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    public void generateEvents() throws InvalidScheduleSettingsException, FirebaseMessagingException {
+    public void generateEvents() throws FirebaseMessagingException {
         Authentication auth = new FirebaseAuthenticationToken("scheduler", "");
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        ScheduleSetting scheduleSetting = scheduleSettingRepository.findByKey(EventGeneratorService.SCHEDULE_RANDOM_GROUP)
-                .orElseThrow(InvalidScheduleSettingsException::new);
-
-        Bound bound = JsonUtil.jsonToObject(scheduleSetting.getFlags(), Bound.class, objectMapper);
-
-        List<Set<Profile>> profilesByGroup = eventGeneratorService.generate(bound);
+        List<Set<Profile>> profilesByGroup = eventGeneratorService.generate();
         eventService.saveEvents(profilesByGroup);
 
+        sendRandomEventNotification();
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    private void sendRandomEventNotification() throws FirebaseMessagingException {
         com.google.firebase.messaging.Message message = com.google.firebase.messaging.Message.builder()
                 .setNotification(
                         Notification.builder()
                                 .setTitle("Rooms based on your priority has been created!")
                                 .setBody("Rooms based on your priority has been created!")
-                                .build()
-                )
+                                .build())
                 .setTopic("Dating")
                 .build();
 
         FirebaseMessaging.getInstance().send(message);
         System.out.println("Successfully sent message");
-
-        SecurityContextHolder.getContext().setAuthentication(null);
     }
 }

@@ -15,16 +15,18 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.raxim.myscoutee.common.config.JsonConfig;
 import com.raxim.myscoutee.common.config.RepositoryConfig;
 import com.raxim.myscoutee.common.repository.MongoDataLoaderTestExecutionListener;
 import com.raxim.myscoutee.common.repository.TestData;
-import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.dto.rest.LikeDTO;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
+import com.raxim.myscoutee.util.TestJsonUtil;
 
 @DataMongoTest
-@Import({ RepositoryConfig.class })
+@Import({ JsonConfig.class, RepositoryConfig.class })
 @TestPropertySource(properties = { "de.flapdoodle.mongodb.embedded.version=6.0.6",
                 "logging.level.org.springframework.data.mongodb=DEBUG" })
 @TestData({ "mongo/profiles.json", "mongo/likes.json" })
@@ -35,6 +37,9 @@ public class LikeRepositoryTest {
 
         @Autowired
         private LikeRepository likeRepository;
+
+        @Autowired
+        private ObjectMapper objectMapper;
 
         @Test
         public void testShouldFindAll() {
@@ -66,7 +71,7 @@ public class LikeRepositoryTest {
 
         @Test
         public void testShouldFindByParty() throws IOException {
-                LikeDTO[] likeArray = JsonUtil.loadJson(this, "rest/likes.json", LikeDTO[].class);
+                LikeDTO[] likeArray = TestJsonUtil.loadJson(this, "rest/likes.json", LikeDTO[].class, objectMapper);
                 List<LikeDTO> likeDTOs = Arrays.asList(likeArray);
                 List<LikeGroup> likes = this.likeRepository.findByParty(UUID_PROFILE_SOPHIA, likeDTOs);
 
