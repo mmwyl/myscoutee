@@ -21,25 +21,13 @@ public class Event {
     @JsonProperty(value = "key")
     private UUID id;
 
-    // if you change dateFrom of general than every other item's date will slip,
-    // first event item of the items list, which contains the signal chat url
-    @JsonIgnore
-    private EventItem info;
-
-    @DBRef
-    @JsonIgnore
-    private List<EventItem> items;
-
-    @DBRef
-    @JsonIgnore
-    private List<Feedback> feedbacks;
-
     // should be filtered by group
     @JsonIgnore
     private UUID group;
 
+    // idea, job, event for template
     @JsonIgnore
-    private GeoJsonPoint position;
+    private String type;
 
     // Accepted (A) (by Organizer), Published/Promotion/Pending (P),
     // Inactive (I), Template (T), Under Review (U), Reviewed/Recommended (R),
@@ -52,10 +40,6 @@ public class Event {
     @JsonProperty(value = "status")
     private String status;
 
-    // idea, job, event for template
-    @JsonIgnore
-    private String type;
-
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonProperty(value = "createdDate")
     private LocalDateTime createdDate = LocalDateTime.now();
@@ -63,10 +47,7 @@ public class Event {
     @JsonProperty(value = "createdBy")
     private UUID createdBy;
 
-    @JsonDeserialize(using = GeoJsonPointDeserializer.class)
-    @JsonIgnore
-    @JsonProperty(value = "positions")
-    private List<GeoJsonPoint> positions;
+    // -------------??
 
     // ref counter
     @JsonIgnore
@@ -76,6 +57,37 @@ public class Event {
     @DBRef
     @JsonIgnore
     private Event ref;
+
+    // ----------------lehet nem kell----------------
+
+    // if you change dateFrom of general than every other item's date will slip,
+    // first event item of the items list, which contains the signal chat url
+    // lehet nem kell
+    @JsonIgnore
+    private EventItem info;
+
+    // ??, lehet, hogy az eventItem-nek kell az event.id tartalmaznia es ez ide nem
+    // kell
+    // lekerdezesek vizsgalata kell-e ez az optimalizacio
+    @DBRef
+    @JsonIgnore
+    private List<EventItem> items;
+
+    // a Feedback-nel van event.id, es nem kell ide, lekerdezeseket checkkolni,
+    // kell-e ez az optimalizacio
+    @DBRef
+    @JsonIgnore
+    private List<Feedback> feedbacks;
+
+    // lehet, hogy az eventItemhez kellene rakni
+    @JsonIgnore
+    private GeoJsonPoint position;
+
+    // lehet, hogy az eventItemhez kellene rakni
+    @JsonDeserialize(using = GeoJsonPointDeserializer.class)
+    @JsonIgnore
+    @JsonProperty(value = "positions")
+    private List<GeoJsonPoint> positions;
 
     public UUID getId() {
         return id;

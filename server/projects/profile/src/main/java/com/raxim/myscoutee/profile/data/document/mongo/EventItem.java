@@ -1,7 +1,6 @@
 package com.raxim.myscoutee.profile.data.document.mongo;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,8 +22,14 @@ public class EventItem {
     @JsonProperty(value = "key")
     private UUID id;
 
-    //random, main -> only one (there is no random and main -> if all the places has been invited no calculation), general, car, accommodation, private (like phone number)
-    //event is published if capacity has been set - auto capacity
+    // aki jelentkezett kulon chat ablak -> pl. fuvar
+    @JsonProperty(value = "optional")
+    private Boolean optional; // not mandatory event - not all participant needs to attend
+
+    // random, main -> only one (there is no random and main -> if all the places
+    // has been invited no calculation), general, car, accommodation, private (like
+    // phone number)
+    // event is published if capacity has been set - auto capacity
     @JsonProperty(value = "type")
     private String type;
 
@@ -38,71 +43,77 @@ public class EventItem {
     @JsonProperty(value = "desc")
     private String desc;
 
-    // google
-    @JsonProperty(value = "urlRef")
-    private String urlRef;
-
-    //signal url
-    @JsonProperty(value = "chatKey")
-    private String chatKey;
-
     @JsonProperty(value = "range")
     private RangeLocal range;
 
     @JsonProperty(value = "capacity")
     private RangeInt capacity;
 
-    @JsonProperty(value = "telNum")
-    private String telNum;
-
-    @JsonProperty(value = "optional")
-    private Boolean optional; // not mandatory event - not all participant needs to attend
-
+    //price
     @JsonProperty(value = "amount")
     private Amount amount;
 
+    //qr code generation
     @JsonProperty(value = "ticket")
     private Boolean ticket;
 
-    //@DBRef
-    // kivalasztas belemasolas - modositas nem vezetodik at, ha valtozott a kocsi rendszama - update
-    @JsonProperty(value = "car")
-    private Car car;
-
-    //the two item below is needed for the random calculation, which replaces members, if they are not available
-
-    //when you met with a member
-    @JsonProperty(value = "memberRange")
-    private RangeLocal memberRange;
+    // google, booking.com etc., az alkalmazas belso url-je is,
+    // vagyis ilyenkor egy popup ablak jelenik meg pl. a kocsi infoival
+    @JsonProperty(value = "urlRef")
+    private String urlRef;
 
     @GeoSpatialIndexed(name = "position", type = GeoSpatialIndexType.GEO_2DSPHERE)
     @JsonDeserialize(using = GeoJsonPointDeserializer.class)
     @JsonProperty(value = "position")
     private GeoJsonPoint position;
 
-    // opcionalis esemenyek - car is egy esemeny, amihez lehet csatlakozni
-    // memberek telefonszama nincs itt mentve, egyelore
-    @JsonIgnore
-    @JsonProperty(value = "members")
-    private Set<Member> members;
-
-    //nujmber of members
-    @JsonProperty(value = "num")
-    private int num;
-
-    @JsonProperty(value = "rule")
-    private Rule rule;
-
-    //Active (A), Deleted (D)
+    // Active (A), Deleted (D)
     @JsonProperty(value = "status")
     private String status = "A";
-
-    @JsonProperty(value = "priority")
-    private Boolean priority;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonProperty(value = "createdDate")
     private LocalDateTime createdDate = LocalDateTime.now();
+
+    @JsonProperty(value = "priority")
+    private Boolean priority;
+
+    @JsonProperty(value = "rule")
+    private Rule rule;
+
+    // -------------nem kell--------------
+
+    // ez nem lesz,sajat google notification chat, kesobb web socket
+    // signal url
+    @JsonProperty(value = "chatKey")
+    private String chatKey;
+
+    // nem kell, chat-ben megy a kommunikacio
+    @JsonProperty(value = "telNum")
+    private String telNum;
+
+    // nem kell urlRef lefedi
+    @JsonProperty(value = "car")
+    private Car car;
+
+    // when you met with a member, random calculation, ez nem kell like tabla oldja
+    // meg (updatedTime)
+    @JsonProperty(value = "memberRange")
+    private RangeLocal memberRange;
+
+    // number of members, nem tudom, hogy kell-e...
+    @JsonProperty(value = "num")
+    private int num;
+
+    // opcionalis esemenyek - car is egy esemeny, amihez lehet csatlakozni
+    // memberek telefonszama nincs itt mentve, egyelore
+    // forditott viszony Member should contain eventItemId es nem forditva, members
+    // nem kell
+    // a lekerdezeseket checkoljuk, de nem valoszinu, hogy kell ez az optimalizacio
+    // ide
+    @JsonIgnore
+    @JsonProperty(value = "members")
+    private Set<Member> members;
 
     // Add getters and setters for all fields
 

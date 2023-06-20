@@ -4,9 +4,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+//utolso x alkalommal akikkel talalkoztam szurje ki -> az esemeny ideje, es neve jelenjen meg felul (fieldset)
+//random esemeny utan az egyezo nemuekre is lehet szavazni -> az esemeny koedukalt parameteru
+
+//lista kepernyo ezekkel a szurokkel, hogy lehessen latni milyen sorrendben hivja meg az embereket
+//az elso x ember a kapacitas alapjan mas szinu
+
+//contact kepernyorol szures (sorba van rendezve kolcsonos rate-k alapjan)
 
 @Document(collection = "rules")
 public class Rule {
+    //tehat az ismeroseim ismerosei egy melyseg, LikeRepository lekerdezes
     @JsonProperty(value = "met")
     private Boolean met;
 
@@ -14,6 +22,8 @@ public class Rule {
     @JsonProperty(value = "rate")
     private Integer rate;
 
+    //ehelyett utolso x esemeny
+    //like updated time, nem az eventItem.memberRange helyett, nem range, hanem egy datum
     @JsonProperty(value = "range")
     private RangeLocal range;
 
