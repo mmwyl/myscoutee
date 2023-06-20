@@ -28,6 +28,7 @@ public class EventItem {
     @JsonProperty(value = "type")
     private String type;
 
+    /* local, global */
     @JsonProperty(value = "category")
     private String category;
 
@@ -85,6 +86,7 @@ public class EventItem {
     @JsonProperty(value = "members")
     private Set<Member> members;
 
+    //nujmber of members
     @JsonProperty(value = "num")
     private int num;
 

@@ -21,13 +21,8 @@ public class Event {
     @JsonProperty(value = "key")
     private UUID id;
 
-    // the first event in the list
-    //it contains the url of signal also
-    //if first event is not added yet, it shows the form in the popup instead of the list
-    //open dialog in list feature, if there is no element
-    //routing hasFirst feature - if isFirst - than the popup *ngIf shows other elements - like signal url field
-
-    //if you change dateFrom of general than every other item's date will slip
+    // if you change dateFrom of general than every other item's date will slip,
+    // first event item of the items list, which contains the signal chat url
     @JsonIgnore
     private EventItem info;
 
@@ -39,9 +34,6 @@ public class Event {
     @JsonIgnore
     private List<Feedback> feedbacks;
 
-    @JsonIgnore
-    private int cnt;
-
     // should be filtered by group
     @JsonIgnore
     private UUID group;
@@ -49,13 +41,9 @@ public class Event {
     @JsonIgnore
     private GeoJsonPoint position;
 
-    // cloned from
-    @DBRef
-    @JsonIgnore
-    private Event ref;
-
     // Accepted (A) (by Organizer), Published/Promotion/Pending (P),
-    // Inactive (I), Template (T), Under Review (U), Reviewed/Recommended (R), Rejected/Deleted (D)
+    // Inactive (I), Template (T), Under Review (U), Reviewed/Recommended (R),
+    // Rejected/Deleted (D)
     // Cancelled (C)
     // auto publish when general has been added
     // inactive means, just edited locally, before being published
@@ -64,7 +52,7 @@ public class Event {
     @JsonProperty(value = "status")
     private String status;
 
-    //idea, job, event for template
+    // idea, job, event for template
     @JsonIgnore
     private String type;
 
@@ -79,6 +67,15 @@ public class Event {
     @JsonIgnore
     @JsonProperty(value = "positions")
     private List<GeoJsonPoint> positions;
+
+    // ref counter
+    @JsonIgnore
+    private int cnt;
+
+    // cloned from
+    @DBRef
+    @JsonIgnore
+    private Event ref;
 
     public UUID getId() {
         return id;
@@ -182,6 +179,6 @@ public class Event {
 
     public void setPositions(List<GeoJsonPoint> positions) {
         this.positions = positions;
-    }    
-    
+    }
+
 }

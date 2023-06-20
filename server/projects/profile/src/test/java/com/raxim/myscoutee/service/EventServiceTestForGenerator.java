@@ -73,7 +73,7 @@ public class EventServiceTestForGenerator {
                 Profile[] profileArray = TestJsonUtil.loadJson(this, "rest/profiles.json",
                                 TestProfile[].class,
                                 objectMapper);
-                EventItem[] eventItemArray = TestJsonUtil.loadJson(this, "mongo/eventItems.json",
+                EventItem[] eventItemArray = TestJsonUtil.loadJson(this, "rest/eventItems.json",
                                 EventItem[].class,
                                 objectMapper);
 
