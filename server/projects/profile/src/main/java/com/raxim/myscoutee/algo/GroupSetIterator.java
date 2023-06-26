@@ -21,7 +21,7 @@ public class GroupSetIterator implements Iterator<GroupAlgo> {
     private boolean isCollect = false;
     private GroupAlgo group = new GroupAlgo(new ArrayList<>());
     private volatile int partition = -1;
-    
+
     private final GroupSet groupSet;
 
     public GroupSet getGroupSet() {
@@ -119,14 +119,11 @@ public class GroupSetIterator implements Iterator<GroupAlgo> {
                         wn = nodeInfo.peek();
                     }
 
-                    if (nodeInfo.getDegree() == 0) {
-                        groupSet.getNodeRepository().getNodeForest().remove(nodeInfo);
-                        continue;
-                    }
-
                     groupSet.getNodeRepository().getNodeForest().remove(nodeInfo);
                     if (nodeInfo.getDegree() > 0) {
                         groupSet.getNodeRepository().getNodeForest().add(nodeInfo);
+                    } else {
+                        continue;
                     }
 
                     nodeTree.add(nodeInfo);
@@ -143,14 +140,11 @@ public class GroupSetIterator implements Iterator<GroupAlgo> {
                         wn = sNodeInfo.peek();
                     }
 
-                    if (sNodeInfo.getDegree() == 0) {
-                        groupSet.getNodeRepository().getNodeForest().remove(sNodeInfo);
-                        continue;
-                    }
-
                     groupSet.getNodeRepository().getNodeForest().remove(sNodeInfo);
                     if (sNodeInfo.getDegree() > 0) {
                         groupSet.getNodeRepository().getNodeForest().add(sNodeInfo);
+                    } else {
+                        continue;
                     }
                     nodeTree.add(sNodeInfo);
                 }

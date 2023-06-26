@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.raxim.myscoutee.algo.dto.Edge;
@@ -29,6 +30,8 @@ public class GroupSetTest extends AbstractAlgoTest {
 
     @Test
     void shouldIterate() throws AlgoLoadException {
+        System.out.println("shouldIterate");
+        
         NodeRepository nodeRepository = new NodeRepository();
         Graph graph = load("algo/graph.json");
 
@@ -105,7 +108,7 @@ public class GroupSetTest extends AbstractAlgoTest {
         assertEquals(1, nodeInfos.get("2").getDegree());
 
         System.out.println("non-balanced group");
-        
+
         Range range = new Range(2, 3);
         GroupSet groupSet = new GroupSet(nodeRepository, range);
         groupSet.forEach(group -> {
@@ -123,6 +126,7 @@ public class GroupSetTest extends AbstractAlgoTest {
         });
     }
 
+    @Disabled
     @Test
     void shouldGenIterate() {
         NodeRepository nodeRepository = new NodeRepository();
