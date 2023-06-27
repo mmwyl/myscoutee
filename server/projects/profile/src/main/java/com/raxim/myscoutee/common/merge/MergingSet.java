@@ -1,9 +1,19 @@
 package com.raxim.myscoutee.common.merge;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentSkipListSet;
 
-public class MergingSet<T extends Mergeable<T>> extends ConcurrentSkipListSet<T> {
+public class MergingSet<T extends Mergeable<T>> extends HashSet<T> {
+
+    public MergingSet() {
+        super();
+    }
+
+    public MergingSet(Collection<T> c) {
+        super(c);
+    }
+
     @Override
     public boolean add(T element) {
         for (Iterator<T> iterator = this.iterator(); iterator.hasNext();) {

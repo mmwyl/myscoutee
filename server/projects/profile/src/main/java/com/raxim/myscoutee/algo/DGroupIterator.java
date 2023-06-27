@@ -8,9 +8,7 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import com.raxim.myscoutee.algo.dto.CGroup;
-import com.raxim.myscoutee.algo.dto.Node;
 import com.raxim.myscoutee.algo.dto.NodeInfo;
-import com.raxim.myscoutee.algo.dto.WeightNode;
 
 public class DGroupIterator implements Iterator<CGroup> {
 

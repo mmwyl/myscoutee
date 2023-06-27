@@ -2,16 +2,21 @@ package com.raxim.myscoutee.algo.dto;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class CNode {
+import com.raxim.myscoutee.common.merge.Mergeable;
+
+public class CNode implements Mergeable<CNode>, Comparable<CNode> {
 
     private final Node node;
-    private final PriorityQueue<Edge> edgesOrdered;
+    private PriorityQueue<Edge> edgesOrdered;
 
     public CNode(Node node) {
         this.node = node;
         this.edgesOrdered = new PriorityQueue<>(
-                Comparator.comparing(Edge::getWeight).reversed());
+                Comparator.comparing(Edge::getWeight).reversed().thenComparing(Edge::getFrom));
     }
 
     public Node getNode() {
@@ -71,6 +76,23 @@ public class CNode {
         } else if (!node.equals(other.getNode()))
             return false;
         return true;
+    }
+
+    @Override
+    public int compareTo(CNode arg0) {
+        return Integer.compare(this.hashCode(), arg0.hashCode());
+    }
+
+    @Override
+    public boolean canMerge(CNode other) {
+        return this.getNode().getId() == other.getNode().getId();
+    }
+
+    @Override
+    public void merge(CNode node) {
+        this.edgesOrdered = Stream.concat(edgesOrdered.stream(), node.edgesOrdered.stream())
+                .collect(Collectors.toCollection(() -> new PriorityQueue<>(
+                        Comparator.comparing(Edge::getWeight).reversed().thenComparing(Edge::getFrom))));
     }
 
 }

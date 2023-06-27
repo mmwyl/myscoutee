@@ -2,7 +2,9 @@ package com.raxim.myscoutee.common.merge;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -60,7 +62,9 @@ public class MergingSetTest {
         n3.add("e2");
         mergedSet.add(n3);
 
-        assertEquals(1, mergedSet.size());
-        assertEquals(4, mergedSet.first().edges.size());
+        List<Node> nodes = new ArrayList<>(mergedSet);
+
+        assertEquals(1, nodes.size());
+        assertEquals(4, nodes.get(0).edges.size());
     }
 }
