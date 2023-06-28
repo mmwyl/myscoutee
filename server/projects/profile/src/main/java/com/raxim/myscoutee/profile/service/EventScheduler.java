@@ -98,6 +98,7 @@ public class EventScheduler {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         List<Set<Profile>> profilesByGroup = eventGeneratorService.generate();
+        //save likes with G
         eventServiceForGenerator.saveEvents(profilesByGroup);
 
         sendRandomEventNotification();
