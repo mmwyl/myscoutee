@@ -1,6 +1,7 @@
 package com.raxim.myscoutee.algo;
 
 import java.util.Iterator;
+import java.util.Set;
 
 import com.raxim.myscoutee.algo.dto.CGroup;
 import com.raxim.myscoutee.algo.dto.Edge;
@@ -31,25 +32,37 @@ public class BCTreeIterator implements Iterator<CGroup> {
 
         while (cGroup.size() < this.range.getMax()
                 && cTreeIterator.hasNext()) {
-            Edge edge = cTreeIterator.next();
 
-            Node from = edge.getFrom();
-            if (cTree.contains(from)) {
-                from = null;
-            }
+            Node from = null;
+            Node to = null;
+            double weight = 0;
 
-            Node to = edge.getTo();
-            if (cTree.contains(to)) {
-                to = null;
-            }
+            Edge edge;
+            int counter = 0;
+            do {
+                edge = cTreeIterator.next();
 
-            edge = new Edge(from, to, edge.getWeight(), edge.isIgnored());
+                if (from == null && !cTree.contains(edge.getFrom())) {
+                    from = edge.getFrom();
+                }
+
+                if (to == null && !cTree.contains(edge.getTo())) {
+                    to = edge.getTo();
+                }
+
+                weight += edge.getWeight();
+                counter++;
+            } while ((edge.getFrom() == null || edge.getTo() == null)
+                    && cTreeIterator.hasNext());
+
+            edge = new Edge(from, to, weight / counter, edge.isIgnored());
 
             cGroup.add(edge);
             cTree.add(edge);
         }
 
-        System.out.println(cGroup.balance(cTreeIterator.getTypes()));
+        Set<Node> nodes = cGroup.balance(cTreeIterator.getTypes());
+        // cTreeIterator.getUsed().addAll(nodes);
 
         return cGroup.size() >= this.range.getMin()
                 && (cGroup.size() % cTreeIterator.getTypes().size() == 0);

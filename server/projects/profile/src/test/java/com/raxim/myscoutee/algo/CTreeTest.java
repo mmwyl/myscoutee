@@ -70,12 +70,51 @@ public class CTreeTest extends AbstractAlgoTest {
 
         nodeIterator.hasNext();
         CGroup cGroup = nodeIterator.next();
+        System.out.println(cGroup);
         assertEquals(2, cGroup.size());
 
         Set<String> ids = Set.of("3", "4");
 
         boolean hasMatch = cGroup.stream().allMatch(cNode -> ids.contains(cNode.getId()));
         assertTrue(hasMatch);
+
+        while(nodeIterator.hasNext()) {
+            System.out.println(nodeIterator.next());
+        }
+    }
+
+    @Test
+    public void shouldDisableNode() throws AlgoLoadException {
+        Graph graph = load("algo/graph.json");
+
+        DGraph dGraph1 = new DGraph();
+        dGraph1.addAll(graph.getEdges());
+
+        assertEquals(2, dGraph1.size());
+
+        Iterator<CGraph> itDGraph = dGraph1.iterator();
+        CGraph cGraph1 = itDGraph.next();
+
+        CTree cTree1 = new CTree(cGraph1);
+        CTreeIterator edgeIterator = (CTreeIterator) cTree1.iterator();
+
+        List<Edge> edges = new ArrayList<>();
+
+        if (edgeIterator.hasNext()) {
+            edges.add(edgeIterator.next());
+        }
+
+        Set<Node> usedNodes = Set.of(graph.getNodes().get("3"), graph.getNodes().get("4"));
+        edgeIterator.getUsed().addAll(usedNodes);
+
+        List<List<String>> ids = List.of(List.of("3", "4"), List.of("1", "2"));
+
+        while (edgeIterator.hasNext()) {
+            edges.add(edgeIterator.next());
+        }
+
+        boolean allEdgesMatched = matchAll(edges, ids);
+        assertTrue(allEdgesMatched);
     }
 
     @Test

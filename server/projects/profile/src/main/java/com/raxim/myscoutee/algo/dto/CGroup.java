@@ -8,14 +8,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.common.util.concurrent.AtomicDouble;
-
 public class CGroup extends LinkedHashSet<Node> {
-    private final AtomicDouble weight;
+    private double weight;
 
     private Set<String> types = new HashSet<>();
 
-    //for rebalance, and normalize (changing nodes between groups - edges on intersection is needed)
+    // for rebalance, and normalize (changing nodes between groups - edges on
+    // intersection is needed)
     private List<Edge> edges = new ArrayList<>();
 
     public CGroup() {
@@ -24,11 +23,10 @@ public class CGroup extends LinkedHashSet<Node> {
 
     public CGroup(Set<Node> nodes) {
         super(nodes);
-        this.weight = new AtomicDouble(0D);
+        this.weight = 0d;
     }
 
     public void add(Edge edge) {
-        this.weight.addAndGet(edge.getWeight());
         if (edge.getFrom() != null) {
             super.add(edge.getFrom());
             if (edge.getFrom().getType() != null) {
@@ -43,17 +41,19 @@ public class CGroup extends LinkedHashSet<Node> {
             }
         }
         edges.add(edge);
+
+        this.weight = edges.stream().mapToDouble(Edge::getWeight).average().getAsDouble();
     }
 
-    public int balance(List<String> pTypes) {
+    public Set<Node> balance(List<String> pTypes) {
         if (pTypes.isEmpty() || pTypes.size() < 2) {
-            return 0;
+            return this;
         }
 
-        int oldSize = this.size();
+        // TODO: behavior review
         if (pTypes.size() != types.size()) {
             super.clear();
-            return oldSize;
+            return Set.of();
         }
 
         Map<String, List<Node>> nodesByType = this.stream()
@@ -71,11 +71,11 @@ public class CGroup extends LinkedHashSet<Node> {
         super.clear();
         super.addAll(nodes);
 
-        return oldSize - this.size();
+        return nodes;
     }
 
     @Override
     public String toString() {
-        return "Group [weight=" + weight + ", nodes=" + super.toString() + "]";
+        return "CGroup [weight=" + weight + ", types=" + types + ", edges=" + edges + "]";
     }
 }

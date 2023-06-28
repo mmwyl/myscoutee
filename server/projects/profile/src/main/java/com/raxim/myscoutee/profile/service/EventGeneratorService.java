@@ -89,6 +89,7 @@ public class EventGeneratorService {
 
         List<Set<Profile>> profileList = new ArrayList<>();
         bcTrees.forEach(bcTree -> bcTree.forEach(cGroup -> {
+            System.out.println(cGroup);
             Set<Profile> profiles = cGroup.stream()
                     .map(node -> nodes.get(node.getId()))
                     .collect(Collectors.toSet());

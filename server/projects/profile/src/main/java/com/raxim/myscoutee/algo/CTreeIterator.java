@@ -24,6 +24,9 @@ public class CTreeIterator implements Iterator<Edge> {
 
     private final Set<String> visited = new HashSet<>();
 
+    // BCTree requires nodes disabling
+    private final Set<Node> used = new HashSet<>();
+
     private int currentIdx = 0;
     private Edge currEdge;
 
@@ -54,14 +57,22 @@ public class CTreeIterator implements Iterator<Edge> {
 
         while (!cTree.isEmpty()
                 && nodesOrderedByType.get(type).isEmpty()) {
-            CNode cNode = cTree.poll();
+            CNode cNode;
+            Node node;
+            do {
+                cNode = cTree.poll();
+                node = cNode.getNode();
+            } while (!cTree.isEmpty() && used.contains(node));
 
-            Node node = cNode.getNode();
+            if (cTree.isEmpty()) {
+                return false;
+            }
+
             if (node.getType() == null) {
                 node = new Node(node.getId(), DEFAULT_TYPE);
             }
             if (type.equals(node.getType())) {
-                String nodeFrom = cNode.getNode().getId();
+                String nodeFrom = node.getId();
                 visited.add(nodeFrom);
             }
 
@@ -76,12 +87,16 @@ public class CTreeIterator implements Iterator<Edge> {
 
             cNode = nodesOrderedByType.get(type).peek();
             currEdge = cNode.poll();
+            if (currEdge != null && used.contains(currEdge.getFrom())) {
+                break;
+            }
 
             nodesOrderedByType.get(type).remove(cNode);
             if (cNode.getDegree() > 0) {
                 nodesOrderedByType.get(type).add(cNode);
             }
-        } while (currEdge != null && visited.contains(currEdge.getTo().getId())
+        } while (currEdge != null
+                && (visited.contains(currEdge.getTo().getId()) || used.contains(currEdge.getTo()))
                 && !nodesOrderedByType.get(type).isEmpty());
 
         if ((currEdge == null || visited.contains(currEdge.getTo().getId()))
@@ -90,12 +105,14 @@ public class CTreeIterator implements Iterator<Edge> {
             hasNext();
         }
 
-        // skip edge
-        if ((currEdge != null && currEdge.isIgnored())
-                && (currEdge != null && !visited.contains(currEdge.getTo().getId()))
-                && (!cTree.isEmpty() || !nodesOrderedByType.get(type).isEmpty())) {
-            next();
-            hasNext();
+        if (currEdge != null) {
+            if (used.contains(currEdge.getTo()) || used.contains(currEdge.getFrom())) {
+                hasNext();
+            } else if (currEdge.isIgnored() && !visited.contains(currEdge.getTo().getId())
+                    && (!cTree.isEmpty() || !nodesOrderedByType.get(type).isEmpty())) {
+                next();
+                hasNext();
+            }
         }
 
         return (currEdge != null && !visited.contains(currEdge.getTo().getId()))
@@ -136,6 +153,10 @@ public class CTreeIterator implements Iterator<Edge> {
 
     public List<String> getTypes() {
         return types;
+    }
+
+    public Set<Node> getUsed() {
+        return used;
     }
 
 }
