@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ import com.raxim.myscoutee.algo.generator.IGenerator;
 import com.raxim.myscoutee.algo.generator.NodeGenerator;
 import com.raxim.myscoutee.profile.util.AppConstants;
 
-public class DGraphTest extends AbstractAlgoTest {
+public class CTreeTest extends AbstractAlgoTest {
 
     private final static int NODE_NUM = 100;
     private final static int EDGE_NUM = 100;
