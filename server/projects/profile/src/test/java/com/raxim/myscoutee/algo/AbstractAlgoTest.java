@@ -32,7 +32,7 @@ public abstract class AbstractAlgoTest {
                 .collect(Collectors.toMap(GraphData.Node::getId, node -> new Node(node.getId(), node.getType())));
 
         List<Edge> edges = graph.getEdges().stream()
-                .map(edge -> new Edge(nodeMap.get(edge.getFrom()), nodeMap.get(edge.getTo()), edge.getWeight()))
+                .map(edge -> new Edge(nodeMap.get(edge.getFrom()), nodeMap.get(edge.getTo()), edge.getWeight(), edge.isIgnored()))
                 .collect(Collectors.toList());
         return new Graph(edges, nodeMap);
     }

@@ -1,5 +1,6 @@
 package com.raxim.myscoutee.algo.dto;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,6 +14,9 @@ public class CGroup extends LinkedHashSet<Node> {
     private final AtomicDouble weight;
 
     private Set<String> types = new HashSet<>();
+
+    //for rebalance, and normalize (changing nodes between groups - edges on intersection is needed)
+    private List<Edge> edges = new ArrayList<>();
 
     public CGroup() {
         this(new HashSet<>());
@@ -38,6 +42,7 @@ public class CGroup extends LinkedHashSet<Node> {
                 types.add(edge.getTo().getType());
             }
         }
+        edges.add(edge);
     }
 
     public int balance(List<String> pTypes) {

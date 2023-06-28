@@ -4,7 +4,6 @@ public class Node implements Comparable<Node> {
 
 	private final String id;
 	private final String type;
-	private volatile boolean visited;
 
 	public Node(String id, String type) {
 		this.id = id;
@@ -52,14 +51,6 @@ public class Node implements Comparable<Node> {
 	@Override
 	public int compareTo(Node arg0) {
 		return getId().compareTo(arg0.getId());
-	}
-
-	public boolean isVisited() {
-		return visited;
-	}
-
-	public void setVisited(boolean visited) {
-		this.visited = visited;
 	}
 
 }

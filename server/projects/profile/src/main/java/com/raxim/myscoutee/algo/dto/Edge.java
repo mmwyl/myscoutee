@@ -5,6 +5,11 @@ public class Edge {
     private final Node from;
     private final Node to;
     private final double weight;
+    private final boolean ignored;
+
+    public boolean isIgnored() {
+        return ignored;
+    }
 
     public Node getFrom() {
         return from;
@@ -19,9 +24,14 @@ public class Edge {
     }
 
     public Edge(Node from, Node to, double weight) {
+        this(from, to, weight, false);
+    }
+
+    public Edge(Node from, Node to, double weight, boolean ignored) {
         this.from = from;
         this.to = to;
         this.weight = weight;
+        this.ignored = ignored;
     }
 
     @Override

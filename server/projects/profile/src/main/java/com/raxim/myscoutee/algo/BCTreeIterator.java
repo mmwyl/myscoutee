@@ -34,16 +34,16 @@ public class BCTreeIterator implements Iterator<CGroup> {
             Edge edge = cTreeIterator.next();
 
             Node from = edge.getFrom();
-            if (cTree.contains(edge.getFrom())) {
+            if (cTree.contains(from)) {
                 from = null;
             }
 
             Node to = edge.getTo();
-            if (cTree.contains(edge.getTo())) {
+            if (cTree.contains(to)) {
                 to = null;
             }
 
-            edge = new Edge(from, to, edge.getWeight());
+            edge = new Edge(from, to, edge.getWeight(), edge.isIgnored());
 
             cGroup.add(edge);
             cTree.add(edge);

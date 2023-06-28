@@ -50,7 +50,14 @@ public class GraphData {
         private String from;
         private String to;
         private int weight;
+        private boolean ignored;
         
+        public boolean isIgnored() {
+            return ignored;
+        }
+        public void setIgnored(boolean ignored) {
+            this.ignored = ignored;
+        }
         public String getFrom() {
             return from;
         }

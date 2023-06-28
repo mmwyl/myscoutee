@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
@@ -78,13 +79,44 @@ public class CTreeTest extends AbstractAlgoTest {
     }
 
     @Test
-    public void shouldLoadDGraph() throws AlgoLoadException {
-        Graph graph = load("algo/graph.json");
+    public void shouldGetMaxFlowWithDisabledEdge() throws AlgoLoadException {
+        List<Edge> edges = getEdges("algo/graph5.json");
+        List<Edge> edgesC = getEdges("algo/graph5C.json");
+        List<Edge> edgesD = getEdges("algo/graph5D.json");
 
-        DGraph dGraph1 = new DGraph();
-        dGraph1.addAll(graph.getEdges());
+        List<List<String>> ids = List.of(List.of("3", "4"), List.of("4", "1"), List.of("3", "2"));
+        boolean allEdgesMatched = matchAll(edges, ids);
+        assertTrue(allEdgesMatched);
 
-        assertEquals(2, dGraph1.size());
+        List<List<String>> idsC = List.of(List.of("1", "3"), List.of("3", "2"), List.of("2", "4"));
+        boolean allEdgesCMatched = matchAll(edgesC, idsC);
+        assertTrue(allEdgesCMatched);
+
+        List<List<String>> idsD = List.of(List.of("1", "3"), List.of("3", "2"), List.of("4", "5"));
+        boolean allEdgesDMatched = matchAll(edgesD, idsD);
+        assertTrue(allEdgesDMatched);
+    }
+
+    private boolean matchAll(List<Edge> edges, List<List<String>> ids) {
+        boolean allEdgesMatched = IntStream.range(0, Math.min(edges.size(), ids.size()))
+                .allMatch(i -> ids.get(i).get(0).equals(edges.get(i).getFrom().getId())
+                        && ids.get(i).get(1).equals(edges.get(i).getTo().getId()));
+        return allEdgesMatched;
+    }
+
+    private List<Edge> getEdges(String fileName) throws AlgoLoadException {
+        Graph graph = load(fileName);
+
+        DGraph dGraph = new DGraph();
+        dGraph.addAll(graph.getEdges());
+
+        List<Edge> edges = new ArrayList<>();
+        dGraph.stream().map(cGraph -> new CTree(cGraph)).forEach(cTree -> {
+            cTree.forEach(edge -> {
+                edges.add(edge);
+            });
+        });
+        return edges;
     }
 
     @Test
@@ -176,7 +208,7 @@ public class CTreeTest extends AbstractAlgoTest {
                 System.out.println(group);
                 assertTrue(group.size() >= 2 && group.size() <= 6);
                 Map<String, List<Node>> nodesByType = group.stream().collect(Collectors.groupingBy(Node::getType));
-                assertEquals(nodesByType.get(AppConstants.MAN).size(),nodesByType.get(AppConstants.WOMAN).size());
+                assertEquals(nodesByType.get(AppConstants.MAN).size(), nodesByType.get(AppConstants.WOMAN).size());
             });
         });
     }
