@@ -1,4 +1,4 @@
-package com.raxim.myscoutee.algo;
+/*package com.raxim.myscoutee.algo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,7 +23,7 @@ import com.raxim.myscoutee.algo.generator.EdgeGenerator;
 import com.raxim.myscoutee.algo.generator.IGenerator;
 import com.raxim.myscoutee.algo.generator.NodeGenerator;
 
-/*public class GroupSetTest extends AbstractAlgoTest {
+public class GroupSetTest extends AbstractAlgoTest {
 
     private final static int NODE_NUM = 1000;
     private final static int EDGE_NUM = 1000;

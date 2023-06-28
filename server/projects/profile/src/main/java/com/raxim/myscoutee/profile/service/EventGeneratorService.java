@@ -11,11 +11,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.raxim.myscoutee.algo.BGroupSet;
-import com.raxim.myscoutee.algo.NodeRepository;
-import com.raxim.myscoutee.algo.dto.Bound;
+import com.raxim.myscoutee.algo.BCTree;
+import com.raxim.myscoutee.algo.CTree;
+import com.raxim.myscoutee.algo.dto.DGraph;
 import com.raxim.myscoutee.algo.dto.Edge;
-import com.raxim.myscoutee.algo.dto.CGroup;
 import com.raxim.myscoutee.algo.dto.Node;
 import com.raxim.myscoutee.algo.dto.Range;
 import com.raxim.myscoutee.common.util.JsonUtil;
@@ -49,8 +48,8 @@ public class EventGeneratorService {
         Optional<Schedule> schedule = scheduleRepository.findByKey(SCHEDULE_RANDOM_GROUP);
         long lastIdx = schedule.map(Schedule::getLastIdx).orElse(0L);
         long batchSize = schedule.map(Schedule::getBatchSize).orElse(1000L);
-        Bound flags = schedule.map(sch -> JsonUtil.jsonToObject(sch.getFlags(), Bound.class, objectMapper))
-                .orElse(new Bound(6, 12));
+        Range flags = schedule.map(sch -> JsonUtil.jsonToObject(sch.getFlags(), Range.class, objectMapper))
+                .orElse(new Range(6, 12));
 
         List<LikeGroup> likeGroups = likeRepository.findAll(lastIdx, batchSize);
         /*
@@ -75,25 +74,26 @@ public class EventGeneratorService {
         List<Edge> edges = likesBoth.stream().map(likeBoth -> {
             Node fromNode = new Node(likeBoth.getFrom().getId().toString(), likeBoth.getFrom().getGender());
             Node toNode = new Node(likeBoth.getTo().getId().toString(), likeBoth.getTo().getGender());
-            long weight = (long) (likeBoth.getRate() * likeBoth.getDistance());
+            double weight = (double) (likeBoth.getRate() * likeBoth.getDistance());
             return new Edge(fromNode, toNode, weight);
         }).toList();
 
-        NodeRepository nodeRepository = new NodeRepository();
-        nodeRepository.addAll(edges);
+        DGraph dGraph = new DGraph();
+        dGraph.addAll(edges);
 
-        Range range = new Range(flags.getMinGroupSize(), flags.getMaxGroupSize());
-        //BGroupSet groupSet = new BGroupSet(nodeRepository, range, List.of(AppConstants.MAN, AppConstants.WOMAN));
+        Range range = new Range(flags.getMin(), flags.getMax());
+        List<BCTree> bcTrees = dGraph.stream().map(cGraph -> {
+            CTree cTree = new CTree(cGraph, List.of(AppConstants.MAN, AppConstants.WOMAN));
+            return new BCTree(cTree, range);
+        }).toList();
 
         List<Set<Profile>> profileList = new ArrayList<>();
-        /*for (CGroup group : groupSet) {
-
-            Set<Profile> profilesByGroup = group.getNodes().stream()
+        bcTrees.forEach(bcTree -> bcTree.forEach(cGroup -> {
+            Set<Profile> profiles = cGroup.stream()
                     .map(node -> nodes.get(node.getId()))
                     .collect(Collectors.toSet());
-            profileList.add(profilesByGroup);
-
-        }*/
+            profileList.add(profiles);
+        }));
 
         return profileList;
     }

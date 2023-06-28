@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.Set;
 
 import com.raxim.myscoutee.algo.dto.Node;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 public class NodeGenerator implements IGenerator<Node> {
 
@@ -16,7 +17,7 @@ public class NodeGenerator implements IGenerator<Node> {
         while (nodeSet.size() < num) {
             int nodeId = random.nextInt(Integer.MAX_VALUE);
             boolean isMan = random.nextBoolean();
-            nodeSet.add(new Node(String.valueOf(nodeId), isMan ? "m" : "w"));
+            nodeSet.add(new Node(String.valueOf(nodeId), isMan ? AppConstants.MAN : AppConstants.WOMAN));
         }
         return nodeSet;
     }

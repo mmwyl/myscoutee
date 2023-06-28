@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.raxim.myscoutee.algo.dto.Edge;
 import com.raxim.myscoutee.algo.dto.Node;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 public class EdgeGenerator implements IGenerator<Edge> {
 
@@ -34,12 +35,13 @@ public class EdgeGenerator implements IGenerator<Edge> {
     public Set<Edge> generate(Integer num) {
         Set<Edge> edges = new HashSet<>();
         while (edges.size() < num) {
-            int ixdMan = random.nextInt(nodesByType.get("m").size());
-            int ixdWoman = random.nextInt(nodesByType.get("w").size());
+            int ixdMan = random.nextInt(nodesByType.get(AppConstants.MAN).size());
+            int ixdWoman = random.nextInt(nodesByType.get(AppConstants.WOMAN).size());
 
             int weight = random.nextInt(Byte.MAX_VALUE);
 
-            Edge edge = new Edge(nodesByType.get("m").get(ixdMan), nodesByType.get("w").get(ixdWoman), weight);
+            Edge edge = new Edge(nodesByType.get(AppConstants.MAN).get(ixdMan),
+                    nodesByType.get(AppConstants.WOMAN).get(ixdWoman), weight);
             edges.add(edge);
         }
         return edges;

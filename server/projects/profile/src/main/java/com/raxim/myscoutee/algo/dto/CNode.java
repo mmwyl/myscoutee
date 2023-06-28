@@ -43,8 +43,8 @@ public class CNode implements Mergeable<CNode>, Comparable<CNode> {
         edgesOrdered.remove(edge);
     }
 
-    public long getWeight() {
-        return !this.edgesOrdered.isEmpty() ? this.peek().getWeight() : -1;
+    public double getWeight() {
+        return !this.edgesOrdered.isEmpty() ? this.peek().getWeight() : -1d;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class CNode implements Mergeable<CNode>, Comparable<CNode> {
 
     @Override
     public boolean canMerge(CNode other) {
-        return this.getNode().getId() == other.getNode().getId();
+        return this.getNode().getId().equals(other.getNode().getId());
     }
 
     @Override

@@ -1,8 +1,11 @@
 package com.raxim.myscoutee.algo.dto;
 
 public class Range {
-    private final int min;
-    private final int max;
+    private int min;
+    private int max;
+
+    public Range() {
+    }
 
     public Range(int min, int max) {
         this.min = min;
@@ -15,5 +18,13 @@ public class Range {
 
     public int getMax() {
         return max;
+    }
+
+    public void setMin(int min) {
+        this.min = min;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
     }
 }

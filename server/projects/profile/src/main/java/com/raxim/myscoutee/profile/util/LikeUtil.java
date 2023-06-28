@@ -20,9 +20,9 @@ public class LikeUtil {
     private static final double MAX_VALUE = 10;
 
     public static double calcAdjustedHarmonicMean(List<Double> values, List<Double> adjustments) {
-        double harmonicMean = values.size() /
+        double harmonicMean = (double)values.size() /
                 values.stream()
-                        .mapToDouble(value -> 1 / value)
+                        .mapToDouble(value -> 1d / value)
                         .sum();
 
         double adjustedValue = 0;
@@ -36,7 +36,7 @@ public class LikeUtil {
             /*
              * f(x) = log(x+1) / log(n + 1), where n = MAX_RATE_COUNT, x = adjustment.size()
              */
-            double exponencial = CommonUtil.exp(adjustments.size(), MAX_COUNT);
+            double exponencial = CommonUtil.exp((double)adjustments.size(), MAX_COUNT);
             adjustedValue = (averageValue * exponencial) / MAX_VALUE;
         }
 

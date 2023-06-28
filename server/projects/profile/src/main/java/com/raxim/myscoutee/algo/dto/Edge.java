@@ -4,7 +4,7 @@ public class Edge {
 
     private final Node from;
     private final Node to;
-    private final long weight;
+    private final double weight;
 
     public Node getFrom() {
         return from;
@@ -14,11 +14,11 @@ public class Edge {
         return to;
     }
 
-    public long getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public Edge(Node from, Node to, long weight) {
+    public Edge(Node from, Node to, double weight) {
         this.from = from;
         this.to = to;
         this.weight = weight;

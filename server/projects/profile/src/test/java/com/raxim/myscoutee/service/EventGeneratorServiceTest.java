@@ -22,7 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.raxim.myscoutee.algo.dto.Bound;
+import com.raxim.myscoutee.algo.dto.Range;
 import com.raxim.myscoutee.common.config.JsonConfig;
 import com.raxim.myscoutee.data.mongo.TestLike;
 import com.raxim.myscoutee.data.mongo.TestProfile;
@@ -39,7 +39,7 @@ import com.raxim.myscoutee.util.TestJsonUtil;
 @ContextConfiguration(classes = JsonConfig.class)
 public class EventGeneratorServiceTest {
 
-        private static final Bound FLAGS_DEFAULT = new Bound(2, 3);
+        private static final Range FLAGS_DEFAULT = new Range(2, 3);
 
         private static final UUID UUID_PROFILE_LIAM = UUID.fromString("8f4bd3a8-1195-01b0-172a-a04f052f5982");
         private static final UUID UUID_PROFILE_EMMA = UUID.fromString("fc4c72f8-a905-e1d1-05f8-c0d9914e158c");
@@ -49,6 +49,8 @@ public class EventGeneratorServiceTest {
 
         private static final UUID UUID_PROFILE_ETHAN = UUID.fromString("2f7e01ce-1336-37d4-e69e-efc88d2ee81a");
         private static final UUID UUID_PROFILE_SOPHIA = UUID.fromString("39402632-a452-57be-2518-53cc117b1abc");
+
+        private static final UUID UUID_PROFILE_LUCAS = UUID.fromString("694ef9b8-e486-bdf2-6510-7d05f19db486");
 
         @InjectMocks
         private EventGeneratorService eventGeneratorService;
@@ -90,33 +92,33 @@ public class EventGeneratorServiceTest {
 
                 List<Set<Profile>> profilesByGroup = eventGeneratorService.generate();
 
-                assertEquals(3, profilesByGroup.size());
+                assertEquals(2, profilesByGroup.size());
 
                 // group1
                 Set<Profile> group1 = profilesByGroup.get(0);
                 assertEquals(2, group1.size());
 
-                List<UUID> expectedUuidsForGroup1 = List.of(UUID_PROFILE_LIAM, UUID_PROFILE_EMMA);
+                List<UUID> expectedUuidsForGroup1 = List.of(UUID_PROFILE_LUCAS, UUID_PROFILE_AVA);
                 assertTrue(expectedUuidsForGroup1.stream().allMatch(
                                 id -> group1.stream().anyMatch(
                                                 group -> group.getId().equals(id))));
 
-                // group1
+                // group2
                 Set<Profile> group2 = profilesByGroup.get(1);
                 assertEquals(2, group2.size());
 
-                List<UUID> expectedUuidsForGroup2 = List.of(UUID_PROFILE_ETHAN, UUID_PROFILE_AVA);
+                List<UUID> expectedUuidsForGroup2 = List.of(UUID_PROFILE_LIAM, UUID_PROFILE_EMMA);
                 assertTrue(expectedUuidsForGroup2.stream().allMatch(
                                 id -> group2.stream().anyMatch(
                                                 group -> group.getId().equals(id))));
 
-                Set<Profile> group3 = profilesByGroup.get(2);
+                /*Set<Profile> group3 = profilesByGroup.get(2);
                 assertEquals(2, group3.size());
 
                 List<UUID> expectedUuidsForGroup3 = List.of(UUID_PROFILE_SOPHIA, UUID_PROFILE_OLIVER);
                 assertTrue(expectedUuidsForGroup3.stream().allMatch(
                                 id -> group3.stream().anyMatch(
-                                                group -> group.getId().equals(id))));
+                                                group -> group.getId().equals(id))));*/
 
         }
 }

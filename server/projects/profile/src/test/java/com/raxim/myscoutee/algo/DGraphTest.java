@@ -23,6 +23,7 @@ import com.raxim.myscoutee.algo.dto.Range;
 import com.raxim.myscoutee.algo.generator.EdgeGenerator;
 import com.raxim.myscoutee.algo.generator.IGenerator;
 import com.raxim.myscoutee.algo.generator.NodeGenerator;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 public class DGraphTest extends AbstractAlgoTest {
 
@@ -41,8 +42,8 @@ public class DGraphTest extends AbstractAlgoTest {
         Iterator<CGraph> itDGraph = dGraph1.iterator();
         CGraph cGraph1 = itDGraph.next();
 
-        CTree cTree1 = new CTree(cGraph1);
-        LCTree bcTree = new LCTree(cTree1, new Range(2, 6));
+        CTree cTree1 = new CTree(cGraph1, List.of(AppConstants.MAN, AppConstants.WOMAN));
+        BCTree bcTree = new BCTree(cTree1, new Range(2, 6));
         Iterator<CGroup> nodeIterator = bcTree.iterator();
 
         nodeIterator.hasNext();
@@ -64,7 +65,7 @@ public class DGraphTest extends AbstractAlgoTest {
         CGraph cGraph1 = itDGraph.next();
 
         CTree cTree1 = new CTree(cGraph1);
-        LCTree bcTree = new LCTree(cTree1, new Range(2, 2));
+        BCTree bcTree = new BCTree(cTree1, new Range(2, 2));
         Iterator<CGroup> nodeIterator = bcTree.iterator();
 
         nodeIterator.hasNext();
@@ -127,7 +128,7 @@ public class DGraphTest extends AbstractAlgoTest {
         Iterator<CGraph> itDGraph = dGraph.iterator();
         CGraph cGraph = itDGraph.next();
 
-        CTree cTree = new CTree(cGraph, List.of("m", "w"));
+        CTree cTree = new CTree(cGraph, List.of(AppConstants.MAN, AppConstants.WOMAN));
 
         cTree.forEach(edge -> {
             System.out.println(edge);
@@ -150,7 +151,7 @@ public class DGraphTest extends AbstractAlgoTest {
 
         dGraph.forEach(cGraph -> {
             System.out.println("---- partition -----");
-            CTree cTree = new CTree(cGraph, List.of("m", "w"));
+            CTree cTree = new CTree(cGraph, List.of(AppConstants.MAN, AppConstants.WOMAN));
             cTree.forEach(edge -> {
                 System.out.println(edge);
             });
@@ -170,13 +171,13 @@ public class DGraphTest extends AbstractAlgoTest {
 
         dGraph.forEach(cGraph -> {
             System.out.println("---- partition -----");
-            CTree cTree = new CTree(cGraph, List.of("m", "w"));
-            LCTree lcTree = new LCTree(cTree, new Range(2, 6));
+            CTree cTree = new CTree(cGraph, List.of(AppConstants.MAN, AppConstants.WOMAN));
+            BCTree lcTree = new BCTree(cTree, new Range(2, 6));
             lcTree.forEach(group -> {
                 System.out.println(group);
                 assertTrue(group.size() >= 2 && group.size() <= 6);
                 Map<String, List<Node>> nodesByType = group.stream().collect(Collectors.groupingBy(Node::getType));
-                assertEquals(nodesByType.get("m").size(),nodesByType.get("w").size());
+                assertEquals(nodesByType.get(AppConstants.MAN).size(),nodesByType.get(AppConstants.WOMAN).size());
             });
         });
     }

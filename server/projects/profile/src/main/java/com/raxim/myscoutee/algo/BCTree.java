@@ -1,56 +1,22 @@
-/*package com.raxim.myscoutee.algo;
+package com.raxim.myscoutee.algo;
 
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.concurrent.ConcurrentHashMap;
 
-import com.raxim.myscoutee.algo.dto.CGraph;
-import com.raxim.myscoutee.algo.dto.CNode;
-import com.raxim.myscoutee.algo.dto.Edge;
+import com.raxim.myscoutee.algo.dto.CGroup;
+import com.raxim.myscoutee.algo.dto.Range;
 
-public class BCTree extends CTree {
-    private final Map<String, PriorityQueue<CNode>> nodesOrderedByType;
-    private final List<String> types;
-    private int currentIdx;
+public class BCTree implements Iterable<CGroup> {
 
-    public BCTree(CGraph cGraph, List<String> types) {
-        super(cGraph);
+    private final CTree cTree;
+    private final Range range;
 
-        this.types = types;
-        this.nodesOrderedByType = new ConcurrentHashMap<>();
-
-        cGraph.forEach(cNode -> {
-            if (!nodesOrderedByType.containsKey(cNode.getNode().getType())) {
-
-                PriorityQueue<CNode> nodes = new PriorityQueue<>(
-                        Comparator.comparing(CNode::getWeight).reversed().thenComparing(CNode::getNode));
-
-                nodesOrderedByType.put(cNode.getNode().getType(), nodes);
-            }
-
-            nodesOrderedByType.get(cNode.getNode().getType()).add(cNode);
-        });
+    public BCTree(CTree cTree, Range range) {
+        this.cTree = cTree;
+        this.range = range;
     }
 
     @Override
-    public Iterator<Edge> iterator() {
-        return new CTreeIterator(this);
+    public Iterator<CGroup> iterator() {
+        return new BCTreeIterator((CTreeIterator) this.cTree.iterator(), range);
     }
-
-    public CNode getNode(String key) {
-        return super.getNode(key);
-    }
-
-    public CNode poll() {
-        CNode cNode = nodesOrderedByType.get(types.get(currentIdx)).poll();
-        currentIdx++;
-        return cNode;
-    }
-
-    public boolean isEmpty() {
-        return nodesOrderedByType.entrySet().stream().anyMatch(entry -> entry.getValue().isEmpty());
-    }
-}*/
+}
