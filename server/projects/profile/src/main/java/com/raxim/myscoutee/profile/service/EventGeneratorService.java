@@ -55,7 +55,8 @@ public class EventGeneratorService {
         Range flags = schedule.map(sch -> JsonUtil.jsonToObject(sch.getFlags(), Range.class, objectMapper))
                 .orElse(new Range(6, 12));
 
-        List<LikeGroup> likeGroups = likeRepository.findAll(lastIdx, batchSize);
+        //bacthed version of query does exist -> just to simplify for the time being
+        List<LikeGroup> likeGroups = likeRepository.findLikeGroups();
 
         // get all generated events
         List<EventItem> eventItems = eventItemRepository.findEventItemsByType("g");

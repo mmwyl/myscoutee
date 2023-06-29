@@ -45,15 +45,16 @@ public class LikeRepositoryTest extends AbstractAlgoTest {
 
         @Test
         public void testShouldFindAll() {
+                List<LikeGroup> likes = this.likeRepository.findLikeGroups();
+                assertEquals(7, likes.size());
 
-                List<LikeGroup> likes = this.likeRepository.findAll(0L, 1000L);
+                likes = this.likeRepository.findLikeGroupsByBatch(0L, 1000L);
                 assertEquals(7, likes.size());
 
                 List<LikeGroup> pLikes = likes.stream().filter(
                                 like -> like.getLikes()
                                                 .stream()
-                                                .filter(pLike -> "A".equals(pLike.getStatus())
-                                                                || "G".equals(pLike.getStatus()))
+                                                .filter(pLike -> "A".equals(pLike.getStatus()))
                                                 .count() == 2)
                                 .toList();
                 assertEquals(2, pLikes.size());

@@ -93,8 +93,13 @@ public class EventGeneratorServiceTest extends AbstractAlgoTest {
                                                 flags));
                 when(scheduleRepository.findByKey(EventGeneratorService.SCHEDULE_RANDOM_GROUP))
                                 .thenReturn(scheduleResp);
-                when(likeRepository.findAll(0L, 1000L))
+
+                when(likeRepository.findLikeGroups())
                                 .thenReturn(likesBoth);
+                /*
+                 * when(likeRepository.findLikeGroupsByBatch(0L, 1000L))
+                 * .thenReturn(likesBoth);
+                 */
 
                 List<Set<Profile>> profilesByGroup = eventGeneratorService.generate();
                 assertEquals(3, profilesByGroup.size());

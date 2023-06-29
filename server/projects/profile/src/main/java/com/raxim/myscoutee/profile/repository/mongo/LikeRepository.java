@@ -32,7 +32,9 @@ public interface LikeRepository extends MongoRepository<Like, UUID> {
             @Param("status") String[] status,
             @Param("offset") Object[] offset);
 
-    @Aggregation(pipeline = "findAll")
-    List<LikeGroup> findAll(long lastIdx, long batchSize);
+    @Aggregation(pipeline = "findLikeGroupsByBatch")
+    List<LikeGroup> findLikeGroupsByBatch(long lastIdx, long batchSize);
 
+    @Aggregation(pipeline = "findLikeGroups")
+    List<LikeGroup> findLikeGroups();
 }

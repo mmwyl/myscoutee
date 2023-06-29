@@ -110,7 +110,7 @@
             "$type": "03"
         },
         "type": "P",
-        "status": "G",
+        "status": "A",
         "cnt": 4,
         "from": {
             "$ref": "profiles",
@@ -1020,7 +1020,7 @@
             "$type": "03"
         },
         "type": "P",
-        "status": "G",
+        "status": "A",
         "cnt": 4,
         "from": {
             "$ref": "profiles",
