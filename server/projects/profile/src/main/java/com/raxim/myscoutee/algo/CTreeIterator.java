@@ -14,31 +14,19 @@ import com.raxim.myscoutee.algo.dto.Edge;
 import com.raxim.myscoutee.algo.dto.Node;
 
 public class CTreeIterator implements Iterator<Edge> {
-
-    public static final String DEFAULT_TYPE = "d";
-
     private final CTree cTree;
 
     private final Map<String, PriorityQueue<CNode>> nodesOrderedByType;
-    private final List<String> types;
-
     private final Set<String> visited = new HashSet<>();
-
-    private final Set<Node> used = new HashSet<>();
 
     private int currentIdx = 0;
     private Edge currEdge;
 
     public CTreeIterator(final CTree cTree, List<String> types) {
         this.cTree = cTree;
-        if (!types.isEmpty()) {
-            this.types = types;
-        } else {
-            this.types = List.of(DEFAULT_TYPE);
-        }
         this.nodesOrderedByType = new ConcurrentHashMap<>();
 
-        for (String type : this.types) {
+        for (String type : cTree.getTypes()) {
             PriorityQueue<CNode> nodes = new PriorityQueue<>(
                     Comparator.comparing(CNode::getWeight).reversed().thenComparing(CNode::getNode));
 
@@ -48,7 +36,7 @@ public class CTreeIterator implements Iterator<Edge> {
 
     @Override
     public boolean hasNext() {
-        String type = types.get(currentIdx);
+        String type = cTree.getTypes().get(currentIdx);
         if (cTree.isEmpty()
                 && nodesOrderedByType.get(type).isEmpty()) {
             return false;
@@ -61,14 +49,14 @@ public class CTreeIterator implements Iterator<Edge> {
             do {
                 cNode = cTree.poll();
                 node = cNode.getNode();
-            } while (!cTree.isEmpty() && used.contains(node));
+            } while (!cTree.isEmpty() && cTree.isDisabledNode(node));
 
             if (cTree.isEmpty()) {
                 return false;
             }
 
             if (node.getType() == null) {
-                node = new Node(node.getId(), DEFAULT_TYPE);
+                node = new Node(node.getId(), CTree.DEFAULT_TYPE);
             }
             if (type.equals(node.getType())) {
                 String nodeFrom = node.getId();
@@ -86,7 +74,7 @@ public class CTreeIterator implements Iterator<Edge> {
 
             cNode = nodesOrderedByType.get(type).peek();
             currEdge = cNode.poll();
-            if (currEdge != null && used.contains(currEdge.getFrom())) {
+            if (currEdge != null && cTree.isDisabledNode(currEdge.getFrom())) {
                 break;
             }
 
@@ -95,43 +83,45 @@ public class CTreeIterator implements Iterator<Edge> {
                 nodesOrderedByType.get(type).add(cNode);
             }
         } while (currEdge != null
-                && (visited.contains(currEdge.getTo().getId()) || used.contains(currEdge.getTo()))
+                && (visited.contains(currEdge.getTo().getId())
+                        || cTree.isDisabledNode(currEdge.getTo()))
                 && !nodesOrderedByType.get(type).isEmpty());
 
         if ((currEdge == null || visited.contains(currEdge.getTo().getId()))
                 && (!cTree.isEmpty() || !nodesOrderedByType.get(type).isEmpty())) {
-            currentIdx = ++currentIdx % types.size();
+            currentIdx = ++currentIdx % cTree.getTypes().size();
             hasNext();
         }
 
         if (currEdge != null) {
-            if (used.contains(currEdge.getTo()) || used.contains(currEdge.getFrom())) {
+            if (cTree.isDisabledNode(currEdge.getTo()) || cTree.isDisabledNode(currEdge.getFrom())) {
                 hasNext();
-            } else if (currEdge.isIgnored() && !visited.contains(currEdge.getTo().getId())
+            } else if (cTree.isIgnoredEdge(currEdge) && !visited.contains(currEdge.getTo().getId())
                     && (!cTree.isEmpty() || !nodesOrderedByType.get(type).isEmpty())) {
                 next();
                 hasNext();
             }
         }
 
-        return (currEdge != null && !visited.contains(currEdge.getTo().getId()))
+        return (currEdge != null
+                && !visited.contains(currEdge.getTo().getId()))
                 && (!cTree.isEmpty() || !nodesOrderedByType.get(type).isEmpty());
     }
 
     @Override
     public Edge next() {
         if (currEdge != null) {
-            if (!currEdge.isIgnored()) {
+            if (!cTree.isIgnoredEdge(currEdge)) {
                 visited.add(currEdge.getFrom().getId());
                 visited.add(currEdge.getTo().getId());
             } else {
                 visited.remove(currEdge.getFrom().getId());
             }
-            currentIdx = ++currentIdx % types.size();
+            currentIdx = ++currentIdx % cTree.getTypes().size();
         }
 
         loadNodeTo();
-        if (!currEdge.isIgnored()) {
+        if (!cTree.isIgnoredEdge(currEdge)) {
             System.out.println(currEdge);
         }
         return currEdge;
@@ -143,7 +133,7 @@ public class CTreeIterator implements Iterator<Edge> {
         if (cNodeTo != null) {
             Node node = cNodeTo.getNode();
             if (node.getType() == null) {
-                node = new Node(node.getId(), DEFAULT_TYPE);
+                node = new Node(node.getId(), CTree.DEFAULT_TYPE);
             }
             nodesOrderedByType.get(node.getType()).add(cNodeTo);
             cTree.remove(cNodeTo);
@@ -151,11 +141,7 @@ public class CTreeIterator implements Iterator<Edge> {
     }
 
     public List<String> getTypes() {
-        return types;
-    }
-
-    public Set<Node> getUsed() {
-        return used;
+        return cTree.getTypes();
     }
 
 }

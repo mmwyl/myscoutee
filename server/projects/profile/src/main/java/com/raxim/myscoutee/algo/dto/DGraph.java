@@ -22,7 +22,7 @@ public class DGraph extends MergingSet<CGraph> {
         CGraph aTree = new CGraph();
         aTree.add(edge);
 
-        Edge edgeReversed = new Edge(edge.getTo(), edge.getFrom(), edge.getWeight(), edge.isIgnored());
+        Edge edgeReversed = new Edge(edge.getTo(), edge.getFrom(), edge.getWeight());
         aTree.add(edgeReversed);
 
         super.add(aTree);

@@ -59,7 +59,7 @@ public class BCTreeIterator implements Iterator<CGroup> {
             } while ((edge.getFrom() == null || edge.getTo() == null)
                     && cTreeIterator.hasNext());
 
-            edge = new Edge(from, to, weight / counter, edge.isIgnored());
+            edge = new Edge(from, to, weight / counter);
 
             cGroup.add(edge);
             cTree.add(edge);
@@ -69,7 +69,7 @@ public class BCTreeIterator implements Iterator<CGroup> {
         int newSize = nodes.size();
         System.out.println("---------------" + (oldSize - newSize));
 
-        //edges not used - it might be needed to put it back
+        // edges not used - it might be needed to put it back
         Set<Edge> rEdges = edges.stream().filter(edge -> !nodes.contains(edge.getFrom())
                 && !nodes.contains(edge.getTo())).collect(Collectors.toSet());
         System.out.println(rEdges);

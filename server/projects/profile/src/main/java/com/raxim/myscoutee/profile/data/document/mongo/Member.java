@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 // role for event
 @Document(collection = "members")
 public class Member {
-    // profile id - only for the query
+    // profile id - only for the query?? it might not be needed, we can get profile.id
     @Id
     @JsonProperty(value = "key")
     private UUID id;
@@ -109,15 +109,33 @@ public class Member {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Member)) return false;
-        Member member = (Member) o;
-        return Objects.equals(id, member.id);
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((profile == null) ? 0 : profile.hashCode());
+        return result;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, profile, code, createdDate);
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Member other = (Member) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (profile == null) {
+            if (other.profile != null)
+                return false;
+        } else if (!profile.equals(other.profile))
+            return false;
+        return true;
     }
 }

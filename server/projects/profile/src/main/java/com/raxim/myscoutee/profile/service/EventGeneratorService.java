@@ -68,8 +68,7 @@ public class EventGeneratorService {
             Node fromNode = new Node(likeBoth.getFrom().getId().toString(), likeBoth.getFrom().getGender());
             Node toNode = new Node(likeBoth.getTo().getId().toString(), likeBoth.getTo().getGender());
             double weight = (double) (likeBoth.getRate() * likeBoth.getDistance());
-            boolean isIgnored = "G".equals(likeBoth.getStatus()) ? true : false;
-            return new Edge(fromNode, toNode, weight, isIgnored);
+            return new Edge(fromNode, toNode, weight);
         }).toList();
 
         DGraph dGraph = new DGraph();

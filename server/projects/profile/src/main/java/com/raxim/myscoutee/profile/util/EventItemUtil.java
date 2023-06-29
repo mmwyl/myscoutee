@@ -1,14 +1,20 @@
 package com.raxim.myscoutee.profile.util;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.raxim.myscoutee.algo.dto.Edge;
+import com.raxim.myscoutee.algo.dto.Node;
 import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
+import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
@@ -52,7 +58,8 @@ public class EventItemUtil {
         }
     }
 
-    public static ResponseEntity<EventItemDTO> update(EventService eventService, EventItem eventItem, String id, String itemId,
+    public static ResponseEntity<EventItemDTO> update(EventService eventService, EventItem eventItem, String id,
+            String itemId,
             Profile profile) {
         Optional<Event> event = eventService.getEvent(eventItem, profile, "A", CommonUtil.parseUUID(id), true);
         if (event.isPresent()) {
@@ -82,5 +89,23 @@ public class EventItemUtil {
         } else {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    public static Set<Edge> permutate(EventItem eventItem) {
+        List<List<List<Member>>> nodes = CommonUtil.permutation(eventItem.getMembers());
+
+        Set<Edge> edges = nodes.stream()
+                .flatMap(group -> group.stream()
+                        .map(pair -> {
+                            Profile profile1 = pair.get(0).getProfile();
+                            Profile profile2 = pair.get(1).getProfile();
+
+                            Node node1 = new Node(profile1.getId().toString(), profile1.getGender());
+                            Node node2 = new Node(profile2.getId().toString(), profile2.getGender());
+                            Edge edge = new Edge(node1, node2);
+                            return edge;
+                        }))
+                .collect(Collectors.toSet());
+        return edges;
     }
 }
