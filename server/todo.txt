@@ -1,0 +1,16 @@
+Priority event list screen
+--------------------------
+1) eventItem rule section should be moved to an inner list screen as filter bar
+2) when rule filter bar gets saved, it will be saved to eventItem.rule also
+3) when we set the rule filter, it filters out all the candidates, what we met (balanced, or user with same gender can be choosen)
+4) we can rate man/women in that filtered list, and based on that the priority algorithm will work
+5) the list is paginated, and shows, which members has been notified, and who is accepted and rejected, left etc.
+6) on the event panel it's a new button next to the members (members is showing the list of active members only)
+
+Priority algorithm
+------------------
+1) it's non paginated
+
+Event list screen
+-----------------
+1) groupKey can be eventName + eventDate, and the list can show the members who were present over there
