@@ -58,7 +58,7 @@ public class EventGeneratorService {
         // batched version of query does exist -> just to simplify for the time being
         List<LikeGroup> likeGroups = likeRepository.findLikeGroups();
 
-        // get all generated events
+        // get all generated events - created by is system_uuid -> for the time being 'g' general is enough
         List<EventItem> eventItems = eventItemRepository.findEventItemsByType("g");
 
         List<Set<Edge>> ignoredEdges = eventItems.stream().map(eventItem -> EventItemUtil.permutate(eventItem))

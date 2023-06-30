@@ -18,16 +18,18 @@ import org.bson.codecs.ValueCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 
 public class AppConstants {
-    public static final String WOMAN = "w";
-    public static final String MAN = "m";
+        public static final String WOMAN = "w";
+        public static final String MAN = "m";
 
-    public final static BsonTypeClassMap TYPE_MAP = new BsonTypeClassMap(Map.of(BsonType.BINARY, UUID.class));
-    public static final Codec<Document> UUID_CODEC = CodecRegistries
-            .withUuidRepresentation(CodecRegistries.fromProviders(Arrays.asList(new ValueCodecProvider(),
-                    new CollectionCodecProvider(TYPE_MAP), new IterableCodecProvider(TYPE_MAP),
-                    new BsonValueCodecProvider(), new DocumentCodecProvider(TYPE_MAP),
-                    new MapCodecProvider(TYPE_MAP))),
-                    UuidRepresentation.JAVA_LEGACY)
-            .get(Document.class);
+        public final static BsonTypeClassMap TYPE_MAP = new BsonTypeClassMap(Map.of(BsonType.BINARY, UUID.class));
+        public static final Codec<Document> UUID_CODEC = CodecRegistries
+                        .withUuidRepresentation(CodecRegistries.fromProviders(Arrays.asList(new ValueCodecProvider(),
+                                        new CollectionCodecProvider(TYPE_MAP), new IterableCodecProvider(TYPE_MAP),
+                                        new BsonValueCodecProvider(), new DocumentCodecProvider(TYPE_MAP),
+                                        new MapCodecProvider(TYPE_MAP))),
+                                        UuidRepresentation.JAVA_LEGACY)
+                        .get(Document.class);
+
+        public static final UUID UUID_SYSTEM = UUID.fromString("58d6abac-fd83-40a0-b339-14f7f009cd29");
 
 }

@@ -25,5 +25,7 @@ public class EventPriorityService {
     /*public List<Set<Profile>> generate() {
         //find all eventItem where capacity hasn't been filled, status is A, type is 'g' general, and priority is true
         //the data structure will be refactored, but the calculation shouldn't change that much
+        //return eventItemId, members to be invited, merge original and the newly invited members and save the eventItem
+        //eventItem based query, returning event-items with members
     }*/
 }

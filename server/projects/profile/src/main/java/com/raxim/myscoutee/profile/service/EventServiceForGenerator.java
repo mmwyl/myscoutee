@@ -20,6 +20,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
 import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 @Service
 public class EventServiceForGenerator {
@@ -49,6 +50,7 @@ public class EventServiceForGenerator {
                                         eventItem.setName("Generated Event!");
                                         eventItem.setDesc("Generated Event for strangers!");
                                         eventItem.setMembers(new HashSet<>(members));
+                                        eventItem.setCreatedBy(AppConstants.UUID_SYSTEM);
 
                                         LocalDateTime fromDT = LocalDateTime.now()
                                                         .with(TemporalAdjusters.next(DayOfWeek.MONDAY))
