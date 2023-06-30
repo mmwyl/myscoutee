@@ -37,6 +37,7 @@ public class EventItem {
     /*
      * google map is complicated to get the coordinates to search for,
      * but to differentiate local and global based on that is ridiculous
+     * the category will be reused to identify the real category (sport, reading etc.)
      */
     @JsonProperty(value = "category")
     private String category;
