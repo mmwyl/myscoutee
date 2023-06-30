@@ -1,6 +1,9 @@
 package com.raxim.myscoutee.profile.data.document.mongo;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -14,30 +17,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Document(collection = "rules")
 public class Rule {
-    //tehat az ismeroseim ismerosei egy melyseg, LikeRepository lekerdezes
-    @JsonProperty(value = "met")
-    private Boolean met;
+
+    /*
+     * kesobb boviteni lehet
+     * met field has been removed we might need to look at one level down,
+     * (ismeros ismerosei)
+     */
+    @JsonProperty(value = "mutual")
+    private Boolean mutual;
 
     // don't invite less than 2-3 rated people for the event
     @JsonProperty(value = "rate")
     private Integer rate;
 
-    //ehelyett utolso x esemeny
-    //like updated time, nem az eventItem.memberRange helyett, nem range, hanem egy datum
-    @JsonProperty(value = "range")
-    private RangeLocal range;
+    // ehelyett utolso x esemeny - ido bar-on kivalasztva
+    // nem regebbi mint 'from' esemeny
+    @JsonProperty(value = "from")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime from;
 
     // Balanced Female/Male Ratio
     @JsonProperty(value = "balanced")
     private String balanced;
-
-    public Boolean getMet() {
-        return met;
-    }
-
-    public void setMet(Boolean met) {
-        this.met = met;
-    }
 
     // don't invite less than 2-3 rated people for the event
     public Integer getRate() {
@@ -48,14 +49,6 @@ public class Rule {
         this.rate = rate;
     }
 
-    public RangeLocal getRange() {
-        return range;
-    }
-
-    public void setRange(RangeLocal range) {
-        this.range = range;
-    }
-
     // Balanced Female/Male Ratio
     public String getBalanced() {
         return balanced;
@@ -63,5 +56,21 @@ public class Rule {
 
     public void setBalanced(String balanced) {
         this.balanced = balanced;
+    }
+
+    public Boolean getMutual() {
+        return mutual;
+    }
+
+    public void setMutual(Boolean mutual) {
+        this.mutual = mutual;
+    }
+
+    public LocalDateTime getFrom() {
+        return from;
+    }
+
+    public void setFrom(LocalDateTime from) {
+        this.from = from;
     }
 }
