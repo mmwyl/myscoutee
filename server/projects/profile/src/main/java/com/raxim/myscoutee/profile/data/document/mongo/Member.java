@@ -3,7 +3,6 @@ package com.raxim.myscoutee.profile.data.document.mongo;
 import java.util.Date;
 import java.util.UUID;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,12 +12,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 // role for event
 @Document(collection = "members")
 public class Member {
-    // profile id - only for the query?? it might not be needed, we can get
-    // profile.id
-    @Id
-    @JsonProperty(value = "key")
-    private UUID id;
-
     @DBRef
     @JsonProperty(value = "profile")
     private Profile profile;
@@ -50,21 +43,12 @@ public class Member {
     }
 
     public Member(Profile profile, String status, String role) {
-        this.id = profile.getId(); // it might not be needed
         this.profile = profile;
         this.status = status;
         this.role = role;
     }
 
     public Member() {
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public Profile getProfile() {
@@ -119,7 +103,6 @@ public class Member {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((profile == null) ? 0 : profile.hashCode());
         return result;
     }
@@ -133,11 +116,6 @@ public class Member {
         if (getClass() != obj.getClass())
             return false;
         Member other = (Member) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
         if (profile == null) {
             if (other.profile != null)
                 return false;

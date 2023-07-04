@@ -18,28 +18,25 @@ public class EventPriorityService {
         this.objectMapper = objectMapper;
     }
 
-    //the eventItem <-> event structure will be refactored, but the calculation shouldn't change that much
-    //the event will have the Rule and 'g' general eventItem will be moved to Event, (event.info will be removed)
+    //only profiles, with status 'A' or 'F'
     //you can add eventItem to the event, but not necessarily
     /*public List<Set<Profile>> generate() {
         //eventItem.findCandidates()
-        //1) if T, set all the members to T inside the eventItem
+        //1) if T, save event with status T
         //2) if A, send notification for all the members
-        //3) If P
-        //  a) check whether some eventItem.members hasn't been accepted invitation on time, hence needs to set the status to time out
-        //4) get findLikeGroups (likeGroup.reduce first)
+        //3) get findLikeGroups (likeGroup.reduce first)
         //   a) filter the likes among members of the union of (candidates and eventItem.members),
         //   b) filter likes, where the rate is less then rule.rate
-        //   c) ignore all edges among existing eventItem.members (generate permutation)
-        //5) if P, run BCTree (check rule.balanced, eventItem.maxCapacity (CGroup.size))
+        //   c) ignore all edges among existing eventItem.members (generate permutation) with members.accepted + members.invited (not overdue rule.memberGrace)
+        //4) if P, run BCTree (check rule.balanced, CGroup.size = eventItem.maxCapacity - members.accepted + members.invited (not overdue rule.memberGrace)
         // get first CGroup
         //   add the filtered candidates to eventItem and save and send notification for the invitied members
 
 
         //findCandidates needs to be extended with mutual and from last event
         //a) from range.start of last event is just a gte from input parameter (?1)
-        //b) eventItem lookup query only match, where the currentEventItem.createdBy has status 'A'
-        //c) group -> merge lookup.eventItems.commonMembers
-        //d) list all the events where $$currentEventItem.members is in the member list also if mutual has been set (rule.mutual)
+        //b) group -> merge lookup.eventItems.commonMembers
+        //c) eventItem lookup query only match, where the currentItem.createdBy has status 'A'
+        //d) list all the events where $$currentItem.members is in the member list also if mutual has been set (rule.mutual)
     }*/
 }

@@ -19,125 +19,65 @@
                     }
                 }
             },
-            "invitedMembers": {
-                "$filter": {
-                    "input": "$members",
-                    "as": "member",
-                    "cond": {
+            "validUntil": {
+                "$dateSubtract": {
+                    "startDate": {
+                        "$toDate": "ISODate()"
+                    },
+                    "unit": "minute",
+                    "amount": "$rule.eventGrace"
+                }
+            }
+        }
+    },
+    {
+        "$set": {
+            "status": {
+                "$cond": [
+                    {
                         "$and": [
                             {
-                                "$eq": [
-                                    "$$member.status",
-                                    "I"
+                                "$lt": [
+                                    "$range.start",
+                                    "$validUntil"
                                 ]
                             },
                             {
-                                "$gte": [
+                                "$lt": [
                                     {
-                                        "$ifNull": [
-                                            "$$member.createdDate",
-                                            "ISODate()"
-                                        ]
+                                        "$size": "$currentMembers"
                                     },
-                                    {
-                                        "$toDate": "?1"
-                                    }
+                                    "$capacity.min"
                                 ]
                             }
                         ]
+                    },
+                    "T",
+                    {
+                        "$cond": [
+                            {
+                                "$and": [
+                                    {
+                                        "$gte": [
+                                            "$range.start",
+                                            "$validUntil"
+                                        ]
+                                    },
+                                    {
+                                        "$eq": [
+                                            {
+                                                "$size": "$currentMembers"
+                                            },
+                                            "$capacity.max"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "A",
+                            "P"
+                        ]
                     }
-                },
-                "status": {
-                    "$cond": [
-                        {
-                            "$and": [
-                                {
-                                    "$lt": [
-                                        "$range.start",
-                                        {
-                                            "$add": [
-                                                {
-                                                    "$toDate": {
-                                                        "$date": "$$NOW"
-                                                    }
-                                                },
-                                                {
-                                                    "$multiply": [
-                                                        "$gracePeriod",
-                                                        60,
-                                                        1000
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$lt": [
-                                        {
-                                            "$add": [
-                                                {
-                                                    "$size": "$currentMembers"
-                                                },
-                                                {
-                                                    "$size": "$invitedMembers"
-                                                }
-                                            ]
-                                        },
-                                        "$capacity.min"
-                                    ]
-                                }
-                            ]
-                        },
-                        "T",
-                        {
-                            "$cond": [
-                                {
-                                    "$and": [
-                                        {
-                                            "$lt": [
-                                                "$range.start",
-                                                {
-                                                    "$add": [
-                                                        {
-                                                            "$toDate": {
-                                                                "$date": "$$NOW"
-                                                            }
-                                                        },
-                                                        {
-                                                            "$multiply": [
-                                                                "$gracePeriod",
-                                                                60,
-                                                                1000
-                                                            ]
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "$gte": [
-                                                {
-                                                    "$add": [
-                                                        {
-                                                            "$size": "$currentMembers"
-                                                        },
-                                                        {
-                                                            "$size": "$invitedMembers"
-                                                        }
-                                                    ]
-                                                },
-                                                "$capacity.min"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "A",
-                                "P"
-                            ]
-                        }
-                    ]
-                }
+                ]
             }
         }
     },
@@ -146,7 +86,7 @@
             "from": "events",
             "let": {
                 "createdBy": "$createdBy",
-                "currentEvent": "$$CURRENT",
+                "currentEvent": "$$ROOT",
                 "currentMembers": "$currentMembers"
             },
             "pipeline": [
@@ -168,14 +108,40 @@
                                 },
                                 {
                                     "$eq": [
-                                        "$type",
-                                        "g"
+                                        "$$currentEvent.group",
+                                        "$group"
                                     ]
                                 },
                                 {
                                     "$ne": [
                                         "$_id",
                                         "$$currentEvent._id"
+                                    ]
+                                },
+                                {
+                                    "$or": [
+                                        {
+                                            "$eq": [
+                                                "$$currentEvent.rule.from",
+                                                null
+                                            ]
+                                        },
+                                        {
+                                            "$and": [
+                                                {
+                                                    "$ne": [
+                                                        "$$currentEvent.rule.from",
+                                                        null
+                                                    ]
+                                                },
+                                                {
+                                                    "$gte": [
+                                                        "$range.start",
+                                                        "$$currentEvent.rule.from"
+                                                    ]
+                                                }
+                                            ]
+                                        }
                                     ]
                                 },
                                 {
@@ -198,102 +164,8 @@
                                                     }
                                                 },
                                                 "as": "member",
-                                                "in": "$$member.profile.id"
+                                                "in": "$$member.profile.$id"
                                             }
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$or": [
-                                        {
-                                            "$and": [
-                                                {
-                                                    "$eq": [
-                                                        "$$currentEvent.rule.mutual",
-                                                        true
-                                                    ]
-                                                },
-                                                {
-                                                    "$gt": [
-                                                        {
-                                                            "$size": {
-                                                                "$setIntersection": [
-                                                                    "$$currentMembers.profile.id",
-                                                                    {
-                                                                        "$map": {
-                                                                            "input": {
-                                                                                "$filter": {
-                                                                                    "input": "$members",
-                                                                                    "as": "member",
-                                                                                    "cond": {
-                                                                                        "$in": [
-                                                                                            "$$member.status",
-                                                                                            [
-                                                                                                "A"
-                                                                                            ]
-                                                                                        ]
-                                                                                    }
-                                                                                }
-                                                                            },
-                                                                            "as": "member",
-                                                                            "in": "$$member.profile.id"
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        },
-                                                        0
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "$and": [
-                                                {
-                                                    "$eq": [
-                                                        "$$currentEvent.rule.mutual",
-                                                        false
-                                                    ]
-                                                },
-                                                {
-                                                    "$in": [
-                                                        "$$createdBy",
-                                                        {
-                                                            "$map": {
-                                                                "input": {
-                                                                    "$filter": {
-                                                                        "input": "$members",
-                                                                        "as": "member",
-                                                                        "cond": {
-                                                                            "$in": [
-                                                                                "$$member.status",
-                                                                                [
-                                                                                    "A"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                },
-                                                                "as": "member",
-                                                                "in": "$$member.profile.id"
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$gte": [
-                                        {
-                                            "$ifNull": [
-                                                "$range.start",
-                                                "ISODate()"
-                                            ]
-                                        },
-                                        {
-                                            "$toDate": "?1"
                                         }
                                     ]
                                 }
@@ -302,12 +174,176 @@
                     }
                 },
                 {
+                    "$unwind": {
+                        "path": "$members"
+                    }
+                },
+                {
                     "$group": {
-                        "members": 1
+                        "_id": null,
+                        "mergedMembers": {
+                            "$addToSet": "$members"
+                        }
+                    }
+                },
+                {
+                    "$lookup": {
+                        "from": "events",
+                        "let": {
+                            "mergedMembers": "$mergedMembers",
+                            "currentEvent": "$$currentEvent"
+                        },
+                        "pipeline": [
+                            {
+                                "$match": {
+                                    "$expr": {
+                                        "$and": [
+                                            {
+                                                "$eq": [
+                                                    "$$currentEvent.rule.mutual",
+                                                    true
+                                                ]
+                                            },
+                                            {
+                                                "$eq": [
+                                                    "$$currentEvent.status",
+                                                    "P"
+                                                ]
+                                            },
+                                            {
+                                                "$eq": [
+                                                    "$status",
+                                                    "A"
+                                                ]
+                                            },
+                                            {
+                                                "$eq": [
+                                                    "$$currentEvent.group",
+                                                    "$group"
+                                                ]
+                                            },
+                                            {
+                                                "$ne": [
+                                                    "$_id",
+                                                    "$$currentEvent._id"
+                                                ]
+                                            },
+                                            {
+                                                "$or": [
+                                                    {
+                                                        "$eq": [
+                                                            "$$currentEvent.rule.from",
+                                                            null
+                                                        ]
+                                                    },
+                                                    {
+                                                        "$and": [
+                                                            {
+                                                                "$ne": [
+                                                                    "$$currentEvent.rule.from",
+                                                                    null
+                                                                ]
+                                                            },
+                                                            {
+                                                                "$gte": [
+                                                                    "$range.start",
+                                                                    "$$currentEvent.rule.from"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "$gt": [
+                                                    {
+                                                        "$size": {
+                                                            "$setIntersection": [
+                                                                "$$mergedMembers.profile.$id",
+                                                                {
+                                                                    "$map": {
+                                                                        "input": {
+                                                                            "$filter": {
+                                                                                "input": "$members",
+                                                                                "as": "member",
+                                                                                "cond": {
+                                                                                    "$in": [
+                                                                                        "$$member.status",
+                                                                                        [
+                                                                                            "A"
+                                                                                        ]
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "as": "member",
+                                                                        "in": "$$member.profile.$id"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    0
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$unwind": {
+                                    "path": "$members"
+                                }
+                            },
+                            {
+                                "$group": {
+                                    "_id": null,
+                                    "mergedMembers": {
+                                        "$addToSet": "$members"
+                                    }
+                                }
+                            },
+                            {
+                                "$unwind": {
+                                    "path": "$mergedMembers"
+                                }
+                            }
+                        ],
+                        "as": "mutual"
+                    }
+                },
+                {
+                    "$set": {
+                        "members": {
+                            "$cond": {
+                                "if": {
+                                    "$ne": [
+                                        "$mutual.mergedMembers",
+                                        []
+                                    ]
+                                },
+                                "then": "$mutual.mergedMembers",
+                                "else": "$mergedMembers"
+                            }
+                        }
                     }
                 }
             ],
             "as": "candidates"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$candidates",
+            "preserveNullAndEmptyArrays": true
+        }
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": {
+                "event": "$$ROOT",
+                "candidates": "$candidates.members"
+            }
         }
     }
 ]

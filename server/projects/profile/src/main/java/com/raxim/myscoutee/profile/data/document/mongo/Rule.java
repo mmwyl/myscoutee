@@ -22,8 +22,12 @@ public class Rule {
 
     // the capacity should be fulfilled before the event starts with the grace
     // period
-    @JsonProperty(value = "gracePeriod")
-    private int gracePeriod;
+    @JsonProperty(value = "eventGrace")
+    private int eventGrace;
+
+    // invited, but didn't respond within the grace period, new candidates are invited, but that ones are not timed out
+    @JsonProperty(value = "memberGrace")
+    private int memberGrace;
 
     /*
      * kesobb boviteni lehet
@@ -47,7 +51,6 @@ public class Rule {
     @JsonProperty(value = "balanced")
     private String balanced;
 
-    // don't invite less than 2-3 rated people for the event
     public Integer getRate() {
         return rate;
     }
@@ -89,11 +92,19 @@ public class Rule {
         this.priority = priority;
     }
 
-    public int getGracePeriod() {
-        return gracePeriod;
+    public int getEventGrace() {
+        return eventGrace;
     }
 
-    public void setGracePeriod(int gracePeriod) {
-        this.gracePeriod = gracePeriod;
+    public void setEventGrace(int eventGrace) {
+        this.eventGrace = eventGrace;
+    }
+
+    public int getMemberGrace() {
+        return memberGrace;
+    }
+
+    public void setMemberGrace(int memberGrace) {
+        this.memberGrace = memberGrace;
     }
 }

@@ -5,6 +5,7 @@ import java.util.Set;
 public class EventWithCandidates {
 
     private Event event;
+
     private Set<Member> candidates;
 
     public Set<Member> getCandidates() {

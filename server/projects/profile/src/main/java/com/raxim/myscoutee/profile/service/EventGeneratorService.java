@@ -48,6 +48,7 @@ public class EventGeneratorService {
         this.objectMapper = objectMapper;
     }
 
+    //only profiles with status is 'A'
     public List<Set<Profile>> generate() {
         System.out.println("---- generate start -----");
 
