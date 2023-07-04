@@ -101,6 +101,56 @@
     },
     {
         "_id": {
+            "$binary": "f0XjJP5nYzMiKNTVqFsTlg==",
+            "$type": "03"
+        },
+        "type": "P",
+        "name": "Event12",
+        "range": {
+            "start": {
+                "$date": "9999-01-30T04:17:08.000Z"
+            },
+            "end": {
+                "$date": "9999-11-17T09:22:01.000Z"
+            }
+        },
+        "status": "P",
+        "rule" : {
+            "priority": true,
+            "eventGrace": 50
+        },
+        "capacity" : {
+            "min" : 2,
+            "max" : 6
+        },
+        "createdDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
+        },
+        "num": 1,
+        "members": [
+            {
+                "profile": {
+                    "$ref": "profiles",
+                    "$id": {
+                        "$binary": "vldSpDImQDm8GnsRzFMYJQ==",
+                        "$type": "03"
+                    }
+                },
+                "status": "A",
+                "role": "A"
+            }
+        ],
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "createdBy": {
+            "$binary": "vldSpDImQDm8GnsRzFMYJQ==",
+            "$type": "03"
+        }
+    },
+    {
+        "_id": {
             "$binary": "jEzsC2l500NzJTdJoWk7ow==",
             "$type": "03"
         },

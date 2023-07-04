@@ -159,6 +159,13 @@ public class Profile implements Cloneable {
     @JsonIgnore
     private LocalDateTime lastLogin;
 
+    public Profile() {
+    }
+
+    public Profile(UUID id) {
+        this.id = id;
+    }
+
     @Override
     public Profile clone() {
         try {
@@ -387,5 +394,9 @@ public class Profile implements Cloneable {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    public static Set<String> getActive() {
+        return ACTIVE;
     }
 }

@@ -31,8 +31,19 @@ public class BCTreeIterator implements Iterator<CGroup> {
         this.range = new Range(min, max);
     }
 
+    public boolean hasAnyNext() {
+        handleGroup();
+        return hasAnyRemaining();
+    }
+
     @Override
     public boolean hasNext() {
+        handleGroup();
+
+        return hasRemaining();
+    }
+
+    private void handleGroup() {
         System.out.println("--------- start -------");
         Set<Edge> edges = new HashSet<>();
 
@@ -83,12 +94,15 @@ public class BCTreeIterator implements Iterator<CGroup> {
         if (!hasRemaining()) {
             System.out.println("--------- end -------");
         }
-
-        return hasRemaining();
     }
 
     private boolean hasRemaining() {
         return cGroup.size() >= this.range.getMin()
+                && (cGroup.size() % cTreeIterator.getTypes().size() == 0);
+    }
+
+    private boolean hasAnyRemaining() {
+        return cGroup.size() > 0
                 && (cGroup.size() % cTreeIterator.getTypes().size() == 0);
     }
 

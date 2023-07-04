@@ -55,7 +55,7 @@ public class CTreeIterator implements Iterator<Edge> {
                 return false;
             }
 
-            if (node.getType() == null) {
+            if (node.getType() == null || nodesOrderedByType.containsKey(CTree.DEFAULT_TYPE)) {
                 node = new Node(node.getId(), CTree.DEFAULT_TYPE);
             }
             if (type.equals(node.getType())) {
@@ -132,7 +132,7 @@ public class CTreeIterator implements Iterator<Edge> {
 
         if (cNodeTo != null) {
             Node node = cNodeTo.getNode();
-            if (node.getType() == null) {
+            if (node.getType() == null || nodesOrderedByType.containsKey(CTree.DEFAULT_TYPE)) {
                 node = new Node(node.getId(), CTree.DEFAULT_TYPE);
             }
             nodesOrderedByType.get(node.getType()).add(cNodeTo);

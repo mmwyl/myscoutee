@@ -55,7 +55,15 @@ public abstract class AbstractAlgoTest {
     public boolean matchAll(Set<Member> members, List<UUID> uuids) {
         boolean allEdgesMatched = uuids.stream().allMatch(
                 id -> members.stream().anyMatch(
-                        group -> group.getProfile().getId().equals(id)));
+                        member -> member.getProfile().getId().equals(id)));
+        return allEdgesMatched;
+    }
+
+    public boolean matchAll(Set<Member> members, Set<Member> pMembers) {
+        boolean allEdgesMatched = pMembers.stream().allMatch(
+                pMember -> members.stream().anyMatch(
+                        member -> pMember.getStatus().equals(member.getStatus())
+                                && pMember.getProfile().getId().equals(member.getProfile().getId())));
         return allEdgesMatched;
     }
 

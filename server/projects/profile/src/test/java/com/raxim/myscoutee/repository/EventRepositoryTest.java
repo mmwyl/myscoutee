@@ -38,7 +38,7 @@ public class EventRepositoryTest {
         List<Event> events = eventRepository.findAll();
 
         List<EventWithCandidates> eventsWithCandidates = eventRepository.findCandidates();
-        assertEquals(2, eventsWithCandidates.size());
+        assertEquals(3, eventsWithCandidates.size());
         assertEquals("T", eventsWithCandidates.get(0).getEvent().getStatus());
 
         EventWithCandidates eventWithCandidates1 = eventsWithCandidates.get(1);

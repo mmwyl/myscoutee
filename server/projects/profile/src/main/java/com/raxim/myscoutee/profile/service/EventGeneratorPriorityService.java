@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.raxim.myscoutee.algo.BCTree;
+import com.raxim.myscoutee.algo.BCTreeIterator;
 import com.raxim.myscoutee.algo.CTree;
 import com.raxim.myscoutee.algo.dto.CGroup;
 import com.raxim.myscoutee.algo.dto.DGraph;
@@ -121,14 +122,14 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
 
             Set<Node> activeNodes = event.getEvent().getMembers().stream()
                     .filter(member -> "A".equals(member.getStatus())
-                            && "I".equals(member.getStatus()))
+                            || "I".equals(member.getStatus()))
                     .map(member -> {
                         Profile profile = nodes.get(member.getProfile().getId().toString());
                         return new Node(profile.getId().toString(), profile.getGender());
                     })
                     .collect(Collectors.toSet());
-            
-            Range range = new Range(event.getEvent().getCapacity().getMin(),
+
+            Range range = new Range(event.getEvent().getCapacity().getMin() - activeNodes.size(),
                     event.getEvent().getCapacity().getMax() - activeNodes.size());
 
             List<String> types;
@@ -146,11 +147,11 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
             Iterator<BCTree> itBCTree = bcTrees.iterator();
             if (itBCTree.hasNext()) {
                 BCTree bcTree = itBCTree.next();
-                Iterator<CGroup> itCGroup = bcTree.iterator();
-                if (itCGroup.hasNext()) {
+                BCTreeIterator itCGroup = (BCTreeIterator)bcTree.iterator();
+                if (itCGroup.hasAnyNext()) {
                     CGroup cGroup = itCGroup.next();
                     Set<Member> newMembers = cGroup.stream()
-                            .map(node -> new Member(nodes.get(node.getId()), "A", "U"))
+                            .map(node -> new Member(nodes.get(node.getId()), "I", "U"))
                             .collect(Collectors.toSet());
                     // send notification invited
                     event.getEvent().getMembers().addAll(newMembers);
