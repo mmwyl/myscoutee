@@ -83,7 +83,7 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
                 if (!"A".equals(profile.getStatus()) && !"F".equals(profile.getStatus())) {
                     if ("A".equals(member.getStatus())) {
                         member.setStatus("LD");
-                    } else if ("R".equals(member.getStatus())) {
+                    } else if ("I".equals(member.getStatus())) {
                         member.setStatus("RD");
                     } else {
                         member.setStatus("D");
