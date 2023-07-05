@@ -34,7 +34,6 @@ import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.PromotionRepository;
 import com.raxim.myscoutee.profile.repository.mongo.SettingRepository;
 import com.raxim.myscoutee.profile.service.EventService;
-import com.raxim.myscoutee.profile.util.EventUtil;
 
 @RepositoryRestController
 @RequestMapping("activity")
@@ -76,7 +75,7 @@ public class ActivityRestController {
             List<EventDTO> events = eventService.getEvents(pageParam,
                     new String[] { "A", "P", "C" });
 
-            List<Object> lOffset = !events.isEmpty() ? events.get(events.size() - 1).getOffset() : List.of();
+            List<Object> lOffset = CommonUtil.offset(events);
 
             return ResponseEntity.ok(
                     new PageDTO<>(events, lOffset, 0, pageParam.getType()));

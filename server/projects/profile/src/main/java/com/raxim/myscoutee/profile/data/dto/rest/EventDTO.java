@@ -1,14 +1,11 @@
 package com.raxim.myscoutee.profile.data.dto.rest;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 
-import java.util.List;
-
 @JsonRootName("event")
-public class EventDTO {
+public class EventDTO extends PageItemDTO {
 
     @JsonProperty(value = "event")
     private Event event;
@@ -18,9 +15,6 @@ public class EventDTO {
 
     @JsonProperty(value = "sortKey")
     private Object sortKey;
-
-    @JsonIgnore
-    private List<Object> offset;
 
     @JsonProperty(value = "rate")
     private Integer rate;
@@ -72,14 +66,6 @@ public class EventDTO {
 
     public void setSortKey(Object sortKey) {
         this.sortKey = sortKey;
-    }
-
-    public List<Object> getOffset() {
-        return offset;
-    }
-
-    public void setOffset(List<Object> offset) {
-        this.offset = offset;
     }
 
     public Integer getRate() {

@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
 import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
+import com.raxim.myscoutee.profile.data.dto.rest.PageItemDTO;
 
 public class CommonUtil {
 
@@ -133,5 +134,9 @@ public class CommonUtil {
                         .filter(b -> !a.equals(b))
                         .map(b -> Arrays.asList(a, b)))
                 .distinct().toList()).toList();
+    }
+
+    public static <T extends PageItemDTO> List<Object> offset(List<T> list) {
+        return !list.isEmpty() ? list.get(list.size() - 1).getOffset() : List.of();
     }
 }
