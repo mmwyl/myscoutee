@@ -19,6 +19,7 @@ import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.FeedbackDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 
 @RepositoryRestResource(collectionResourceRel = "events", path = "events")
@@ -56,34 +57,18 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
 
         @Aggregation(pipeline = "findEventDown")
         List<EventDTO> findEventDown(
-                        @Param("currentId") UUID currentId,
-                        @Param("limit") int limit,
-                        @Param("step") int step,
-                        @Param("format") String format,
-                        @Param("evtStatus") String[] eventStatus,
-                        @Param("offset") String[] offset,
-                        @Param("status") String status);
+                        @Param("param") PageParam param,
+                        @Param("status") String[] status);
 
         @Aggregation(pipeline = "findEventUp")
         List<EventDTO> findEventUp(
-                        @Param("currentId") UUID currentId,
-                        @Param("limit") int limit,
-                        @Param("step") int step,
-                        @Param("format") String format,
-                        @Param("evtStatus") String[] eventStatus,
-                        @Param("offset") String[] offset,
-                        @Param("status") String status);
+                        @Param("param") PageParam param,
+                        @Param("status") String[] status);
 
         @Aggregation(pipeline = "findEventByMonth")
         List<EventDTO> findEventByMonth(
-                        @Param("currentId") UUID currentId,
-                        @Param("limit") int limit,
-                        @Param("step") int step,
-                        @Param("format") String format,
-                        @Param("evtStatus") String[] eventStatus,
-                        @Param("until") Object until,
-                        @Param("offset") String[] offset,
-                        @Param("status") String status);
+                        @Param("param") PageParam param,
+                        @Param("status") String[] status);
 
         @Aggregation(pipeline = "findProfileByEvent")
         List<ProfileDTO> findProfileByEvent(

@@ -69,17 +69,17 @@ public class ActivityRestController {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = principal.getUser().getProfile();
 
-        //override page param
+        // override page param
         pageParam = paramHandlers.handle(profile, pageParam, EventParamHandler.EVENT);
 
         if (profile.getPosition() != null) {
-            List<EventDTO> events = eventService.getEvents(pageParam, profile.getId(),
+            List<EventDTO> events = eventService.getEvents(pageParam,
                     new String[] { "A", "P", "C" });
 
             List<Object> lOffset = !events.isEmpty() ? events.get(events.size() - 1).getOffset() : List.of();
 
             return ResponseEntity.ok(
-                    new PageDTO<>(events, lOffset, 0, pageParam.getStep()));
+                    new PageDTO<>(events, lOffset, 0, pageParam.getType()));
         } else {
             return ResponseEntity.badRequest().body(new ErrorDTO(450, "err.no_profile"));
         }

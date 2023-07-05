@@ -50,6 +50,15 @@ public class Base64Test {
         System.out.println(result);
     }
 
+    @Test
+    public void shouldFirstDayOfTheMonth() {
+        LocalDate now = LocalDate.now().withDayOfMonth(1);
+        System.out.println(now);
+
+        LocalDateTime now2 = LocalDateTime.now().withDayOfMonth(1);
+        System.out.println(now2);
+    }
+
     @Disabled
     @Test
     public void daysDiff() {

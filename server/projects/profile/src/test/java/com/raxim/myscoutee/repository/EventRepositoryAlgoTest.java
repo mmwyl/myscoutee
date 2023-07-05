@@ -28,7 +28,7 @@ import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 // @TestData({"profiles" = mongo/profiles.json})
 @TestData({ "mongo/profiles.json", "mongo/priority/events.json" })
 @TestExecutionListeners(value = MongoDataLoaderTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
-public class EventRepositoryTest {
+public class EventRepositoryAlgoTest {
 
     @Autowired
     private EventRepository eventRepository;
@@ -64,4 +64,5 @@ public class EventRepositoryTest {
         assertEquals("P", eventWithCandidates1.getEvent().getStatus());
         assertEquals(2, eventWithCandidates1.getCandidates().size());
     }
+
 }

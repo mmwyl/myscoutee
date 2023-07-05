@@ -18,7 +18,7 @@ public class SettingsService {
     }
 
     @SuppressWarnings("unchecked")
-    public String getStep(Profile profile, String pStep) {
+    public String getViewType(Profile profile, String pStep) {
         Setting setting = settingRepository.findSettingByProfileAndKey(profile.getId(), "/activity/events");
 
         String step = pStep;

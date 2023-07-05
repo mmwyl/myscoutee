@@ -1,83 +1,242 @@
 [
-        {
-            "$match": {
-                "info.members": { "$elemMatch": { "profile.$id": "?0", "status": ":#{#status}" } }
-            }
-        },
-        {
-            "$match": {
-                "$expr": {
-                    "$and": [
-                        {
-                            "$or": [
-                                {
-                                    "$and": [
-                                        { "$gte": [ "$info.range.start", { "$toDate": ":#{#offset[0]}" } ] },
-                                        { "$lt": [ "$info.range.start", { "$toDate": ":#{#until}" } ] }
-                                    ]
-                                },
-                                {
-                                    "$and": [
-                                        { "$lte": [ "$info.range.start", { "$toDate": ":#{#offset[0]}" } ] },
-                                        { "$gt": [ "$info.range.end", { "$toDate": ":#{#offset[0]}" } ] }
-                                    ]
-                                }
-                            ]
-                        },
-                        { "$in": [ "$status", ":#{#evtStatus}" ] }
-                    ]
+    {
+        "$match": {
+            "members": {
+                "$elemMatch": {
+                    "profile.$id": "?#{#param.id}",
+                    "status": "A"
                 }
             }
-        },
-        {
-            "$sort": {
-                "info.range.start": 1,
-                "createdDate": -1
-            }
-        },
-        {
-            "$addFields": {
-                "groupKey": {
-                    "$dateToString": {
-                        "format": "?3",
-                        "date": { "$toDate": ":#{#offset[0]}" }
-                    }
-                }
-            }
-        },
-        {
-            "$addFields": {
-                "user": {
-                    "$first": {
-                        "$filter": {
-                            "input": "$info.members",
-                            "as": "member",
-                            "cond": {
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$and": [
+                    {
+                        "$or": [
+                            {
                                 "$and": [
-                                    { "$eq": [ "$$member.profile.$id", "?0" ] },
-                                    { "$eq": [ "$$member.status", "A" ] }
+                                    {
+                                        "$gte": [
+                                            "$range.start",
+                                            {
+                                                "$toDate": "?#{#param.offset[0]}"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "$lt": [
+                                            "$range.start",
+                                            {
+                                                "$toDate": "?#{#param.offset[2]}"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "$and": [
+                                    {
+                                        "$lte": [
+                                            "$range.start",
+                                            {
+                                                "$toDate": "?#{#param.offset[0]}"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "$gt": [
+                                            "$range.end",
+                                            {
+                                                "$toDate": "?#{#param.offset[0]}"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "$in": [
+                            "$status",
+                            ":#{#status}"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "$sort": {
+            "range.start": 1,
+            "createdDate": -1
+        }
+    },
+    {
+        "$addFields": {
+            "groupKey": {
+                "$concat": [
+                    {
+                        "$toString": {
+                            "$year": {
+                                "$toDate": "?#{#param.offset[0]}"
+                            }
+                        }
+                    },
+                    " ",
+                    {
+                        "$let": {
+                            "vars": {
+                                "monthsInString": [
+                                    "",
+                                    "January",
+                                    "February",
+                                    "March",
+                                    "April",
+                                    "May",
+                                    "June",
+                                    "July",
+                                    "August",
+                                    "September",
+                                    "October",
+                                    "November",
+                                    "December"
+                                ]
+                            },
+                            "in": {
+                                "$arrayElemAt": [
+                                    "$$monthsInString",
+                                    {
+                                        "$month": {
+                                            "$toDate": "?#{#param.offset[0]}"
+                                        }
+                                    }
                                 ]
                             }
                         }
                     }
-                }
+                ]
             }
-        },
-        {
-            "$replaceRoot": {
-                "newRoot": {
-                    "$mergeObjects": [
-                        { "event": "$$ROOT" },
-                        {
-                            "groupKey": "$groupKey",
-                            "role": { "$cond": [{ "$ifNull": ["$user", null] }, "$user.role", null] },
-                            "isPromotion": { "$cond": [{ "$ifNull": ["$ref", false] }, true, false] },
-                            "sortKey": { "$toLong": "$info.range.start" },
-                            "offset": [{ "$toDate": ":#{#offset[0]}" }, "$createdDate"]
-                        }
-                    ]
+        }
+    },
+    {
+        "$set": {
+            "range": {
+                "start": {
+                    "$cond": {
+                        "if": {
+                            "$lt": [
+                                "$range.start",
+                                {
+                                    "$toDate": "?#{#param.offset[0]}"
+                                }
+                            ]
+                        },
+                        "then": {
+                            "$toDate": "?#{#param.offset[0]}"
+                        },
+                        "else": "$range.start"
+                    }
+                },
+                "end": {
+                    "$cond": {
+                        "if": {
+                            "$gt": [
+                                "$range.end",
+                                {
+                                    "$toDate": "?#{#param.offset[2]}"
+                                }
+                            ]
+                        },
+                        "then": {
+                            "$dateSubtract": {
+                                "startDate": {
+                                    "$toDate": "?#{#param.offset[2]}"
+                                },
+                                "unit": "millisecond",
+                                "amount": 1
+                            }
+                        },
+                        "else": "$range.end"
+                    }
                 }
             }
         }
-    ]
-    
+    },
+    {
+        "$addFields": {
+            "user": {
+                "$first": {
+                    "$filter": {
+                        "input": "$members",
+                        "as": "member",
+                        "cond": {
+                            "$and": [
+                                {
+                                    "$eq": [
+                                        "$$member.profile.$id",
+                                        "?#{#param.id}"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "$$member.status",
+                                        "A"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": {
+                "$mergeObjects": [
+                    {
+                        "event": "$$ROOT"
+                    },
+                    {
+                        "groupKey": "$groupKey",
+                        "role": {
+                            "$cond": [
+                                {
+                                    "$ifNull": [
+                                        "$user",
+                                        null
+                                    ]
+                                },
+                                "$user.role",
+                                null
+                            ]
+                        },
+                        "isPromotion": {
+                            "$cond": [
+                                {
+                                    "$ifNull": [
+                                        "$ref",
+                                        false
+                                    ]
+                                },
+                                true,
+                                false
+                            ]
+                        },
+                        "sortKey": {
+                            "$toLong": "$range.start"
+                        },
+                        "offset": [
+                            {
+                                "$toDate": "?#{#param.offset[0]}"
+                            },
+                            "$createdDate"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

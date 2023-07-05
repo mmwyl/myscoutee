@@ -1,7 +1,7 @@
 package com.raxim.myscoutee.profile.handler;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Component;
@@ -16,6 +16,14 @@ public class EventParamHandler implements IParamHandler {
     public static final String EVENT = "event";
 
     public static final String MONTH = "m";
+    public static final String WEEK = "w";
+    public static final String DAY = "d";
+
+    public static final String MONTH_FORMAT = "%Y-%m";
+    public static final String WEEK_FORMAT = "%Y %U";
+    public static final String DAY_FORMAT = "%Y-%m-%d";
+
+    public static final LocalDate DATE_MIN = LocalDate.of(1900, 1, 1);
 
     private final SettingsService settingsService;
 
@@ -25,32 +33,41 @@ public class EventParamHandler implements IParamHandler {
 
     @Override
     public PageParam handle(Profile profile, PageParam pageParam) {
-        String step = this.settingsService.getStep(profile, pageParam.getStep());
+        String viewType = this.settingsService.getViewType(profile, pageParam.getType());
+        viewType = viewType != null ? viewType : DAY; // day is the default grouping
 
-        String[] tOffset;
+        LocalDate from = LocalDate.now();
+        LocalDate createdDateFrom = DATE_MIN;
+        LocalDate until = LocalDate.now();
+
         if (pageParam.getOffset() != null && pageParam.getOffset().length == 2) {
-            if (MONTH.equals(step)) {
-                LocalDateTime from = LocalDate
-                        .parse(CommonUtil.decode(pageParam.getOffset()[0]), DateTimeFormatter.ISO_DATE_TIME)
-                        .withDayOfMonth(1).atStartOfDay();
-                String fromFormatted = from.format(DateTimeFormatter.ISO_DATE_TIME);
-
-                tOffset = new String[] { fromFormatted, CommonUtil.decode(pageParam.getOffset()[1]) };
-            } else {
-                tOffset = new String[] { CommonUtil.decode(pageParam.getOffset()[0]),
-                        CommonUtil.decode(pageParam.getOffset()[1]) };
-            }
-        } else {
-            if (MONTH.equals(step)) {
-                LocalDateTime from = LocalDate.now().withDayOfMonth(1).atStartOfDay();
-                String fromFormatted = from.format(DateTimeFormatter.ISO_DATE_TIME);
-                tOffset = new String[] { fromFormatted, "1900-01-01" };
-            } else {
-                tOffset = new String[] { LocalDate.now().atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME),
-                        "1900-01-01" };
-            }
+            from = LocalDate.parse(CommonUtil.decode(pageParam.getOffset()[0]), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+            createdDateFrom = LocalDate.parse(CommonUtil.decode(pageParam.getOffset()[1]),
+                    DateTimeFormatter.ISO_OFFSET_DATE);
         }
-        return new PageParam(tOffset, pageParam.getDirection(), step);
+
+        String groupKey = null;
+        if (MONTH.equals(viewType)) {
+            from = from.withDayOfMonth(1);
+            until = from.plusMonths(1);
+            groupKey = MONTH_FORMAT;
+        } else if (WEEK.equals(viewType)) {
+            groupKey = WEEK_FORMAT;
+        } else if (DAY.equals(viewType)) {
+            groupKey = DAY_FORMAT;
+        }
+
+        String fromF = from.atStartOfDay(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        String createdDateF = createdDateFrom.atStartOfDay(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        String untilF = until.atStartOfDay(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+        String[] tOffset = new String[] { fromF, createdDateF, untilF };
+
+        pageParam = new PageParam(tOffset, viewType, pageParam.getDirection());
+        pageParam.setId(profile.getId());
+        pageParam.setGroupKey(groupKey);
+        return pageParam;
     }
 
     @Override

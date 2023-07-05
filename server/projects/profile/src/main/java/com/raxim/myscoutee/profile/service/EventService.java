@@ -1,36 +1,22 @@
 package com.raxim.myscoutee.profile.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.raxim.myscoutee.common.util.CommonUtil;
-import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
-import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
-import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
 import com.raxim.myscoutee.profile.data.document.mongo.Token;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
+import com.raxim.myscoutee.profile.handler.EventParamHandler;
 import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.MemberRepository;
 import com.raxim.myscoutee.profile.repository.mongo.PromotionRepository;
-import com.raxim.myscoutee.profile.util.EventUtil;
 
 @Service
 public class EventService {
@@ -62,48 +48,48 @@ public class EventService {
         return eventRepository.findTokensByEvent(refIds);
     }
 
-    public List<EventDTO> getEvents(PageParam pageParam,
-            UUID profileId, String[] status) {
+    /*
+     * javascript
+     * 
+     * const isoOffsetDateTime = '2023-07-05T10:30:00+05:30'; // Example
+     * ISO_OFFSET_DATE_TIME string
+     * 
+     * // Create a new Date object from the ISO_OFFSET_DATE_TIME string
+     * const date = new Date(isoOffsetDateTime);
+     * 
+     * // Get the time zone offset in minutes
+     * const timezoneOffsetMinutes = date.getTimezoneOffset();
+     * 
+     * // Convert the offset to hours and minutes
+     * const offsetHours = Math.floor(Math.abs(timezoneOffsetMinutes) / 60);
+     * const offsetMinutes = Math.abs(timezoneOffsetMinutes) % 60;
+     * 
+     * // Determine the sign of the offset
+     * const sign = timezoneOffsetMinutes > 0 ? '-' : '+';
+     * 
+     * // Format the offset as a string (e.g., +05:30 or -05:00)
+     * const offsetString =
+     * `${sign}${padZero(offsetHours)}:${padZero(offsetMinutes)}`;
+     * 
+     * console.log('Offset String:', offsetString);
+     * 
+     * // Helper function to pad a number with leading zeros
+     * function padZero(number) {
+     * return number.toString().padStart(2, '0');
+     * }
+     */
+    public List<EventDTO> getEvents(PageParam pageParam, String[] status) {
         List<EventDTO> events = Collections.emptyList();
-
-        if (pageParam.getStep() == null || pageParam.getStep().equals("d")) {
+        if (EventParamHandler.DAY.equals(pageParam.getType())) {
             if (pageParam.getDirection() == 1) {
-                events = eventRepository.findEventDown(profileId, 20, 5, "%Y-%m-%d", status, pageParam.getOffset(),
-                        "A");
+                events = eventRepository.findEventDown(pageParam, status);
             } else {
-                events = eventRepository.findEventUp(profileId, 20, 5, "%Y-%m-%d", status, pageParam.getOffset(), "A");
+                events = eventRepository.findEventUp(pageParam, status);
             }
-        } else {
-            if (pageParam.getStep().equals("w")) {
-                events = eventRepository.findEventDown(profileId, 20, 5, "%Y %U", status, pageParam.getOffset(), "A");
-            } else if (pageParam.getStep().equals("m")) {
-                LocalDateTime from = LocalDate.parse(pageParam.getOffset()[0], DateTimeFormatter.ISO_DATE_TIME)
-                        .withDayOfMonth(1).atStartOfDay();
-                LocalDateTime until = from.plusMonths(1);
-                String untilS = until.format(DateTimeFormatter.ISO_DATE_TIME);
-
-                events = eventRepository.findEventByMonth(profileId, 20, 5, "%Y-%m", status,
-                        untilS, pageParam.getOffset(), "A");
-
-                events = events.stream().map(event -> {
-                    String[] dateParts = event.getGroupKey().toString().split("-");
-                    event.setGroupKey(dateParts[0] + " " + CommonUtil.months[Integer.parseInt(dateParts[1]) - 1]);
-
-                    RangeLocal range = event.getEvent().getRange();
-                    if (range != null) {
-                        LocalDateTime start = range.getStart();
-                        if (start.isBefore(from)) {
-                            start = from;
-                        }
-                        LocalDateTime end = range.getEnd();
-                        if (end.isAfter(until)) {
-                            end = until.minusSeconds(1);
-                        }
-                        event.getEvent().setRange(new RangeLocal(start, end));
-                    }
-                    return event;
-                }).collect(Collectors.toList());
-            }
+        } else if (EventParamHandler.WEEK.equals(pageParam.getType())) {
+            events = eventRepository.findEventDown(pageParam, status);
+        } else if (EventParamHandler.MONTH.equals(pageParam.getType())) {
+            events = eventRepository.findEventByMonth(pageParam, status);
         }
         return events;
     }
