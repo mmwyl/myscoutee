@@ -27,7 +27,6 @@ import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Badge;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
-import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Link;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
@@ -52,7 +51,6 @@ import com.raxim.myscoutee.profile.repository.mongo.RoleRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 import com.raxim.myscoutee.profile.service.EventService;
 import com.raxim.myscoutee.profile.service.ProfileService;
-import com.raxim.myscoutee.profile.util.EventItemUtil;
 
 @RepositoryRestController
 @RequestMapping("user")
