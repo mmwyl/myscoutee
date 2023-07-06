@@ -39,6 +39,9 @@ public class Member {
     @JsonIgnore
     private LocalDateTime createdDate;
 
+    @JsonIgnore
+    private LocalDateTime updatedDate;
+
     // event item ref - members will be removed from event item
     @JsonIgnore
     private UUID eventRef;
@@ -94,6 +97,14 @@ public class Member {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public LocalDateTime getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDateTime updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
     public UUID getEventRef() {

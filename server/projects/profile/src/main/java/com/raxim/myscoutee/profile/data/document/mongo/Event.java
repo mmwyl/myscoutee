@@ -5,9 +5,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
@@ -69,7 +67,7 @@ public class Event extends EventBase {
     // lekerdezesek vizsgalata kell-e ez az optimalizacio
     @DBRef
     @JsonIgnore
-    private Set<EventItem> items;
+    private List<EventItem> items;
 
     // a Feedback-nel van event.id, es nem kell ide, lekerdezeseket checkkolni,
     // kell-e ez az optimalizacio
@@ -96,11 +94,11 @@ public class Event extends EventBase {
         this.category = category;
     }
 
-    public Set<EventItem> getItems() {
+    public List<EventItem> getItems() {
         return items;
     }
 
-    public void setItems(Set<EventItem> items) {
+    public void setItems(List<EventItem> items) {
         this.items = items;
     }
 
@@ -162,66 +160,108 @@ public class Event extends EventBase {
 
     // eventItem range should be within event
     public void sync() {
-        Optional<Integer> optMaxCapacity = this.items.stream().filter(item -> item.getCapacity() != null)
-                .map(item -> item.getCapacity().getMax())
-                .max((cap1, cap2) -> cap1.compareTo(cap2));
-        if (optMaxCapacity.isPresent()) {
-            Integer maxCapacity = optMaxCapacity.get();
-            if (maxCapacity.intValue() > this.getCapacity().getMax()) {
-                this.getCapacity().setMax(maxCapacity.intValue());
+        if (getItems() != null) {
+            Optional<Integer> optMaxCapacity = getItems().stream().filter(item -> item.getCapacity() != null)
+                    .map(item -> item.getCapacity().getMax())
+                    .max((cap1, cap2) -> cap1.compareTo(cap2));
+            if (optMaxCapacity.isPresent()) {
+                Integer maxCapacity = optMaxCapacity.get();
+                if (getCapacity() != null
+                        && maxCapacity.intValue() > getCapacity().getMax()) {
+                    getCapacity().setMax(maxCapacity.intValue());
+                }
+            }
+
+            Optional<LocalDateTime> optStart = getItems().stream().filter(item -> item.getRange() != null)
+                    .map(item -> item.getRange().getStart())
+                    .min((cap1, cap2) -> cap1.isBefore(cap2) ? -1 : 1);
+
+            if (optStart.isPresent()) {
+                LocalDateTime start = optStart.get();
+                if (getRange() != null
+                        && start.isBefore(getRange().getStart())) {
+                    getRange().setStart(start);
+                }
+            }
+
+            Optional<LocalDateTime> optEnd = getItems().stream().filter(item -> item.getRange() != null)
+                    .map(item -> item.getRange().getEnd())
+                    .max((cap1, cap2) -> cap1.isAfter(cap2) ? -1 : 1);
+
+            if (optEnd.isPresent()) {
+                LocalDateTime end = optEnd.get();
+                if (getRange() != null
+                        && end.isAfter(getRange().getEnd())) {
+                    getRange().setEnd(end);
+                }
             }
         }
 
-        Optional<LocalDateTime> optStart = this.items.stream().filter(item -> item.getRange() != null)
-                .map(item -> item.getRange().getStart())
-                .min((cap1, cap2) -> cap1.isBefore(cap2) ? -1 : 1);
+        LocalDateTime graceTime = getRule() != null ? getRange().getStart()
+                .minus(getRule().getEventGrace(), ChronoUnit.MINUTES)
+                : getRange().getStart();
 
-        if (optStart.isPresent()) {
-            LocalDateTime start = optStart.get();
-            if (start.isBefore(this.getRange().getStart())) {
-                this.getRange().setStart(start);
+        if (getMembers() != null) {
+            int cnt = (int) getMembers().stream().filter(member -> "A".equals(member.getStatus())).count();
+            setNum(cnt);
+
+            getMembers().stream().map(member -> {
+                if ("L".equals(member.getStatus())
+                        && member.getUpdatedDate().isAfter(graceTime)) {
+                    member.setStatus("LL");
+                }
+                return member;
+            });
+        }
+
+        if (getCapacity() != null) {
+            if (getNum() >= getCapacity().getMin()) {
+                if (LocalDateTime.now().isAfter(graceTime) && getNum() >= getCapacity().getMin()) {
+                    setStatus("A");
+                } else {
+                    setStatus("C");
+                }
+            } else {
+                setStatus("P");
             }
         }
 
-        Optional<LocalDateTime> optEnd = this.items.stream().filter(item -> item.getRange() != null)
-                .map(item -> item.getRange().getEnd())
-                .max((cap1, cap2) -> cap1.isAfter(cap2) ? -1 : 1);
-
-        if (optEnd.isPresent()) {
-            LocalDateTime end = optEnd.get();
-            if (end.isAfter(this.getRange().getEnd())) {
-                this.getRange().setEnd(end);
-            }
+        if (getNum() == 0) {
+            setStatus("C");
         }
     }
 
     public void shift() {
-        Optional<LocalDateTime> optStart = this.items.stream().filter(item -> item.getRange() != null)
-                .map(item -> item.getRange().getStart())
-                .min((cap1, cap2) -> cap1.isBefore(cap2) ? -1 : 1);
+        if (getItems() != null) {
+            Optional<LocalDateTime> optStart = getItems().stream().filter(item -> item.getRange() != null)
+                    .map(item -> item.getRange().getStart())
+                    .min((cap1, cap2) -> cap1.isBefore(cap2) ? -1 : 1);
 
-        if (optStart.isPresent() && this.getRange() != null) {
-            LocalDateTime start = optStart.get();
-            Duration duration = Duration.between(start, this.getRange().getStart());
-            long diffInMillis = duration.get(ChronoUnit.SECONDS);
-            if (diffInMillis > 0) {
-                this.items = this.items.stream()
-                        .map(item -> {
-                            LocalDateTime lEventItemStart = item.getRange().getStart().plusSeconds(diffInMillis);
-                            LocalDateTime lEventItemEnd = item.getRange().getEnd().plusSeconds(diffInMillis);
-                            item.setRange(RangeLocal.of(lEventItemStart, lEventItemEnd));
-                            return item;
-                        })
-                        .collect(Collectors.toSet());
+            if (optStart.isPresent() && getRange() != null) {
+                LocalDateTime start = optStart.get();
+                Duration duration = Duration.between(start, getRange().getStart());
+                long diffInMillis = duration.get(ChronoUnit.SECONDS);
+                if (diffInMillis > 0) {
+                    List<EventItem> lItems = getItems().stream()
+                            .map(item -> {
+                                LocalDateTime lEventItemStart = item.getRange().getStart().plusSeconds(diffInMillis);
+                                LocalDateTime lEventItemEnd = item.getRange().getEnd().plusSeconds(diffInMillis);
+                                item.setRange(RangeLocal.of(lEventItemStart, lEventItemEnd));
+                                return item;
+                            })
+                            .toList();
+                    setItems(lItems);
 
-                Optional<LocalDateTime> optEnd = this.items.stream().filter(item -> item.getRange() != null)
-                        .map(item -> item.getRange().getEnd())
-                        .max((cap1, cap2) -> cap1.isAfter(cap2) ? -1 : 1);
+                    Optional<LocalDateTime> optEnd = getItems().stream().filter(item -> item.getRange() != null)
+                            .map(item -> item.getRange().getEnd())
+                            .max((cap1, cap2) -> cap1.isAfter(cap2) ? -1 : 1);
 
-                if (optEnd.isPresent()) {
-                    LocalDateTime end = optEnd.get();
-                    if (end.isBefore(this.getRange().getEnd())) {
-                        this.getRange().setEnd(end);
+                    if (optEnd.isPresent()) {
+                        LocalDateTime end = optEnd.get();
+                        if (getRange() != null
+                                && end.isBefore(getRange().getEnd())) {
+                            getRange().setEnd(end);
+                        }
                     }
                 }
             }

@@ -190,6 +190,67 @@ public class CampaignEventRestController {
         return ResponseEntity.noContent().build();
     }*/
 
+    /*
+     * if (event.getRef() != null) {
+                promotionRepository.findPromotionByEvent(event.getRef().getId()).ifPresent(promotion -> {
+                    promotion.setCnt(promotion.getEvents().stream().mapToInt(Event::getCnt).sum());
+                    promotionRepository.save(promotion);
+                });
+
+                if (action != null) {
+                    List<String> deviceKeys = eventRepository.findTokensByEvent(
+                            new UUID[] { event.getRef().getId() }).stream()
+                            .map(Token::getDeviceKey).collect(Collectors.toList());
+
+                    if (!deviceKeys.isEmpty()) {
+                        MulticastMessage message = MulticastMessage.builder()
+                                .setNotification(Notification.builder()
+                                        .setTitle("Event + " + action)
+                                        .setBody("Promoter " + action +
+                                                " the " + event.getName() + " event!")
+                                        .build())
+                                .addAllTokens(deviceKeys)
+                                .build();
+
+                        try {
+                            FirebaseMessaging.getInstance().sendMulticast(message);
+                        } catch (FirebaseMessagingException e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("Successfully sent message");
+                    }
+                }
+            }
+
+     */
+
+    // TODO: promotion fix - reject event from promotion tab
+    /* either accept or reject -> ref counter should be changing -> notification should be sent to every participant
+     * if (event.getRef() != null) {
+                                event.getRef().setCnt(event.getRef().getCnt() - 1);
+                            }
+     * @PostMapping(value = { "{promoId}/events/{id}/reject" })
+     * public ResponseEntity<?> reject(@PathVariable String id, Authentication auth)
+     * {
+     * FirebasePrincipal firebasePrincipal = (FirebasePrincipal)
+     * auth.getPrincipal();
+     * Profile profile = firebasePrincipal.getUser().getProfile();
+     * return statusService.status(id, "R", profile.getId());
+     * }
+     */
+
+    // TODO: promotion fix - accept event from promotion tab
+    /*
+     * @PostMapping(value = { "{promoId}/events/{id}/accept" })
+     * public ResponseEntity<?> reject(@PathVariable String id, Authentication auth)
+     * {
+     * FirebasePrincipal firebasePrincipal = (FirebasePrincipal)
+     * auth.getPrincipal();
+     * Profile profile = firebasePrincipal.getUser().getProfile();
+     * return statusService.status(id, "R", profile.getId());
+     * }
+     */
+
     @GetMapping("{promoId}/events/{id}/members")
     public ResponseEntity<PageDTO<ProfileDTO>> eventMembers(
             @PathVariable String id,

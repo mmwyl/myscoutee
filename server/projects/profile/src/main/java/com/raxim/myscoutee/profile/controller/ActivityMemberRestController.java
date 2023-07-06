@@ -1,18 +1,14 @@
 package com.raxim.myscoutee.profile.controller;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,14 +19,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
-import com.raxim.myscoutee.common.util.JsonUtil;
-import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
-import com.raxim.myscoutee.profile.data.document.mongo.Member;
+import com.raxim.myscoutee.common.util.ControllerUtil;
+import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.CodeDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.PageItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
+import com.raxim.myscoutee.profile.exception.EventFullException;
+import com.raxim.myscoutee.profile.exception.IllegalAccessException;
 import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
@@ -61,32 +62,61 @@ public class ActivityMemberRestController {
         this.objectMapper = objectMapper;
     }
 
-    //TODO: to be fixed 
-    /*@PostMapping("events/{id}/items/{itemId}/join")
-    public ResponseEntity<?> joinItem(@PathVariable String id, @PathVariable String itemId,
-            @RequestBody EventItem eventItem, Authentication auth) {
-        FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
-        Profile profile = firebasePrincipal.getUser().getProfile();
-        return statusService.itemStatus(itemId, "A", profile.getId());
-    }*/
+    // TODO: to be fixed
+    /*
+     * @PostMapping("events/{id}/items/{itemId}/join")
+     * public ResponseEntity<?> joinItem(@PathVariable String id, @PathVariable
+     * String itemId,
+     * 
+     * @RequestBody EventItem eventItem, Authentication auth) {
+     * FirebasePrincipal firebasePrincipal = (FirebasePrincipal)
+     * auth.getPrincipal();
+     * Profile profile = firebasePrincipal.getUser().getProfile();
+     * return statusService.itemStatus(itemId, "A", profile.getId());
+     * }
+     */
 
-    //TODO: to be fixed
-    /*@PostMapping("events/{id}/items/{itemId}/wait")
-    public ResponseEntity<?> waitItem(@PathVariable String id, @PathVariable String itemId,
-            @RequestBody EventItem eventItem, Authentication auth) {
-        FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
-        Profile profile = firebasePrincipal.getUser().getProfile();
-        return statusService.itemStatus(itemId, "W", profile.getId());
-    }*/
+    // TODO: to be fixed - optional event
+    /*
+     * @PostMapping("events/{id}/items/{itemId}/wait")
+     * public ResponseEntity<?> waitItem(@PathVariable String id, @PathVariable
+     * String itemId,
+     * 
+     * @RequestBody EventItem eventItem, Authentication auth) {
+     * FirebasePrincipal firebasePrincipal = (FirebasePrincipal)
+     * auth.getPrincipal();
+     * Profile profile = firebasePrincipal.getUser().getProfile();
+     * return statusService.itemStatus(itemId, "W", profile.getId());
+     * }
+     */
 
-    //TODO: to be fixed
-    /*@PostMapping("events/{id}/items/{itemId}/leave")
-    public ResponseEntity<?> leaveItem(@PathVariable String id, @PathVariable String itemId,
-            @RequestBody EventItem eventItem, Authentication auth) {
-        FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
-        Profile profile = firebasePrincipal.getUser().getProfile();
-        return statusService.itemStatus(itemId, "L", profile.getId());
-    }*/
+    // TODO: to be fixed
+    /*
+     * @PostMapping("events/{id}/items/{itemId}/leave")
+     * public ResponseEntity<?> leaveItem(@PathVariable String id, @PathVariable
+     * String itemId,
+     * 
+     * @RequestBody EventItem eventItem, Authentication auth) {
+     * FirebasePrincipal firebasePrincipal = (FirebasePrincipal)
+     * auth.getPrincipal();
+     * Profile profile = firebasePrincipal.getUser().getProfile();
+     * return statusService.itemStatus(itemId, "L", profile.getId());
+     * }
+     */
+
+     // TODO: to be fixed - accept the join
+    /*
+     * @PostMapping("events/{id}/items/{itemId}/accept")
+     * public ResponseEntity<?> leaveItem(@PathVariable String id, @PathVariable
+     * String itemId,
+     * 
+     * @RequestBody EventItem eventItem, Authentication auth) {
+     * FirebasePrincipal firebasePrincipal = (FirebasePrincipal)
+     * auth.getPrincipal();
+     * Profile profile = firebasePrincipal.getUser().getProfile();
+     * return statusService.itemStatus(itemId, "L", profile.getId());
+     * }
+     */
 
     @GetMapping(value = { "events/{eventId}/items/{id}/members" })
     public ResponseEntity<PageDTO<MemberDTO>> itemMembers(@PathVariable String id, @RequestParam("step") Integer step,
@@ -161,95 +191,111 @@ public class ActivityMemberRestController {
         return member.map(m -> ResponseEntity.ok(m)).orElse(ResponseEntity.notFound().build());
     }
 
-    //TODO: to be fixed
-    /*@PostMapping("events/{id}/leave")
-    public ResponseEntity<?> leave(@PathVariable String id, Authentication auth) {
+    @PostMapping("events/{id}/leave")
+    public ResponseEntity<EventDTO> leave(@PathVariable String id, Authentication auth) {
         FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = firebasePrincipal.getUser().getProfile();
-        return statusService.status(id, "L", profile.getId());
-    }*/
 
-    //TODO: to be fixed
-    /*@PostMapping(value = { "invitations/{id}/accept", "promotions/{id}/accept" })
-    public ResponseEntity<?> join(@PathVariable String id, Authentication auth) {
+        return ControllerUtil.handle((i, s, p) -> statusService.status(i, s, p),
+                id, profile.getId(), "L",
+                HttpStatus.OK);
+    }
+
+    @PostMapping(value = { "invitations/{id}/accept", "promotions/{id}/accept" })
+    public ResponseEntity<EventDTO> join(@PathVariable String id, Authentication auth) {
         FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = firebasePrincipal.getUser().getProfile();
-        return statusService.status(id, "A", profile.getId());
-    }*/
 
-    //TODO: to be fixed
-    /*@PostMapping(value = { "invitations/{id}/wait" })
-    public ResponseEntity<?> wait(@PathVariable String id, Authentication auth) {
-        FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
-        Profile profile = firebasePrincipal.getUser().getProfile();
-        return statusService.status(id, "W", profile.getId());
-    }*/
+        return ControllerUtil.handle((i, s, p) -> statusService.status(i, s, p),
+                id, profile.getId(), "A",
+                HttpStatus.OK);
+    }
 
-    //TODO: to be fixed
-    /*@PostMapping(value = { "invitations/{id}/reject", "promotions/{id}/reject" })
+    // TODO: invitation wait?? (there is no scenario for that) -> optional event can have a wait list
+    /*
+     * @PostMapping(value = { "invitations/{id}/wait" })
+     * public ResponseEntity<?> wait(@PathVariable String id, Authentication auth) {
+     * FirebasePrincipal firebasePrincipal = (FirebasePrincipal)
+     * auth.getPrincipal();
+     * Profile profile = firebasePrincipal.getUser().getProfile();
+     * return statusService.status(id, "W", profile.getId());
+     * }
+     */
+
+    @PostMapping(value = { "invitations/{id}/reject" })
     public ResponseEntity<?> reject(@PathVariable String id, Authentication auth) {
         FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = firebasePrincipal.getUser().getProfile();
-        return statusService.status(id, "R", profile.getId());
-    }*/
+        return ControllerUtil.handle((i, s, p) -> statusService.status(i, s, p),
+                id, profile.getId(), "R",
+                HttpStatus.OK);
+    }
 
-    //TODO: to be fixed    
-    /*@PostMapping("events/{id}/members")
-    @Transactional
-    public ResponseEntity<List<MemberDTO>> addMember(
-            @PathVariable String id,
-            @RequestBody List<String> profiles) {
-        return eventRepository.findById(UUID.fromString(id)).map(event -> {
-            List<UUID> uProfiles = profiles.stream()
-                    .map(UUID::fromString)
-                    .collect(Collectors.toList());
-
-            List<com.raxim.myscoutee.profile.data.document.mongo.Profile> pProfiles = profileRepository
-                    .findAllById(uProfiles);
-
-            Set<com.raxim.myscoutee.profile.data.document.mongo.Member> tMembers = pProfiles.stream()
-                    .map(profile -> {
-                        com.raxim.myscoutee.profile.data.document.mongo.Member member = event.getInfo().getMembers()
-                                .stream()
-                                .filter(m -> m.getId().equals(profile.getId()))
-                                .findFirst()
-                                .orElse(null);
-
-                        if (member == null) {
-                            String code = null;
-                            if (event.getInfo().getTicket()) {
-                                code = UUID.randomUUID().toString();
-                            }
-
-                            Member newMember = new Member();
-                            newMember.setId(profile.getId());
-                            newMember.setProfile(profile);
-                            newMember.setStatus("I");
-                            newMember.setCreatedDate(new Date());
-                            newMember.setCode(code);
-                            newMember.setRole("U");
-                            return newMember;
-                        } else {
-                            Member clonedMember = JsonUtil.clone(member, objectMapper);
-                            clonedMember.setStatus("I");
-                            return clonedMember;
-                        }
-                    })
-                    .collect(Collectors.toSet());
-
-            tMembers.addAll(event.getInfo().getMembers());
-            event.getInfo().setMembers(tMembers);
-
-            eventRepository.save(event);
-
-            List<MemberDTO> membersDto = tMembers.stream()
-                    .map(member -> new MemberDTO(
-                            member,
-                            List.of(new Date(), member.getStatus())))
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(membersDto);
-        }).orElse(ResponseEntity.notFound().build());
-    }*/
+    // TODO: to be fixed
+    /*
+     * @PostMapping("events/{id}/members")
+     * 
+     * @Transactional
+     * public ResponseEntity<List<MemberDTO>> addMember(
+     * 
+     * @PathVariable String id,
+     * 
+     * @RequestBody List<String> profiles) {
+     * return eventRepository.findById(UUID.fromString(id)).map(event -> {
+     * List<UUID> uProfiles = profiles.stream()
+     * .map(UUID::fromString)
+     * .collect(Collectors.toList());
+     * 
+     * List<com.raxim.myscoutee.profile.data.document.mongo.Profile> pProfiles =
+     * profileRepository
+     * .findAllById(uProfiles);
+     * 
+     * Set<com.raxim.myscoutee.profile.data.document.mongo.Member> tMembers =
+     * pProfiles.stream()
+     * .map(profile -> {
+     * com.raxim.myscoutee.profile.data.document.mongo.Member member =
+     * event.getInfo().getMembers()
+     * .stream()
+     * .filter(m -> m.getId().equals(profile.getId()))
+     * .findFirst()
+     * .orElse(null);
+     * 
+     * if (member == null) {
+     * String code = null;
+     * if (event.getInfo().getTicket()) {
+     * code = UUID.randomUUID().toString();
+     * }
+     * 
+     * Member newMember = new Member();
+     * newMember.setId(profile.getId());
+     * newMember.setProfile(profile);
+     * newMember.setStatus("I");
+     * newMember.setCreatedDate(new Date());
+     * newMember.setCode(code);
+     * newMember.setRole("U");
+     * return newMember;
+     * } else {
+     * Member clonedMember = JsonUtil.clone(member, objectMapper);
+     * clonedMember.setStatus("I");
+     * return clonedMember;
+     * }
+     * })
+     * .collect(Collectors.toSet());
+     * 
+     * tMembers.addAll(event.getInfo().getMembers());
+     * event.getInfo().setMembers(tMembers);
+     * 
+     * eventRepository.save(event);
+     * 
+     * List<MemberDTO> membersDto = tMembers.stream()
+     * .map(member -> new MemberDTO(
+     * member,
+     * List.of(new Date(), member.getStatus())))
+     * .collect(Collectors.toList());
+     * 
+     * return ResponseEntity.status(HttpStatus.CREATED).body(membersDto);
+     * }).orElse(ResponseEntity.notFound().build());
+     * }
+     */
 
 }

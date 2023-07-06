@@ -3,7 +3,9 @@ package com.raxim.myscoutee.data.mongo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -24,7 +26,7 @@ public class EventTest {
         LocalDateTime eventEnd = LocalDateTime.of(2020, 2, 1, 0, 0, 0);
         event.setRange(RangeLocal.of(eventStart, eventEnd));
 
-        Set<EventItem> items = new HashSet<>();
+        List<EventItem> items = new ArrayList<>();
         EventItem eventItem = new EventItem();
         eventItem.setCapacity(RangeInt.of(3, 8));
 
@@ -50,7 +52,7 @@ public class EventTest {
         LocalDateTime eventEnd = LocalDateTime.of(2020, 3, 1, 0, 0, 0);
         event.setRange(RangeLocal.of(eventStart, eventEnd));
 
-        Set<EventItem> items = new HashSet<>();
+        List<EventItem> items = new ArrayList<>();
         EventItem eventItem = new EventItem();
         eventItem.setCapacity(RangeInt.of(3, 8));
 

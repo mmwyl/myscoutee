@@ -1,23 +1,18 @@
 package com.raxim.myscoutee.profile.service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.MulticastMessage;
-import com.google.firebase.messaging.Notification;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
-import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.Token;
-import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
+import com.raxim.myscoutee.profile.data.document.mongo.Promotion;
+import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
+import com.raxim.myscoutee.profile.exception.EventFullException;
+import com.raxim.myscoutee.profile.exception.IllegalAccessException;
+import com.raxim.myscoutee.profile.exception.MessageException;
+import com.raxim.myscoutee.profile.exception.PromotionFullException;
 import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.MemberRepository;
@@ -49,202 +44,153 @@ public class StatusService {
         this.promotionRepository = promotionRepository;
     }
 
-    //TODO: to be fixed
-    /*public ResponseEntity<?> itemStatus(String itemId, String status, UUID profileUid) {
-        Optional<com.raxim.myscoutee.profile.data.document.mongo.Profile> profileOp = profileRepository
-                .findById(profileUid);
-        if (profileOp.isPresent()) {
-            com.raxim.myscoutee.profile.data.document.mongo.Profile profile = profileOp.get();
-            return eventItemRepository.findById(UUID.fromString(itemId)).map(eventItem -> {
-                {
-                    String action = null;
+    // TODO: to be fixed
+    /*
+     * public ResponseEntity<?> itemStatus(String itemId, String status, UUID
+     * profileUid) {
+     * Optional<com.raxim.myscoutee.profile.data.document.mongo.Profile> profileOp =
+     * profileRepository
+     * .findById(profileUid);
+     * if (profileOp.isPresent()) {
+     * com.raxim.myscoutee.profile.data.document.mongo.Profile profile =
+     * profileOp.get();
+     * return eventItemRepository.findById(UUID.fromString(itemId)).map(eventItem ->
+     * {
+     * {
+     * String action = null;
+     * 
+     * if (status.equals("A") && eventItem.getNum() ==
+     * eventItem.getCapacity().getMax()) {
+     * return ResponseEntity.badRequest().body(new ErrorDTO(450, "err.event_full"));
+     * } else {
+     * if (eventItem.getOptional() != null && eventItem.getOptional()) {
+     * if (status.equals("A")) {
+     * boolean isMember = eventItem.getMembers().stream()
+     * .anyMatch(member -> member.getId().equals(profile.getId()));
+     * if (!isMember) {
+     * Member newMember = new Member();
+     * newMember.setId(profileUid);
+     * newMember.setProfile(profile);
+     * newMember.setStatus(status);
+     * newMember.setRole("U");
+     * eventItem.getMembers().add(newMember);
+     * }
+     * action = "joined";
+     * eventItem.setNum(eventItem.getNum() + 1);
+     * } else if (status.equals("L")) {
+     * action = "left";
+     * eventItem.setNum(eventItem.getNum() - 1);
+     * }
+     * 
+     * Set<com.raxim.myscoutee.profile.data.document.mongo.Member> eMembers =
+     * eventItem
+     * .getMembers().stream()
+     * .map(member -> {
+     * if (member.getId().equals(profile.getId())) {
+     * member.setStatus(status);
+     * }
+     * return member;
+     * })
+     * .collect(Collectors.toSet());
+     * 
+     * eventItem.setMembers(eMembers);
+     * com.raxim.myscoutee.profile.data.document.mongo.EventItem savedEventItem =
+     * eventItemRepository
+     * .save(eventItem);
+     * 
+     * if (action != null) {
+     * List<UUID> promoterIds = savedEventItem.getMembers().stream()
+     * .filter(member -> member.getRole().equals("P"))
+     * .map(member -> member.getProfile().getId())
+     * .collect(Collectors.toList());
+     * 
+     * if (promoterIds.size() > 0) {
+     * List<String> deviceKeys = tokenRepository.findByUserIds(promoterIds).stream()
+     * .map(token -> token.getDeviceKey())
+     * .collect(Collectors.toList());
+     * 
+     * if (!deviceKeys.isEmpty()) {
+     * com.google.firebase.messaging.MulticastMessage message =
+     * com.google.firebase.messaging.MulticastMessage
+     * .builder()
+     * .setNotification(
+     * Notification.builder()
+     * .setTitle("Member + " + action)
+     * .setBody("Member '" + profile.getFirstName() + "' "
+     * + action + " the " + eventItem.getName()
+     * + " event!")
+     * .build())
+     * .addAllTokens(deviceKeys)
+     * .build();
+     * 
+     * try {
+     * com.google.firebase.messaging.BatchResponse response = FirebaseMessaging
+     * .getInstance().sendMulticast(message);
+     * System.out.println("Successfully sent message: " + response);
+     * } catch (FirebaseMessagingException e) {
+     * e.printStackTrace();
+     * }
+     * }
+     * }
+     * }
+     * 
+     * return ResponseEntity.noContent().build();
+     * } else {
+     * return ResponseEntity.badRequest().build();
+     * }
+     * }
+     * }
+     * }).orElse(ResponseEntity.notFound().build());
+     * }
+     * return ResponseEntity.badRequest().build();
+     * }
+     */
 
-                    if (status.equals("A") && eventItem.getNum() == eventItem.getCapacity().getMax()) {
-                        return ResponseEntity.badRequest().body(new ErrorDTO(450, "err.event_full"));
-                    } else {
-                        if (eventItem.getOptional() != null && eventItem.getOptional()) {
-                            if (status.equals("A")) {
-                                boolean isMember = eventItem.getMembers().stream()
-                                        .anyMatch(member -> member.getId().equals(profile.getId()));
-                                if (!isMember) {
-                                    Member newMember = new Member();
-                                    newMember.setId(profileUid);
-                                    newMember.setProfile(profile);
-                                    newMember.setStatus(status);
-                                    newMember.setRole("U");
-                                    eventItem.getMembers().add(newMember);
-                                }
-                                action = "joined";
-                                eventItem.setNum(eventItem.getNum() + 1);
-                            } else if (status.equals("L")) {
-                                action = "left";
-                                eventItem.setNum(eventItem.getNum() - 1);
-                            }
+    // promotion accept event -> message to participant, or cancel event
+    public Optional<EventDTO> status(String id, UUID profileUid, String status)
+            throws MessageException {
 
-                            Set<com.raxim.myscoutee.profile.data.document.mongo.Member> eMembers = eventItem
-                                    .getMembers().stream()
-                                    .map(member -> {
-                                        if (member.getId().equals(profile.getId())) {
-                                            member.setStatus(status);
-                                        }
-                                        return member;
-                                    })
-                                    .collect(Collectors.toSet());
+        Optional<Event> eventRes = id != null ? this.eventRepository.findById(UUID.fromString(id)) : Optional.empty();
 
-                            eventItem.setMembers(eMembers);
-                            com.raxim.myscoutee.profile.data.document.mongo.EventItem savedEventItem = eventItemRepository
-                                    .save(eventItem);
+        if (eventRes.isPresent()) {
+            Event event = eventRes.get();
 
-                            if (action != null) {
-                                List<UUID> promoterIds = savedEventItem.getMembers().stream()
-                                        .filter(member -> member.getRole().equals("P"))
-                                        .map(member -> member.getProfile().getId())
-                                        .collect(Collectors.toList());
+            if ("A".equals(status)
+                    && event.getNum() == event.getCapacity().getMax()) {
+                throw new EventFullException();
+            }
 
-                                if (promoterIds.size() > 0) {
-                                    List<String> deviceKeys = tokenRepository.findByUserIds(promoterIds).stream()
-                                            .map(token -> token.getDeviceKey())
-                                            .collect(Collectors.toList());
-
-                                    if (!deviceKeys.isEmpty()) {
-                                        com.google.firebase.messaging.MulticastMessage message = com.google.firebase.messaging.MulticastMessage
-                                                .builder()
-                                                .setNotification(
-                                                        Notification.builder()
-                                                                .setTitle("Member + " + action)
-                                                                .setBody("Member '" + profile.getFirstName() + "' "
-                                                                        + action + " the " + eventItem.getName()
-                                                                        + " event!")
-                                                                .build())
-                                                .addAllTokens(deviceKeys)
-                                                .build();
-
-                                        try {
-                                            com.google.firebase.messaging.BatchResponse response = FirebaseMessaging
-                                                    .getInstance().sendMulticast(message);
-                                            System.out.println("Successfully sent message: " + response);
-                                        } catch (FirebaseMessagingException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                            }
-
-                            return ResponseEntity.noContent().build();
-                        } else {
-                            return ResponseEntity.badRequest().build();
-                        }
-                    }
+            if (event.getRef() != null) {
+                Optional<Promotion> optPromotion = promotionRepository.findPromotionByEvent(event.getRef().getId());
+                if (optPromotion.isPresent()) {
+                    throw new IllegalAccessException();
                 }
-            }).orElse(ResponseEntity.notFound().build());
-        }
-        return ResponseEntity.badRequest().build();
-    }*/
 
-    //TODO: to be fixed 
-    /*public ResponseEntity<?> status(String id, String status, UUID profileUid) {
-        Optional<Profile> profileOp = profileRepository.findById(profileUid);
-        if (profileOp.isPresent()) {
-            Profile profile = profileOp.get();
-            return eventRepository.findById(UUID.fromString(id)).map(event -> {
-                {
-                    String action = null;
-
-                    if (status.equals("A") && event.getInfo().getNum() == event.getInfo().getCapacity().getMax()) {
-                        return ResponseEntity.badRequest().body(new ErrorDTO(450, "err.event_full"));
-                    } else {
-                        boolean isPromotion = event.getInfo().getMembers().stream()
-                                .anyMatch(member -> member.getRole().equals("P"));
-
-                        Set<Member> eMembers = event.getInfo().getMembers();
-                        for(Member member : eMembers) {
-                            if (member.getId().equals(profile.getId())) {
-                                if (member.getRole().equals("P")) {
-                                    if (status.equals("A")) {
-                                        event.setStatus("A");
-                                        action = "accepted";
-                                        if (event.getRef() != null) {
-                                            event.getRef().setCnt(event.getRef().getCnt() - 1);
-                                        }
-                                    } else {
-                                        event.setStatus("C");
-                                        action = "cancelled";
-                                    }
-                                }
-
-                                if (isPromotion) {
-                                    if (status.equals("L") && !member.getRole().equals("P") &&
-                                            event.getStatus().equals("A")) {
-                                        member.setStatus("LL");
-                                    } else {
-                                        if (status.equals("A")) {
-                                            event.getInfo().setNum(event.getInfo().getNum() + 1);
-                                        } else if (status.equals("L")) {
-                                            event.getInfo().setNum(event.getInfo().getNum() - 1);
-                                        }
-                                        member.setStatus(status);
-                                    }
-                                } else {
-                                    if (status.equals("A")) {
-                                        event.getInfo().setNum(event.getInfo().getNum() + 1);
-                                    } else if (status.equals("L")) {
-                                        event.getInfo().setNum(event.getInfo().getNum() - 1);
-                                    }
-                                    member.setStatus(status);
-                                }
-                            }
-                        }
-
-                        if (status.equals("L") && (event.getStatus().equals("A") || event.getStatus().equals("P"))) {
-                            Member hasMember = event.getInfo().getMembers().stream()
-                                    .filter(member -> member.getStatus().equals("A") || member.getStatus().equals("I"))
-                                    .findFirst().orElse(null);
-                            if (hasMember == null) {
-                                event.setStatus("C");
-                                action = "cancelled";
-                            }
-                        }
-
-                        event.getInfo().setMembers(eMembers);
-                        memberRepository.saveAll(event.getInfo().getMembers());
-                        eventRepository.save(event);
-
-                        if (event.getRef() != null) {
-                            promotionRepository.findPromotionByEvent(event.getRef().getId()).ifPresent(promotion -> {
-                                promotion.setCnt(promotion.getEvents().stream().mapToInt(Event::getCnt).sum());
-                                promotionRepository.save(promotion);
-                            });
-
-                            if (action != null) {
-                                List<String> deviceKeys = eventRepository.findTokensByEvent(
-                                        new UUID[] { event.getRef().getId() }).stream()
-                                        .map(Token::getDeviceKey).collect(Collectors.toList());
-
-                                if (!deviceKeys.isEmpty()) {
-                                    MulticastMessage message = MulticastMessage.builder()
-                                            .setNotification(Notification.builder()
-                                                    .setTitle("Event + " + action)
-                                                    .setBody("Promoter " + action +
-                                                            " the " + event.getInfo().getName() + " event!")
-                                                    .build())
-                                            .addAllTokens(deviceKeys)
-                                            .build();
-
-                                    try {
-                                        FirebaseMessaging.getInstance().sendMulticast(message);
-                                    } catch (FirebaseMessagingException e) {
-                                        e.printStackTrace();
-                                    }
-                                    System.out.println("Successfully sent message");
-                                }
-                            }
-                        }
-
-                        return ResponseEntity.noContent().build();
-                    }
+                Promotion promotion = optPromotion.get();
+                if (promotion.getCnt() == 0) {
+                    throw new PromotionFullException();
                 }
-            }).orElse(ResponseEntity.notFound().build());
+            }
+
+            Optional<Member> optCurrentMember = event.getMembers().stream()
+                    .filter(member -> profileUid.equals(member.getProfile().getId())).findFirst();
+
+            if (!optCurrentMember.isPresent()) {
+                throw new IllegalAccessException();
+            }
+
+            Member currentMember = optCurrentMember.get();
+            currentMember.setStatus(status);
+            event.getMembers().add(currentMember);
+
+            event.sync();
+            Event dbEvent = eventRepository.save(event);
+
+            // notification sent for any member with status A and any role (promoter also)
+
+            return Optional.of(new EventDTO(dbEvent));
         }
-        return ResponseEntity.badRequest().build();
-    }*/
+
+        return Optional.empty();
+    }
 }

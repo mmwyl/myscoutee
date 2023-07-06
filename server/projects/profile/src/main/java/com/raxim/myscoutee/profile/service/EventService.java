@@ -2,10 +2,8 @@ package com.raxim.myscoutee.profile.service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -213,17 +211,15 @@ public class EventService {
                     .filter(item -> pEventItem.getId().equals(item.getId()))
                     .findFirst();
 
+            EventItem lEventItem = (EventItem) pEventItem.clone();
             UUID eventItemId;
             if (!eventItemRes.isPresent()) {
-                EventItem lEventItem = (EventItem) pEventItem.clone();
                 eventItemId = UUID.randomUUID();
                 lEventItem.setId(eventItemId);
                 lEventItem.setCreatedDate(LocalDateTime.now());
                 lEventItem.setCreatedBy(profile.getId());
                 lEventItem.setStatus(lEventItem.getNum() >= lEventItem.getCapacity().getMin() ? "A" : "P");
-                dbEvent.getItems().add(lEventItem);
             } else {
-                EventItem lEventItem = (EventItem) pEventItem.clone();
                 EventItem dbEventItem = eventItemRes.get();
 
                 eventItemId = dbEventItem.getId();
@@ -239,10 +235,11 @@ public class EventService {
 
                 // event
                 dbEvent.sync();
-                dbEvent.getItems().add(lEventItem);
-            }
 
-            Set<EventItem> eventItems = new HashSet<>(eventItemRepository.saveAll(dbEvent.getItems()));
+            }
+            dbEvent.getItems().add(lEventItem);
+
+            List<EventItem> eventItems = eventItemRepository.saveAll(dbEvent.getItems());
 
             dbEvent.setItems(eventItems);
             dbEvent = eventRepository.save(dbEvent);
@@ -252,8 +249,8 @@ public class EventService {
                     .findFirst();
 
             if (dbEventItem.isPresent()) {
-                EventItem lEventItem = dbEventItem.get();
-                return Optional.of((EventItemDTO) converters.convert(lEventItem));
+                EventItem tEventItem = dbEventItem.get();
+                return Optional.of((EventItemDTO) converters.convert(tEventItem));
             }
         }
 
