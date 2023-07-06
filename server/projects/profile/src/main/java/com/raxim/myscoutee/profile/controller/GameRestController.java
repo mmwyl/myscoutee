@@ -28,7 +28,6 @@ import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
-import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 import com.raxim.myscoutee.profile.service.ProfileService;
 
 @RepositoryRestController
@@ -38,57 +37,19 @@ public class GameRestController {
     private final ProfileRepository profileRepository;
     private final EventRepository eventRepository;
     private final LikeRepository likeRepository;
-    private final UserRepository userRepository;
     private final ProfileService profileService;
     private final ObjectMapper objectMapper;
 
     public GameRestController(ProfileRepository profileRepository,
             EventRepository eventRepository,
             LikeRepository likeRepository,
-            UserRepository userRepository,
             ProfileService profileService,
             ObjectMapper objectMapper) {
         this.profileRepository = profileRepository;
         this.eventRepository = eventRepository;
         this.likeRepository = likeRepository;
-        this.userRepository = userRepository;
         this.profileService = profileService;
         this.objectMapper = objectMapper;
-    }
-
-    @GetMapping(value = { "/rate_none/{id}/schools", "/rate_give/{id}/schools",
-            "/rate_give/{id}/schools", "/rate_give/{id}/schools", "/rate_give/{id}/schools",
-            "rate_receive/{id}/schools", "/rate_double/{id}/rated/{id}/schools",
-            "/rate_double/{id}/none/{id}/schools",
-            "/rate_both/{id}/schools", "/rate_met/{id}/schools" })
-    public ResponseEntity<PageDTO<SchoolDTO>> getSchools(
-            @PathVariable String id, Authentication auth,
-            @RequestParam(name = "step", required = false) Integer step,
-            @RequestParam(name = "offset", required = false) String[] offset) {
-        Object[] tOffset;
-        if (offset != null && offset.length == 3) {
-            tOffset = new Object[] {
-                    CommonUtil.decode(offset[0]),
-                    CommonUtil.decode(offset[1]),
-                    CommonUtil.decode(offset[2])
-            };
-        } else {
-            tOffset = new Object[] { "a", "1900-01-01", "1900-01-01" };
-        }
-
-        List<SchoolDTO> schools = this.profileService
-                .getSchools(UUID.fromString(id), step, tOffset);
-
-        // http://dolszewski.com/spring/how-to-bind-requestparam-to-object/
-        List<Object> lOffset;
-        if (!schools.isEmpty()) {
-            lOffset = schools.get(schools.size() - 1).getOffset();
-        } else {
-            lOffset = Arrays.asList(tOffset);
-        }
-
-        PageDTO<SchoolDTO> pageDTO = new PageDTO<>(schools, lOffset);
-        return ResponseEntity.ok().body(pageDTO);
     }
 
     @GetMapping("/rate_none")
@@ -191,7 +152,7 @@ public class GameRestController {
                     profile.getId(),
                     gender,
                     profile.getGroup(),
-                    1.0,0);
+                    1.0, 0);
 
             // http://dolszewski.com/spring/how-to-bind-requestparam-to-object/
 
@@ -249,7 +210,7 @@ public class GameRestController {
                     profile.getId(),
                     gender,
                     profile.getGroup(),
-                    2.0,0);
+                    2.0, 0);
 
             // nullify rate received
             List<ProfileDTO> profiles = fProfiles.stream().map(fProfile -> {
@@ -489,6 +450,41 @@ public class GameRestController {
         pageDTO.setScroll(0);
 
         return ResponseEntity.ok(pageDTO);
+    }
+
+    @GetMapping(value = { "/rate_none/{id}/schools", "/rate_give/{id}/schools",
+            "/rate_give/{id}/schools", "/rate_give/{id}/schools", "/rate_give/{id}/schools",
+            "rate_receive/{id}/schools", "/rate_double/{id}/rated/{id}/schools",
+            "/rate_double/{id}/none/{id}/schools",
+            "/rate_both/{id}/schools", "/rate_met/{id}/schools" })
+    public ResponseEntity<PageDTO<SchoolDTO>> getSchools(
+            @PathVariable String id, Authentication auth,
+            @RequestParam(name = "step", required = false) Integer step,
+            @RequestParam(name = "offset", required = false) String[] offset) {
+        Object[] tOffset;
+        if (offset != null && offset.length == 3) {
+            tOffset = new Object[] {
+                    CommonUtil.decode(offset[0]),
+                    CommonUtil.decode(offset[1]),
+                    CommonUtil.decode(offset[2])
+            };
+        } else {
+            tOffset = new Object[] { "a", "1900-01-01", "1900-01-01" };
+        }
+
+        List<SchoolDTO> schools = this.profileService
+                .getSchools(UUID.fromString(id), step, tOffset);
+
+        // http://dolszewski.com/spring/how-to-bind-requestparam-to-object/
+        List<Object> lOffset;
+        if (!schools.isEmpty()) {
+            lOffset = schools.get(schools.size() - 1).getOffset();
+        } else {
+            lOffset = Arrays.asList(tOffset);
+        }
+
+        PageDTO<SchoolDTO> pageDTO = new PageDTO<>(schools, lOffset);
+        return ResponseEntity.ok().body(pageDTO);
     }
 
 }

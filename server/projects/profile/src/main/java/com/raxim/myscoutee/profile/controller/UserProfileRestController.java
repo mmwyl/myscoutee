@@ -51,7 +51,7 @@ public class UserProfileRestController {
             return ResponseEntity.ok(profileDto);
         } else {
             // profile not exists
-            ProfileDTO profileDto = new ProfileDTO(new com.raxim.myscoutee.profile.data.document.mongo.Profile());
+            ProfileDTO profileDto = new ProfileDTO(new Profile());
             return ResponseEntity.ok(profileDto);
         }
     }
@@ -59,7 +59,7 @@ public class UserProfileRestController {
     @PostMapping(value = "/profile", consumes = "multipart/form-data")
     @Transactional
     public ResponseEntity<ProfileDTO> saveProfile(Authentication auth,
-            @RequestPart("profile") com.raxim.myscoutee.profile.data.document.mongo.Profile profile,
+            @RequestPart("profile") Profile profile,
             @RequestPart(value = "voice", required = false) MultipartFile voice) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         User user = principal.getUser();
