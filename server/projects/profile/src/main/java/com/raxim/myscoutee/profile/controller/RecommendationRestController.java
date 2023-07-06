@@ -202,7 +202,7 @@ public class RecommendationRestController {
         }
     }
 
-    //TODO: to be fixed
+    // TODO: promotion fix
     /*@PostMapping("events/{id}/clone")
     public ResponseEntity<EventDTO> cloneEvent(
             @PathVariable String id,

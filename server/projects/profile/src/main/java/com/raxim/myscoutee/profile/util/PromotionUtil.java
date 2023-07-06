@@ -17,7 +17,7 @@ import com.raxim.myscoutee.profile.service.CampaignService;
 
 public class PromotionUtil {
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*public static ResponseEntity<PromotionDTO> save(CampaignService campaignService, Promotion pPromotion, Profile profile) {
         Optional<Pair<Promotion, Boolean>> promotion = campaignService.getPromotion(pPromotion, profile, false, false);
         if (promotion.isPresent()) {
@@ -35,7 +35,7 @@ public class PromotionUtil {
         }
     }*/
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*public static ResponseEntity<?> update(CampaignService campaignService, Promotion pPromotion, Profile profile,
             boolean isEvent) {
         Optional<Pair<Promotion, Boolean>> promotion = campaignService.getPromotion(pPromotion, profile, true, isEvent);

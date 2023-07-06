@@ -142,7 +142,7 @@ public class RecommendationPromotionRestController {
         return ResponseEntity.ok(new PageDTO<>(events, lastOffset));
     }
 
-    //TODO: to be fixed
+    // TODO: promotion fix
     /*@PostMapping("/promotions/{promoId}/events/{id}/clone")
     public ResponseEntity<?> cloneEvent(
             @PathVariable String promoId,

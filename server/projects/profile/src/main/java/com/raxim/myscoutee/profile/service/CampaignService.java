@@ -129,7 +129,7 @@ public class CampaignService {
         }
     }
 
-    //TODO: to be fixed
+    // TODO: promotion fix
     /*public Optional<Promotion> savePromotion(
             Promotion promotion,
             Profile profile,

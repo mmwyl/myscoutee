@@ -86,6 +86,7 @@ public class UserGroupRestController {
         this.objectMapper = objectMapper;
     }
 
+    //TODO: group event
     @GetMapping("/groups/{groupId}/events")
     @Transactional
     public ResponseEntity<?> getEvents(@PathVariable String groupId, @RequestParam(name = "step") String step,
@@ -118,7 +119,7 @@ public class UserGroupRestController {
         }
     }
 
-    //TODO: to be fixed 
+    //TODO: group event
     /*@PatchMapping("/groups/{groupId}/events/{id}")
     @Transactional
     public ResponseEntity<?> patchEvent(@PathVariable String id, @RequestBody EventItem eventItem,
@@ -128,7 +129,7 @@ public class UserGroupRestController {
         return EventItemUtil.update(eventService, eventItem, id, profile);
     }*/
 
-    //TODO: to be fixed 
+    //TODO: group event
     /*@PostMapping("/groups/{groupId}/events/{id}/items")
     public ResponseEntity<EventItemDTO> addItem(@PathVariable String id, @RequestBody EventItem eventItem,
             Authentication auth) {
@@ -137,7 +138,7 @@ public class UserGroupRestController {
         return EventItemUtil.save(eventService, eventItem, id, profile);
     }*/
 
-    //TODO: to be fixed 
+    //TODO: group event
     /*@PatchMapping("/groups/{groupId}/events/{id}/items/{itemId}")
     public ResponseEntity<EventItemDTO> patchItem(@PathVariable String id, @PathVariable String itemId,
             @RequestBody EventItem eventItem, Authentication auth) {

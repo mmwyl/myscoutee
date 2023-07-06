@@ -177,7 +177,7 @@ public class ActivityRestController {
         return ResponseEntity.ok(new PageDTO<>(eventItems, lOffset));
     }
 
-    // TODO: to be fixed
+    // TODO: promotion fix
     /*
      * @PostMapping("events/{id}/recommend")
      * public ResponseEntity<EventDTO> recommend(@PathVariable String id,

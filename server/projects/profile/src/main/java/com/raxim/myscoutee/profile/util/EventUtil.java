@@ -20,7 +20,8 @@ public class EventUtil {
     public static final String EVENT_TYPE_PRIVATE = "pr";
     public static final String DELETED = "D";
 
-    // TODO: to be fixed
+
+    // TODO: promotion fix
     /*
      * public static Event cloneBy(Event event, Profile profile, Slot slot, boolean
      * isRef, ObjectMapper objectMapper) {

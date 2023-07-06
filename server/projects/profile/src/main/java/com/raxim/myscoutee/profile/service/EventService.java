@@ -103,7 +103,7 @@ public class EventService {
         return events;
     }
 
-    // TODO: to be fixed
+    // TODO: promotion fix
     /*
      * public Optional<Event> cloneEvent(UUID eventId, Profile profile) {
      * Optional<Event> eventRes = eventRepository.findById(eventId);
@@ -122,7 +122,7 @@ public class EventService {
      * }
      */
 
-    // TODO: to be fixed
+    // TODO: promotion fix
     /*
      * public Optional<EventDTO> recommendEvent(UUID eventId) {
      * Optional<Event> eventRes = eventRepository.findById(eventId);

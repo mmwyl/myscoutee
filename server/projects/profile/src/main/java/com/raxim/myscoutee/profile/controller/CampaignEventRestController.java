@@ -85,7 +85,7 @@ public class CampaignEventRestController {
         return ResponseEntity.ok(new PageDTO<>(events, lOffset));
     }
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*@PatchMapping("{promoId}/events/{id}")
     @Transactional
     public ResponseEntity<?> patchPromotionEvent(
@@ -133,7 +133,7 @@ public class CampaignEventRestController {
         return ResponseEntity.ok(new PageDTO<>(eventItems, lOffset));
     }
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*@PostMapping("{promoId}/events/{id}/items")
     public ResponseEntity<EventItemDTO> addPromoEventItem(
             @PathVariable String promoId,
@@ -152,7 +152,7 @@ public class CampaignEventRestController {
         return eventResp;
     }*/
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*@PatchMapping("{promoId}/events/{id}/items/{itemId}")
     public ResponseEntity<EventItemDTO> patchPromoEventItem(
             @PathVariable String promoId,
@@ -172,7 +172,7 @@ public class CampaignEventRestController {
         return eventResp;
     }*/
 
-    //TODO: to be fixed
+    // TODO: promotion fix
     /*@DeleteMapping("{promoId}/events/{id}/items/{itemId}")
     public ResponseEntity<?> deletePromoItem(
             @PathVariable String id,

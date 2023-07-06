@@ -81,7 +81,7 @@ public class CampaignRestController {
         }
     }
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*@PostMapping("")
     @Transactional
     public ResponseEntity<PromotionDTO> addPromotion(Authentication auth, @RequestBody Promotion promotion) {
@@ -90,7 +90,7 @@ public class CampaignRestController {
         return PromotionUtil.save(this.campaignService, promotion, profile);
     }*/
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*@PatchMapping("/{id}")
     @Transactional
     public ResponseEntity<?> patchPromotion(Authentication auth, @PathVariable String id,

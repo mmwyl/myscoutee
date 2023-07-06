@@ -36,7 +36,7 @@ public class CampaignTemplateRestController {
         this.eventItemRepository = eventItemRepository;
     }
 
-    //TODO: to be fixed
+    // TODO: promotion fix
     /*@GetMapping("/templates")
     @Transactional
     public ResponseEntity<PageDTO<EventDTO>> getEvents(
@@ -85,7 +85,7 @@ public class CampaignTemplateRestController {
         return ResponseEntity.ok(new PageDTO<>(events, newOffset, 0));
     }*/
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*@PostMapping("/templates")
     @Transactional
     public ResponseEntity<EventDTO> createEvent(
@@ -97,7 +97,7 @@ public class CampaignTemplateRestController {
         return savedEventItem;
     }*/
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*@PatchMapping("/templates/{id}")
     @Transactional
     public ResponseEntity<?> patchEvent(
@@ -110,7 +110,7 @@ public class CampaignTemplateRestController {
         return response;
     }*/
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*@PostMapping("/templates/{id}/items")
     public ResponseEntity<EventItemDTO> addItem(
             @PathVariable String id,
@@ -122,7 +122,7 @@ public class CampaignTemplateRestController {
         return savedEventItem;
     }*/
 
-    //TODO: to be fixed 
+    // TODO: promotion fix
     /*@PatchMapping("/templates/{id}/items/{itemId}")
     public ResponseEntity<EventItemDTO> patchItem(
             @PathVariable String id,
@@ -135,7 +135,7 @@ public class CampaignTemplateRestController {
         return updatedEventItem;
     }*/
 
-    //TODO: to be fixed
+    // TODO: promotion fix
     /*@DeleteMapping("templates/{id}/items/{itemId}")
     public ResponseEntity<?> deleteItem(
             @PathVariable String id,
