@@ -1,121 +1,149 @@
 [
-        {
-            "$match": {
-                "_id": "?0"
-            }
-        },
-    
-        {
-            "$lookup": {
-                "from": "items",
-                "localField": "items.$id",
-                "foreignField": "_id",
-                "as": "items"
-            }
-        },
-    
-        {
-            "$unwind": "$items"
-        },
-    
-        {
-            "$group": {
-                "_id": "$items._id",
-                "data": { "$first": "$items" },
-                "evt": { "$first": "$$ROOT" },
-                "positions": { "$first": "$positions" }
-            }
-        },
-    
-        {
-            "$match": {
-                "$expr": {
-                    "$and": [
-                        { "$eq": [ "$data.status", "A" ] },
-                        { "$gt": [ "$data.range.start", { "$toDate": ":#{#offset[0]}" } ] },
-                        { "$gt": [ { "$ifNull": [ "$data.createdDate", "ISODate()" ] }, { "$toDate": ":#{#offset[1]}" } ] }
-                    ]
-                }
-            }
-        },
-    
-        {
-            "$sort": {
-                "data.range.start": 1,
-                "data.createdDate": 1
-            }
-        },
-    
-        { "$limit": "?1" },
-    
-        {
-            "$addFields": {
-                "groupKey": {
-                    "$dateToString": {
-                        "format": "?3",
-                        "date": "$data.range.start"
-                    }
-                }
-            }
-        },
-    
-        {
-            "$addFields": {
-                "member": {
-                    "$first": {
-                        "$filter": {
-                            "input": "$data.members",
-                            "as": "member",
-                            "cond": {
+    {
+        "$match": {
+            "_id": "?0"
+        }
+    },
+    {
+        "$lookup": {
+            "from": "items",
+            "localField": "items.$id",
+            "foreignField": "_id",
+            "as": "items"
+        }
+    },
+    {
+        "$unwind": "$items"
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$and": [
+                    {
+                        "$in": [
+                            "$status",
+                            [
+                                "A",
+                                "P"
+                            ]
+                        ]
+                    },
+                    {
+                        "$or": [
+                            {
+                                "$gt": [
+                                    "$range.start",
+                                    {
+                                        "$toDate": "?#{#param.offset[0]}"
+                                    }
+                                ]
+                            },
+                            {
                                 "$and": [
-                                    { "$eq": [ "$$member.profile.$id", "?4" ] },
-                                    { "$eq": [ "$$member.status", "A" ] }
+                                    {
+                                        "$eq": [
+                                            "$range.start",
+                                            {
+                                                "$toDate": "?#{#param.offset[0]}"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "$gt": [
+                                            "$createdDate",
+                                            {
+                                                "$toDate": "?#{#param.offset[1]}"
+                                            }
+                                        ]
+                                    }
                                 ]
                             }
-                        }
+                        ]
                     }
-                }
+                ]
             }
-        },
-    
-        {
-            "$addFields": {
-                "user": {
-                    "$first": {
-                        "$filter": {
-                            "input": "$evt.info.members",
-                            "as": "member",
-                            "cond": {
-                                "$and": [
-                                    { "$eq": [ "$$member.profile.$id", "?4" ] },
-                                    { "$eq": [ "$$member.status", "A" ] }
-                                ]
-                            }
-                        }
-                    }
-                }
-            }
-        },
-    
-        {
-            "$replaceRoot": {
-                "newRoot": {
-                    "$mergeObjects": [
-                        { "item": "$data" },
-                        {
-                            "groupKey": "$groupKey",
-                            "role": { "$cond": [ { "$ifNull": [ "$user", null ] }, "$user.role", null ] },
-                            "isPromotion": { "$cond": [ { "$ifNull": ["$evt.ref", false] }, true, false ] },
-                            "sortKey": { "$toLong": "$data.createdDate" },
-                            "isMember": { "$cond": [ { "$ifNull": ["$member", false] }, true, false ] },
-                            "category": "$evt.info.category",
-                            "main": { "$cond": [ { "$eq": ["$evt.info._id", "$data._id"] }, true, false ] },
-                            "positions": { "$cond": [ { "$eq": ["$evt.info._id", "$data._id"] }, "$positions", null ] },
-                            "offset": ["$data.range.start", { "$toDate": ":#{#offset[1]}" }]
-                        }
-                    ]
+        }
+    },
+    {
+        "$sort": {
+            "range.start": 1,
+            "createdDate": 1
+        }
+    },
+    {
+        "$limit": "?#{#param.limit}"
+    },
+    {
+        "$addFields": {
+            "groupKey": {
+                "$dateToString": {
+                    "format": "?#{#param.groupKey}",
+                    "date": "$range.start"
                 }
             }
         }
-    ]
-    
+    },
+    {
+        "$addFields": {
+            "user": {
+                "$first": {
+                    "$filter": {
+                        "input": "$members",
+                        "as": "member",
+                        "cond": {
+                            "$and": [
+                                {
+                                    "$eq": [
+                                        "$$member.profile.$id",
+                                        "?#{#param.id}"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "$$member.status",
+                                        "A"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": {
+                "$mergeObjects": [
+                    {
+                        "item": "$items"
+                    },
+                    {
+                        "groupKey": "$groupKey",
+                        "role": {
+                            "$cond": [
+                                {
+                                    "$ifNull": [
+                                        "$user",
+                                        null
+                                    ]
+                                },
+                                "$user.role",
+                                null
+                            ]
+                        },
+                        "sortKey": {
+                            "$toLong": "$createdDate"
+                        },
+                        "offset": [
+                            "$range.start",
+                            {
+                                "$toDate": "$createdDate"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

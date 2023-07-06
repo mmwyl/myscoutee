@@ -201,7 +201,8 @@ public class RecommendationPromotionRestController {
         return ResponseEntity.ok(new PageDTO<>(feedbacks, lastOffset));
     }
 
-    @GetMapping("/promotions/{promoId}/events/{id}/items")
+    // TODO: promotion fix
+    /*@GetMapping("/promotions/{promoId}/events/{id}/items")
     public ResponseEntity<PageDTO<EventItemDTO>> getEventItems(
             @PathVariable String id,
             @RequestParam(value = "step", required = false) Integer step,
@@ -231,5 +232,5 @@ public class RecommendationPromotionRestController {
         }
 
         return ResponseEntity.ok(new PageDTO<>(eventItems, lastOffset));
-    }
+    }*/
 }

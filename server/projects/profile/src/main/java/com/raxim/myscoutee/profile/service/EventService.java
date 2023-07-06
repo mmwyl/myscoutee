@@ -260,7 +260,7 @@ public class EventService {
         return Optional.empty();
     }
 
-    public List<EventItemDTO> getEventItems(UUID eventId, Integer step, Object[] tOffset, UUID profileId) {
-        return eventRepository.findItemsByEvent(eventId, 20, step != null ? step : 5, "%Y-%m-%d", profileId, tOffset);
+    public List<EventItemDTO> getEventItems(PageParam pageParam, UUID eventId) {
+        return eventRepository.findItemsByEvent(eventId, pageParam);
     }
 }

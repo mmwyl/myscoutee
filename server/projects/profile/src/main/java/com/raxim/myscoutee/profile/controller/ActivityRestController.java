@@ -33,6 +33,7 @@ import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
+import com.raxim.myscoutee.profile.handler.EventItemParamHandler;
 import com.raxim.myscoutee.profile.handler.EventParamHandler;
 import com.raxim.myscoutee.profile.handler.ParamHandlers;
 import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
@@ -77,7 +78,7 @@ public class ActivityRestController {
         Profile profile = principal.getUser().getProfile();
 
         // override page param
-        pageParam = paramHandlers.handle(profile, pageParam, EventParamHandler.EVENT);
+        pageParam = paramHandlers.handle(profile, pageParam, EventParamHandler.TYPE);
 
         if (profile.getPosition() != null) {
             List<EventDTO> events = eventService.getEvents(pageParam,
@@ -160,19 +161,16 @@ public class ActivityRestController {
     }
 
     @GetMapping(value = { "events/{id}/items", "invitations/{id}/items", "promotions/{id}/items" })
-    public ResponseEntity<PageDTO<EventItemDTO>> items(@PathVariable String id,
-            @RequestParam(value = "step", required = false) Integer step,
-            @RequestParam(value = "offset", required = false) String[] offset, Authentication auth) {
+    public ResponseEntity<PageDTO<EventItemDTO>> items(@PathVariable String id, PageParam pageParam, Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = principal.getUser().getProfile();
 
-        String[] tOffset = offset != null && offset.length == 2
-                ? new String[] { CommonUtil.decode(offset[0]), CommonUtil.decode(offset[1]) }
-                : new String[] { "1900-01-01", "1900-01-01" };
+        // override page param
+        pageParam = paramHandlers.handle(profile, pageParam, EventItemParamHandler.TYPE);
 
-        List<EventItemDTO> eventItems = eventService.getEventItems(UUID.fromString(id), step, tOffset, profile.getId());
+        List<EventItemDTO> eventItems = eventService.getEventItems(pageParam, UUID.fromString(id));
 
-        List<Object> lOffset = !eventItems.isEmpty() ? eventItems.get(eventItems.size() - 1).getOffset() : List.of();
+        List<Object> lOffset = CommonUtil.offset(eventItems);
 
         return ResponseEntity.ok(new PageDTO<>(eventItems, lOffset));
     }

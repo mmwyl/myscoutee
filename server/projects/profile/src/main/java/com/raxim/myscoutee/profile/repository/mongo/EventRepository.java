@@ -81,11 +81,7 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
         @Aggregation(pipeline = "findItemsByEvent")
         List<EventItemDTO> findItemsByEvent(
                         @Param("eventId") UUID eventId,
-                        @Param("limit") int limit,
-                        @Param("step") int step,
-                        @Param("format") String format,
-                        @Param("profileId") UUID profileId,
-                        @Param("offset") Object[] offset);
+                        @Param("param") PageParam param);
 
         @Aggregation(pipeline = "findFeedbacksByEvent")
         List<FeedbackDTO> findFeedbacksByEvent(

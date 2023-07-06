@@ -160,7 +160,8 @@ public class CampaignTemplateRestController {
         return ResponseEntity.noContent().build();
     }*/
 
-    @GetMapping(value = { "/templates/{id}/items" })
+    // TODO: promotion fix
+    /*@GetMapping(value = { "/templates/{id}/items" })
     public ResponseEntity<PageDTO<EventItemDTO>> items(
             @PathVariable String id,
             @RequestParam("step") Integer step,
@@ -186,5 +187,5 @@ public class CampaignTemplateRestController {
         }
 
         return ResponseEntity.ok(new PageDTO<>(eventItems, newOffset));
-    }
+    }*/
 }

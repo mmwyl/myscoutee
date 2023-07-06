@@ -147,7 +147,8 @@ public class UserGroupRestController {
         return EventItemUtil.update(eventService, eventItem, id, itemId, profile);
     }*/
 
-    @GetMapping("/groups/{groupId}/events/{id}/items")
+    // TODO: group event
+    /*@GetMapping("/groups/{groupId}/events/{id}/items")
     public ResponseEntity<PageDTO<EventItemDTO>> items(@PathVariable String id, @RequestParam("step") Integer step,
             @RequestParam("offset") String[] offset, Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
@@ -171,7 +172,7 @@ public class UserGroupRestController {
         }
 
         return ResponseEntity.ok(new PageDTO<>(eventItems, lOffset));
-    }
+    }*/
 
     @PostMapping("/groups/{id}/events/{eventId}/publish")
     public ResponseEntity<EventDTO> publish(@PathVariable String eventId, Authentication auth) {

@@ -105,7 +105,8 @@ public class CampaignEventRestController {
         return eventResp;
     }*/
 
-    @GetMapping("{promoId}/events/{id}/items")
+    // TODO: promotion fix
+    /*@GetMapping("{promoId}/events/{id}/items")
     public ResponseEntity<PageDTO<EventItemDTO>> eventItems(
             @PathVariable String id,
             @RequestParam(value = "step", required = false) Integer step,
@@ -131,7 +132,7 @@ public class CampaignEventRestController {
         }
 
         return ResponseEntity.ok(new PageDTO<>(eventItems, lOffset));
-    }
+    }*/
 
     // TODO: promotion fix
     /*@PostMapping("{promoId}/events/{id}/items")

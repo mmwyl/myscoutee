@@ -17,6 +17,10 @@ public class PageParam {
     public PageParam() {
     }
 
+    public PageParam(String[] offset) {
+        this(offset, null);
+    }
+
     public PageParam(String[] offset, String type) {
         this(offset, type, 0);
     }

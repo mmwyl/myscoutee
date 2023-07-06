@@ -271,7 +271,8 @@ public class RecommendationRestController {
         }
     }
 
-    @GetMapping(value = { "events/{id}/items", "invitations/{id}/items" })
+    //promotion fix
+    /*@GetMapping(value = { "events/{id}/items", "invitations/{id}/items" })
     public ResponseEntity<PageDTO<EventItemDTO>> items(
             @PathVariable String id,
             @RequestParam("step") Integer step,
@@ -305,7 +306,7 @@ public class RecommendationRestController {
 
         return ResponseEntity.ok(
                 new PageDTO<>(eventItems, lOffset));
-    }
+    }*/
 
     @GetMapping(value = { "events/{id}/feedbacks", "invitations/{id}/feedbacks" })
     public ResponseEntity<PageDTO<FeedbackDTO>> feedbacks(
