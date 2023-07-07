@@ -50,8 +50,8 @@ public class EventParameterHandlerTest extends AbstractAlgoTest {
         String expectedFrom = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         assertEquals(expectedFrom, pageParam.getOffset()[0]);
 
-        String expectedMin = EventParamHandler.DATE_MIN.atStartOfDay(ZoneId.systemDefault())
+        String expectedCreatedDate = LocalDate.now().atStartOfDay(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        assertEquals(expectedMin, pageParam.getOffset()[1]);
+        assertEquals(expectedCreatedDate, pageParam.getOffset()[1]);
     }
 }
