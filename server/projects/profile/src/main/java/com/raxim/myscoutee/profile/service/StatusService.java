@@ -29,22 +29,16 @@ public class StatusService {
     private final ProfileRepository profileRepository;
     private final EventRepository eventRepository;
     private final EventItemRepository eventItemRepository;
-    private final TokenRepository tokenRepository;
-    private final MemberRepository memberRepository;
     private final PromotionRepository promotionRepository;
 
     public StatusService(
             ProfileRepository profileRepository,
             EventRepository eventRepository,
             EventItemRepository eventItemRepository,
-            TokenRepository tokenRepository,
-            MemberRepository memberRepository,
             PromotionRepository promotionRepository) {
         this.profileRepository = profileRepository;
         this.eventRepository = eventRepository;
         this.eventItemRepository = eventItemRepository;
-        this.tokenRepository = tokenRepository;
-        this.memberRepository = memberRepository;
         this.promotionRepository = promotionRepository;
     }
 
@@ -137,7 +131,8 @@ public class StatusService {
             }
 
             if (event.getRef() != null) {
-                Optional<Promotion> optPromotion = this.promotionRepository.findPromotionByEvent(event.getRef().getId());
+                Optional<Promotion> optPromotion = this.promotionRepository
+                        .findPromotionByEvent(event.getRef().getId());
                 if (!optPromotion.isPresent()) {
                     throw new IllegalAccessException();
                 }
@@ -147,9 +142,11 @@ public class StatusService {
                     throw new PromotionFullException();
                 }
 
-                /*promotion.sync();
-                
-                this.promotionRepository.save(promotion);*/
+                /*
+                 * promotion.sync();
+                 * 
+                 * this.promotionRepository.save(promotion);
+                 */
             }
 
             Optional<Member> optCurrentMember = event.getMembers().stream()

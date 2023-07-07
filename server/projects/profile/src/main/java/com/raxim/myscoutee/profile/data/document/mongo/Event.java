@@ -161,7 +161,7 @@ public class Event extends EventBase {
     // eventItem range should be within event
     public void sync() {
         if (getItems() != null) {
-            //max capacity can be changed only from the event
+            // max capacity can be changed only from the event
             List<EventItem> items = getItems().stream().map(item -> {
                 if (getCapacity() != null && item.getCapacity() != null) {
 
@@ -217,17 +217,41 @@ public class Event extends EventBase {
                 }
                 return member;
             });
-        }
 
-        if (getCapacity() != null) {
-            if (getNum() >= getCapacity().getMin()) {
-                if (LocalDateTime.now().isAfter(graceTime) && getNum() >= getCapacity().getMin()) {
-                    setStatus("A");
-                } else {
+            // admin or promoter
+            if (getRef() != null) {
+                int promoterCnt = (int) getMembers().stream()
+                        .filter(member -> "P".equals(member.getRole()) && "A".equals(member.getStatus())).count();
+
+                if (promoterCnt == 0) {
                     setStatus("C");
                 }
             } else {
-                setStatus("P");
+                int adminCnt = (int) getMembers().stream()
+                        .filter(member -> "A".equals(member.getRole()) && "A".equals(member.getStatus())).count();
+
+                if (adminCnt == 0) {
+                    Optional<Member> optMemberMin = getMembers().stream().filter(member -> "U".equals(member.getRole()))
+                            .min((cap1, cap2) -> cap1.getCreatedDate().isBefore(cap2.getCreatedDate()) ? -1 : 1);
+
+                    if (optMemberMin.isPresent()) {
+                        Member memberMin = optMemberMin.get();
+                        memberMin.setRole("A");
+                        getMembers().add(memberMin);
+                    }
+                }
+            }
+
+            if (getCapacity() != null) {
+                if (getNum() >= getCapacity().getMin()) {
+                    if (LocalDateTime.now().isAfter(graceTime) && getNum() >= getCapacity().getMin()) {
+                        setStatus("A");
+                    } else {
+                        setStatus("C");
+                    }
+                } else {
+                    setStatus("P");
+                }
             }
         }
 
