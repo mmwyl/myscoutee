@@ -92,12 +92,9 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
 
         @Aggregation(pipeline = "findMembersByEvent")
         List<MemberDTO> findMembersByEvent(
+                        @Param("param") PageParam param,
                         @Param("eventId") UUID eventId,
-                        @Param("limit") int limit,
-                        @Param("step") int step,
-                        @Param("profileId") UUID profileId,
-                        @Param("status") String[] status,
-                        @Param("offset") Object[] offset);
+                        @Param("status") String[] status);
 
         @Aggregation(pipeline = "findProfilesByPromotion")
         List<ProfileDTO> findProfilesByPromotion(

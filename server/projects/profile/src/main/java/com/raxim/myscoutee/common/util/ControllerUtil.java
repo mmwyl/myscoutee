@@ -1,7 +1,6 @@
 package com.raxim.myscoutee.common.util;
 
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +23,11 @@ public class ControllerUtil {
     @FunctionalInterface
     public static interface CheckedTriFunction<T, U, V, R> {
         R apply(T t, U u, V v) throws Exception;
+    }
+
+    @FunctionalInterface
+    public static interface CheckedFourFunction<T, U, V, Z, R> {
+        R apply(T t, U u, V v, Z z) throws Exception;
     }
 
     public static <T, E extends PageItemDTO> ResponseEntity<E> handle(Function<T, Optional<E>> function, T p1,
@@ -64,6 +68,23 @@ public class ControllerUtil {
             U p2, V p3, HttpStatus status) {
         try {
             Optional<E> result = function.apply(p1, p2, p3);
+            if (result.isPresent()) {
+                return new ResponseEntity<>(result.get(), status);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // use logger
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    public static <T, U, V, Z, E extends PageItemDTO> ResponseEntity<E> handle(
+            CheckedFourFunction<T, U, V, Z, Optional<E>> function,
+            T p1,
+            U p2, V p3, Z p4, HttpStatus status) {
+        try {
+            Optional<E> result = function.apply(p1, p2, p3, p4);
             if (result.isPresent()) {
                 return new ResponseEntity<>(result.get(), status);
             } else {

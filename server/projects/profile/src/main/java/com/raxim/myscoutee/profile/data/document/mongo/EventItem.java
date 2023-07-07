@@ -1,6 +1,8 @@
 package com.raxim.myscoutee.profile.data.document.mongo;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
@@ -94,5 +96,40 @@ public class EventItem extends EventBase {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    public void sync() {
+        int cnt = (int) getMembers().stream().filter(member -> "A".equals(member.getStatus())).count();
+        setNum(cnt);
+
+        if (getMembers() != null && getCapacity() != null) {
+            int diff = getCapacity().getMax() - cnt;
+
+            if (diff > 0) {
+                getMembers().stream()
+                        .filter(member -> "W".equals(member.getStatus()))
+                        .sorted((m1, m2) -> m1.getUpdatedDate().compareTo(m2.getUpdatedDate()))
+                        .limit(diff).map(member -> {
+                            member.setStatus("J");
+                            return member;
+                        })
+                        .collect(Collectors.toList());
+            }
+
+            int cntWithJ = (int) getMembers().stream()
+                    .filter(member -> "J".equals(member.getStatus())).count();
+            int diffWithJ = cntWithJ - getCapacity().getMax();
+
+            if (diffWithJ > 0) {
+                getMembers().stream()
+                        .filter(member -> "J".equals(member.getStatus()))
+                        .sorted((m1, m2) -> m1.getUpdatedDate().compareTo(m2.getUpdatedDate()))
+                        .limit(diffWithJ).map(member -> {
+                            member.setStatus("W");
+                            return member;
+                        })
+                        .collect(Collectors.toList());
+            }
+        }
     }
 }

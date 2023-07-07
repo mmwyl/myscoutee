@@ -154,4 +154,9 @@ public class Promotion {
     public void setCreatedBy(UUID createdBy) {
         this.createdBy = createdBy;
     }
+
+    //TODO: promotion sync
+    public void sync() {
+
+    }
 }

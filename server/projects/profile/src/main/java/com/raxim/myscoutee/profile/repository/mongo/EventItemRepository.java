@@ -11,6 +11,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 
 @RepositoryRestResource(collectionResourceRel = "items", path = "items")
 public interface EventItemRepository extends MongoRepository<EventItem, UUID> {
@@ -20,9 +21,7 @@ public interface EventItemRepository extends MongoRepository<EventItem, UUID> {
 
         @Aggregation(pipeline = "findMembersByItem")
         List<MemberDTO> findMembersByItem(
+                        @Param("param") PageParam param,
                         @Param("itemId") UUID itemId,
-                        @Param("limit") int limit,
-                        @Param("step") int step,
-                        @Param("status") String[] status,
-                        @Param("offset") Object[] offset);
+                        @Param("status") String[] status);
 }

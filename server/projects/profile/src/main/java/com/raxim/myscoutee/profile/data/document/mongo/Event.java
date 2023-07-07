@@ -161,16 +161,21 @@ public class Event extends EventBase {
     // eventItem range should be within event
     public void sync() {
         if (getItems() != null) {
-            Optional<Integer> optMaxCapacity = getItems().stream().filter(item -> item.getCapacity() != null)
-                    .map(item -> item.getCapacity().getMax())
-                    .max((cap1, cap2) -> cap1.compareTo(cap2));
-            if (optMaxCapacity.isPresent()) {
-                Integer maxCapacity = optMaxCapacity.get();
-                if (getCapacity() != null
-                        && maxCapacity.intValue() > getCapacity().getMax()) {
-                    getCapacity().setMax(maxCapacity.intValue());
+            //max capacity can be changed only from the event
+            List<EventItem> items = getItems().stream().map(item -> {
+                if (getCapacity() != null && item.getCapacity() != null) {
+
+                    if (item.getCapacity().getMax() > getCapacity().getMax()) {
+                        item.getCapacity().setMax(getCapacity().getMax());
+                    }
+
+                    if (item.getCapacity().getMin() > getCapacity().getMax()) {
+                        item.getCapacity().setMin(getCapacity().getMax());
+                    }
                 }
-            }
+                return item;
+            }).toList();
+            setItems(items);
 
             Optional<LocalDateTime> optStart = getItems().stream().filter(item -> item.getRange() != null)
                     .map(item -> item.getRange().getStart())

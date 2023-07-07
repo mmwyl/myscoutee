@@ -36,7 +36,8 @@ public class EventTest {
 
         event.sync();
 
-        assertEquals(8, event.getCapacity().getMax());
+        assertEquals(6, event.getCapacity().getMax());
+        assertEquals(6, event.getItems().get(0).getCapacity().getMax());
         assertEquals(itemStart, event.getRange().getStart());
         assertEquals(itemEnd, event.getRange().getEnd());
     }
@@ -63,7 +64,8 @@ public class EventTest {
         event.shift();
         event.sync();
 
-        assertEquals(8, event.getCapacity().getMax());
+        assertEquals(6, event.getCapacity().getMax());
+        assertEquals(6, event.getItems().get(0).getCapacity().getMax());
         assertEquals(eventStart, event.getRange().getStart());
 
         LocalDateTime expectedEventEnd = LocalDateTime.of(2021, 2, 1, 0, 0, 0);

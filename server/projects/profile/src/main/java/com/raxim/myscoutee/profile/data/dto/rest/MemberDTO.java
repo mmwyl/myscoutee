@@ -1,26 +1,22 @@
 package com.raxim.myscoutee.profile.data.dto.rest;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 
-import java.util.List;
-
 @JsonRootName("member")
-public class MemberDTO {
+public class MemberDTO extends PageItemDTO {
     @JsonProperty(value = "member")
     private Member member;
-
-    @JsonIgnore
-    private List<Object> offset;
 
     @JsonProperty(value = "role")
     private String role;
 
     public MemberDTO(Member member, List<Object> offset) {
+        setOffset(offset);
         this.member = member;
-        this.offset = offset;
     }
 
     public Member getMember() {
@@ -29,14 +25,6 @@ public class MemberDTO {
 
     public void setMember(Member member) {
         this.member = member;
-    }
-
-    public List<Object> getOffset() {
-        return offset;
-    }
-
-    public void setOffset(List<Object> offset) {
-        this.offset = offset;
     }
 
     public String getRole() {

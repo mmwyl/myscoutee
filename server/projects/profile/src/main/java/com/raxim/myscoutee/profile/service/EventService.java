@@ -16,6 +16,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Token;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.handler.EventParamHandler;
 import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
@@ -53,6 +54,16 @@ public class EventService {
 
     public List<Token> getAllActiveTokens(UUID[] refIds) {
         return eventRepository.findTokensByEvent(refIds);
+    }
+
+    public List<MemberDTO> getMembersByItem(PageParam pageParam, String itemId) {
+        return eventItemRepository.findMembersByItem(pageParam, UUID.fromString(itemId),
+                new String[] { "A", "I", "J" });
+    }
+
+    public List<MemberDTO> getMembersByEvent(PageParam pageParam, String eventId) {
+        return eventRepository.findMembersByEvent(pageParam, UUID.fromString(eventId),
+                new String[] { "A", "I", "J" });
     }
 
     /*

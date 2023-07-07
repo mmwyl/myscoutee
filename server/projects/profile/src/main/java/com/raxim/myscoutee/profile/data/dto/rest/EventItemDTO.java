@@ -19,12 +19,16 @@ public class EventItemDTO extends PageItemDTO {
     @JsonProperty(value = "role")
     private String role;
 
+    public EventItemDTO() {
+    }
+
+    public EventItemDTO(EventItem item) {
+        this(item, null);
+    }
+
     public EventItemDTO(EventItem item, Object groupKey) {
         this.item = item;
         this.groupKey = groupKey;
-    }
-
-    public EventItemDTO() {
     }
 
     public EventItem getItem() {

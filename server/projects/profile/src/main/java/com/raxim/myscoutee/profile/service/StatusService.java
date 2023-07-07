@@ -1,14 +1,18 @@
 package com.raxim.myscoutee.profile.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
+import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
+import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Promotion;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.exception.EventFullException;
 import com.raxim.myscoutee.profile.exception.IllegalAccessException;
 import com.raxim.myscoutee.profile.exception.MessageException;
@@ -44,110 +48,82 @@ public class StatusService {
         this.promotionRepository = promotionRepository;
     }
 
-    // TODO: to be fixed
-    /*
-     * public ResponseEntity<?> itemStatus(String itemId, String status, UUID
-     * profileUid) {
-     * Optional<com.raxim.myscoutee.profile.data.document.mongo.Profile> profileOp =
-     * profileRepository
-     * .findById(profileUid);
-     * if (profileOp.isPresent()) {
-     * com.raxim.myscoutee.profile.data.document.mongo.Profile profile =
-     * profileOp.get();
-     * return eventItemRepository.findById(UUID.fromString(itemId)).map(eventItem ->
-     * {
-     * {
-     * String action = null;
-     * 
-     * if (status.equals("A") && eventItem.getNum() ==
-     * eventItem.getCapacity().getMax()) {
-     * return ResponseEntity.badRequest().body(new ErrorDTO(450, "err.event_full"));
-     * } else {
-     * if (eventItem.getOptional() != null && eventItem.getOptional()) {
-     * if (status.equals("A")) {
-     * boolean isMember = eventItem.getMembers().stream()
-     * .anyMatch(member -> member.getId().equals(profile.getId()));
-     * if (!isMember) {
-     * Member newMember = new Member();
-     * newMember.setId(profileUid);
-     * newMember.setProfile(profile);
-     * newMember.setStatus(status);
-     * newMember.setRole("U");
-     * eventItem.getMembers().add(newMember);
-     * }
-     * action = "joined";
-     * eventItem.setNum(eventItem.getNum() + 1);
-     * } else if (status.equals("L")) {
-     * action = "left";
-     * eventItem.setNum(eventItem.getNum() - 1);
-     * }
-     * 
-     * Set<com.raxim.myscoutee.profile.data.document.mongo.Member> eMembers =
-     * eventItem
-     * .getMembers().stream()
-     * .map(member -> {
-     * if (member.getId().equals(profile.getId())) {
-     * member.setStatus(status);
-     * }
-     * return member;
-     * })
-     * .collect(Collectors.toSet());
-     * 
-     * eventItem.setMembers(eMembers);
-     * com.raxim.myscoutee.profile.data.document.mongo.EventItem savedEventItem =
-     * eventItemRepository
-     * .save(eventItem);
-     * 
-     * if (action != null) {
-     * List<UUID> promoterIds = savedEventItem.getMembers().stream()
-     * .filter(member -> member.getRole().equals("P"))
-     * .map(member -> member.getProfile().getId())
-     * .collect(Collectors.toList());
-     * 
-     * if (promoterIds.size() > 0) {
-     * List<String> deviceKeys = tokenRepository.findByUserIds(promoterIds).stream()
-     * .map(token -> token.getDeviceKey())
-     * .collect(Collectors.toList());
-     * 
-     * if (!deviceKeys.isEmpty()) {
-     * com.google.firebase.messaging.MulticastMessage message =
-     * com.google.firebase.messaging.MulticastMessage
-     * .builder()
-     * .setNotification(
-     * Notification.builder()
-     * .setTitle("Member + " + action)
-     * .setBody("Member '" + profile.getFirstName() + "' "
-     * + action + " the " + eventItem.getName()
-     * + " event!")
-     * .build())
-     * .addAllTokens(deviceKeys)
-     * .build();
-     * 
-     * try {
-     * com.google.firebase.messaging.BatchResponse response = FirebaseMessaging
-     * .getInstance().sendMulticast(message);
-     * System.out.println("Successfully sent message: " + response);
-     * } catch (FirebaseMessagingException e) {
-     * e.printStackTrace();
-     * }
-     * }
-     * }
-     * }
-     * 
-     * return ResponseEntity.noContent().build();
-     * } else {
-     * return ResponseEntity.badRequest().build();
-     * }
-     * }
-     * }
-     * }).orElse(ResponseEntity.notFound().build());
-     * }
-     * return ResponseEntity.badRequest().build();
-     * }
-     */
+    // approve, kick etc.
+    public Optional<EventItemDTO> manageMemberStatusForItem(String id, String profileUid, UUID byUuid, String status) {
+        Optional<EventItem> eventItemRes = id != null ? this.eventItemRepository.findById(UUID.fromString(id))
+                : Optional.empty();
+
+        UUID memberId = UUID.fromString(profileUid);
+
+        if (eventItemRes.isPresent()) {
+            EventItem eventItem = eventItemRes.get();
+
+            Optional<Member> optCurrentMember = eventItem.getMembers().stream()
+                    .filter(member -> memberId.equals(member.getProfile().getId())).findFirst();
+
+            Optional<Member> optAdmin = eventItem.getMembers().stream()
+                    .filter(member -> byUuid.equals(member.getProfile().getId())
+                            && "A".equals(member.getRole()))
+                    .findFirst();
+
+            if (optAdmin.isPresent() && optCurrentMember.isPresent()) {
+                Member currentMember = optCurrentMember.get();
+                currentMember.setStatus(status);
+                currentMember.setUpdatedDate(LocalDateTime.now());
+                eventItem.getMembers().add(currentMember);
+            }
+
+            eventItem.sync();
+
+            EventItem dbEventItem = this.eventItemRepository.save(eventItem);
+            return Optional.of(new EventItemDTO(dbEventItem));
+        }
+        return Optional.empty();
+    }
+
+    // optional eventItem
+    public Optional<EventItemDTO> changeStatusForItem(String id, UUID profileUid, String status) {
+        Optional<EventItem> eventItemRes = id != null ? this.eventItemRepository.findById(UUID.fromString(id))
+                : Optional.empty();
+
+        if (eventItemRes.isPresent()) {
+            EventItem eventItem = eventItemRes.get();
+
+            Optional<Member> optCurrentMember = eventItem.getMembers().stream()
+                    .filter(member -> profileUid.equals(member.getProfile().getId())).findFirst();
+
+            if (optCurrentMember.isPresent()) {
+                Member currentMember = optCurrentMember.get();
+                currentMember.setStatus(status);
+                currentMember.setUpdatedDate(LocalDateTime.now());
+                eventItem.getMembers().add(currentMember);
+            } else {
+                Optional<Profile> optProfile = profileRepository
+                        .findById(profileUid);
+                if (optProfile.isPresent()) {
+                    Member newMember = new Member();
+                    Profile profile = optProfile.get();
+                    newMember.setProfile(profile);
+                    newMember.setCreatedDate(LocalDateTime.now());
+                    newMember.setRole("U");
+                    newMember.setUpdatedDate(LocalDateTime.now());
+                    newMember.setStatus(status);
+
+                    eventItem.getMembers().add(newMember);
+                }
+            }
+
+            eventItem.sync();
+
+            EventItem dbEventItem = this.eventItemRepository.save(eventItem);
+            return Optional.of(new EventItemDTO(dbEventItem));
+
+        }
+        return Optional.empty();
+    }
 
     // promotion accept event -> message to participant, or cancel event
-    public Optional<EventDTO> status(String id, UUID profileUid, String status)
+    public Optional<EventDTO> changeStatusForEvent(String id, UUID profileUid, String status)
             throws MessageException {
 
         Optional<Event> eventRes = id != null ? this.eventRepository.findById(UUID.fromString(id)) : Optional.empty();
@@ -161,8 +137,8 @@ public class StatusService {
             }
 
             if (event.getRef() != null) {
-                Optional<Promotion> optPromotion = promotionRepository.findPromotionByEvent(event.getRef().getId());
-                if (optPromotion.isPresent()) {
+                Optional<Promotion> optPromotion = this.promotionRepository.findPromotionByEvent(event.getRef().getId());
+                if (!optPromotion.isPresent()) {
                     throw new IllegalAccessException();
                 }
 
@@ -170,6 +146,10 @@ public class StatusService {
                 if (promotion.getCnt() == 0) {
                     throw new PromotionFullException();
                 }
+
+                /*promotion.sync();
+                
+                this.promotionRepository.save(promotion);*/
             }
 
             Optional<Member> optCurrentMember = event.getMembers().stream()
