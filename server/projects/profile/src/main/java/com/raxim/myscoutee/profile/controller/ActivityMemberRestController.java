@@ -111,6 +111,8 @@ public class ActivityMemberRestController {
                 HttpStatus.OK);
     }
 
+    //when the promoter accepts, can see the members, before that not!
+    //instead of "clone" use name "pick or select"
     // TODO: promotion fix -> statusService.changeStatusForEvent not prepared to
     // handle
     @PostMapping(value = { "promotions/{id}/{type}" })
