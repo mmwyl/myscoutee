@@ -1,7 +1,7 @@
 package com.raxim.myscoutee.profile.data.document.mongo;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -45,6 +45,12 @@ public class Member {
     // event item ref - members will be removed from event item
     @JsonIgnore
     private UUID eventRef;
+
+    @JsonProperty(value = "score")
+    private Integer score;
+
+    // extra scores by Match penalties, reward
+    private List<Score> scores;
 
     public Member(Profile profile) {
         this(profile, "A", "U");
@@ -139,4 +145,21 @@ public class Member {
             return false;
         return true;
     }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public List<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(List<Score> scores) {
+        this.scores = scores;
+    }
+
 }

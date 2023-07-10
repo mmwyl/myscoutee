@@ -29,6 +29,6 @@ public class MockTest {
         when(converters.convert(any())).thenReturn(Optional.of(new EventDTO(event)));
 
         Optional<EventDTO> eventDTO = converters.convert(event).map(ev -> (EventDTO)ev);
-        assertEquals("Z", eventDTO.get().getEvent().getStatus());
+        assertEquals("Z", eventDTO.get().getItem().getStatus());
     }
 }

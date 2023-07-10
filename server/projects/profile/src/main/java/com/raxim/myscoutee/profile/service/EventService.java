@@ -14,18 +14,15 @@ import org.springframework.stereotype.Service;
 
 import com.raxim.myscoutee.profile.converter.Converters;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
-import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Token;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.exception.IllegalAccessException;
 import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.handler.EventParamHandler;
-import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.PromotionRepository;
@@ -33,17 +30,14 @@ import com.raxim.myscoutee.profile.repository.mongo.PromotionRepository;
 @Service
 public class EventService {
     private final EventRepository eventRepository;
-    private final EventItemRepository eventItemRepository;
     private final ProfileRepository profileRepository;
     private final Converters converters;
 
     public EventService(EventRepository eventRepository,
-            EventItemRepository eventItemRepository,
             PromotionRepository promotionRepository,
             ProfileRepository profileRepository,
             Converters converters) {
         this.eventRepository = eventRepository;
-        this.eventItemRepository = eventItemRepository;
         this.profileRepository = profileRepository;
         this.converters = converters;
     }
@@ -58,11 +52,6 @@ public class EventService {
 
     public List<Token> getAllActiveTokens(UUID[] refIds) {
         return eventRepository.findTokensByEvent(refIds);
-    }
-
-    public List<MemberDTO> getMembersByItem(PageParam pageParam, String itemId) {
-        return eventItemRepository.findMembersByItem(pageParam, UUID.fromString(itemId),
-                new String[] { "A", "I", "J", "W" });
     }
 
     public List<MemberDTO> getMembersByEvent(PageParam pageParam, String eventId) {
@@ -214,7 +203,7 @@ public class EventService {
         return Optional.empty();
     }
 
-    public Optional<EventItemDTO> saveItem(Profile profile, String eventId, EventItem pEventItem)
+    public Optional<EventDTO> saveItem(Profile profile, String eventId, Event pEventItem)
             throws CloneNotSupportedException {
         Optional<Event> eventRes = eventId != null ? this.eventRepository.findById(UUID.fromString(eventId))
                 : Optional.empty();
@@ -222,20 +211,20 @@ public class EventService {
         if (eventRes.isPresent()) {
             Event dbEvent = eventRes.get();
 
-            Optional<EventItem> eventItemRes = dbEvent.getItems().stream()
+            Optional<Event> eventItemRes = dbEvent.getItems().stream()
                     .filter(item -> pEventItem.getId().equals(item.getId()))
                     .findFirst();
 
-            EventItem lEventItem = (EventItem) pEventItem.clone();
+            Event lEventItem = (Event) pEventItem.clone();
             UUID eventItemId;
             if (!eventItemRes.isPresent()) {
                 eventItemId = UUID.randomUUID();
                 lEventItem.setId(eventItemId);
                 lEventItem.setCreatedDate(LocalDateTime.now());
                 lEventItem.setCreatedBy(profile.getId());
-                lEventItem.setStatus(lEventItem.getNum() >= lEventItem.getCapacity().getMin() ? "A" : "P");
+                lEventItem.setStatus(lEventItem.getNumOfMembers() >= lEventItem.getCapacity().getMin() ? "A" : "P");
             } else {
-                EventItem dbEventItem = eventItemRes.get();
+                Event dbEventItem = eventItemRes.get();
 
                 eventItemId = dbEventItem.getId();
                 lEventItem.setId(eventItemId);
@@ -254,25 +243,25 @@ public class EventService {
             }
             dbEvent.getItems().add(lEventItem);
 
-            List<EventItem> eventItems = eventItemRepository.saveAll(dbEvent.getItems());
+            List<Event> eventItems = eventRepository.saveAll(dbEvent.getItems());
 
             dbEvent.setItems(eventItems);
             dbEvent = eventRepository.save(dbEvent);
 
-            Optional<EventItem> dbEventItem = dbEvent.getItems().stream()
+            Optional<Event> dbEventItem = dbEvent.getItems().stream()
                     .filter(item -> item.getId().equals(eventItemId))
                     .findFirst();
 
             if (dbEventItem.isPresent()) {
-                EventItem tEventItem = dbEventItem.get();
-                return converters.convert(tEventItem).map(obj -> (EventItemDTO) obj);
+                Event tEventItem = dbEventItem.get();
+                return converters.convert(tEventItem).map(obj -> (EventDTO) obj);
             }
         }
 
         return Optional.empty();
     }
 
-    public List<EventItemDTO> getEventItems(PageParam pageParam, UUID eventId) {
+    public List<EventDTO> getEventItems(PageParam pageParam, UUID eventId) {
         return eventRepository.findItemsByEvent(eventId, pageParam);
     }
 

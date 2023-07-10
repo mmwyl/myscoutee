@@ -35,7 +35,7 @@ import com.raxim.myscoutee.profile.service.EventGeneratorPriorityService;
         "logging.level.org.springframework.data.mongodb=DEBUG" })
 @TestData({ "mongo/profiles.json", "mongo/priority/events.json", "mongo/likes.json" })
 @TestExecutionListeners(value = MongoDataLoaderTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
-public class EventGenerotorPriorityServiceTestInt extends AbstractAlgoTest {
+public class EventGeneratorPriorityServiceTestInt extends AbstractAlgoTest {
 
     private static final UUID UUID_PROFILE_OLIVER = UUID.fromString("534ccc6b-2547-4bf0-ad91-dca739943ea4");
     private static final UUID UUID_PROFILE_SOPHIA = UUID.fromString("39402632-a452-57be-2518-53cc117b1abc");

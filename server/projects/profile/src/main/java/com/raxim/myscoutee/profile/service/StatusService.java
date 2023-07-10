@@ -7,16 +7,13 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
-import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Promotion;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.exception.IllegalAccessException;
 import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.exception.PromotionFullException;
-import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.PromotionRepository;
@@ -25,30 +22,27 @@ import com.raxim.myscoutee.profile.repository.mongo.PromotionRepository;
 public class StatusService {
     private final ProfileRepository profileRepository;
     private final EventRepository eventRepository;
-    private final EventItemRepository eventItemRepository;
     private final PromotionRepository promotionRepository;
 
     public StatusService(
             ProfileRepository profileRepository,
             EventRepository eventRepository,
-            EventItemRepository eventItemRepository,
             PromotionRepository promotionRepository) {
         this.profileRepository = profileRepository;
         this.eventRepository = eventRepository;
-        this.eventItemRepository = eventItemRepository;
         this.promotionRepository = promotionRepository;
     }
 
     // approve, kick etc.
-    public Optional<EventItemDTO> manageMemberStatusForItem(String id, String profileUid, UUID byUuid, String status)
+    public Optional<EventDTO> manageMemberStatusForItem(String id, String profileUid, UUID byUuid, String status)
             throws MessageException {
-        Optional<EventItem> eventItemRes = id != null ? this.eventItemRepository.findById(UUID.fromString(id))
+        Optional<Event> eventItemRes = id != null ? this.eventRepository.findById(UUID.fromString(id))
                 : Optional.empty();
 
         UUID memberId = UUID.fromString(profileUid);
 
         if (eventItemRes.isPresent()) {
-            EventItem eventItem = eventItemRes.get();
+            Event eventItem = eventItemRes.get();
 
             Optional<Member> optCurrentMember = eventItem.getMembers().stream()
                     .filter(member -> memberId.equals(member.getProfile().getId())).findFirst();
@@ -68,8 +62,8 @@ public class StatusService {
 
             eventItem.sync();
 
-            EventItem dbEventItem = this.eventItemRepository.save(eventItem);
-            return Optional.of(new EventItemDTO(dbEventItem));
+            Event dbEventItem = this.eventRepository.save(eventItem);
+            return Optional.of(new EventDTO(dbEventItem));
         }
         return Optional.empty();
     }
@@ -110,12 +104,12 @@ public class StatusService {
     }
 
     // optional eventItem
-    public Optional<EventItemDTO> changeStatusForItem(String id, UUID profileUid, String status) {
-        Optional<EventItem> eventItemRes = id != null ? this.eventItemRepository.findById(UUID.fromString(id))
+    public Optional<EventDTO> changeStatusForItem(String id, UUID profileUid, String status) {
+        Optional<Event> eventItemRes = id != null ? this.eventRepository.findById(UUID.fromString(id))
                 : Optional.empty();
 
         if (eventItemRes.isPresent()) {
-            EventItem eventItem = eventItemRes.get();
+            Event eventItem = eventItemRes.get();
 
             Optional<Member> optCurrentMember = eventItem.getMembers().stream()
                     .filter(member -> profileUid.equals(member.getProfile().getId())).findFirst();
@@ -142,8 +136,8 @@ public class StatusService {
 
             eventItem.sync();
 
-            EventItem dbEventItem = this.eventItemRepository.save(eventItem);
-            return Optional.of(new EventItemDTO(dbEventItem));
+            Event dbEventItem = this.eventRepository.save(eventItem);
+            return Optional.of(new EventDTO(dbEventItem));
 
         }
         return Optional.empty();
@@ -166,7 +160,7 @@ public class StatusService {
                 }
 
                 Promotion promotion = optPromotion.get();
-                if (promotion.getCnt() == 0) {
+                if (promotion.getNumOfEvents() == 0) {
                     throw new PromotionFullException();
                 }
 

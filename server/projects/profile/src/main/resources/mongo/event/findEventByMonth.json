@@ -1,6 +1,7 @@
 [
     {
         "$match": {
+            "type": "A",
             "members": {
                 "$elemMatch": {
                     "profile.$id": "?#{#param.id}",
@@ -197,7 +198,7 @@
             "newRoot": {
                 "$mergeObjects": [
                     {
-                        "event": "$$ROOT"
+                        "item": "$$ROOT"
                     },
                     {
                         "groupKey": "$groupKey",

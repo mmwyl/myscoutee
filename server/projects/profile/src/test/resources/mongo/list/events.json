@@ -4,7 +4,7 @@
             "$binary": "oEy7pm3PAx0lyLoCFSX6kg==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event1",
         "range": {
             "start": {
@@ -26,7 +26,7 @@
         "createdDate": {
             "$date": "2021-01-30T04:17:08.000Z"
         },
-        "num": 1,
+        "numOfMembers": 1,
         "members": [
             {
                 "profile": {
@@ -54,7 +54,7 @@
             "$binary": "pUQakRBTZ8lMwwVGHzQ3sg==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event11",
         "range": {
             "start": {
@@ -76,7 +76,7 @@
         "createdDate": {
             "$date": "2021-01-30T04:17:08.000Z"
         },
-        "num": 1,
+        "numOfMembers": 1,
         "members": [
             {
                 "profile": {
@@ -104,7 +104,7 @@
             "$binary": "f0XjJP5nYzMiKNTVqFsTlg==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event12",
         "range": {
             "start": {
@@ -126,7 +126,7 @@
         "createdDate": {
             "$date": "2021-01-30T04:17:08.000Z"
         },
-        "num": 1,
+        "numOfMembers": 1,
         "members": [
             {
                 "profile": {
@@ -154,7 +154,7 @@
             "$binary": "jEzsC2l500NzJTdJoWk7ow==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event2",
         "range": {
             "start": {
@@ -168,7 +168,7 @@
         "createdDate": {
             "$date": "2021-01-30T04:17:08.000Z"
         },
-        "num": 2,
+        "numOfMembers": 2,
         "members": [
             {
                 "profile": {
@@ -207,7 +207,7 @@
             "$binary": "yUSGxbxr2t/cEdXAbUbNvg==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event31",
         "range": {
             "start": {
@@ -221,7 +221,7 @@
         "createdDate": {
             "$date": "2019-01-30T04:17:08.000Z"
         },
-        "num": 2,
+        "numOfMembers": 2,
         "members": [
             {
                 "profile": {
@@ -260,7 +260,7 @@
             "$binary": "7kUEsQ+WrRXY03is9usQhQ==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event32",
         "range": {
             "start": {
@@ -274,7 +274,7 @@
         "createdDate": {
             "$date": "2020-01-30T04:17:08.000Z"
         },
-        "num": 4,
+        "numOfMembers": 4,
         "capacity": {
             "min": 2,
             "max": 5
@@ -359,7 +359,7 @@
         },
         "items": [
             {
-                "$ref": "items",
+                "$ref": "events",
                 "$id": {
                     "$binary": "5kGUdSWfGlTxSAq+VQAHlw==",
                     "$type": "03"
@@ -372,7 +372,7 @@
             "$binary": "8Ev2c8o1pCw13zY02oBNrA==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event33",
         "range": {
             "start": {
@@ -386,7 +386,7 @@
         "createdDate": {
             "$date": "2021-01-30T04:17:08.000Z"
         },
-        "num": 2,
+        "numOfMembers": 2,
         "members": [
             {
                 "profile": {
@@ -415,6 +415,89 @@
             "$binary": "NkaorobBPrNUDApiL0o1tg==",
             "$type": "03"
         },
+        "createdBy": {
+            "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
+            "$type": "03"
+        }
+    },
+    {
+        "_id": {
+            "$binary": "5kGUdSWfGlTxSAq+VQAHlw==",
+            "$type": "03"
+        },
+        "type": "S",
+        "name": "EventItem32",
+        "range": {
+            "start": {
+                "$date": "2020-01-31T04:17:08.000Z"
+            },
+            "end": {
+                "$date": "2020-10-17T09:22:01.000Z"
+            }
+        },
+        "status": "A",
+        "createdDate": {
+            "$date": "2020-01-29T04:17:08.000Z"
+        },
+        "numOfMembers": 4,
+        "members": [
+            {
+                "profile": {
+                    "$ref": "profiles",
+                    "$id": {
+                        "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
+                        "$type": "03"
+                    }
+                },
+                "status": "A",
+                "role": "A",
+                "createdDate": {
+                    "$date": "2019-01-02T04:17:08.000Z"
+                }
+            },
+            {
+                "profile": {
+                    "$ref": "profiles",
+                    "$id": {
+                        "$binary": "L3VWbLpPSeuZZcjIFMQjUQ==",
+                        "$type": "03"
+                    }
+                },
+                "status": "A",
+                "role": "U",
+                "createdDate": {
+                    "$date": "2020-01-30T04:17:08.000Z"
+                }
+            },
+            {
+                "profile": {
+                    "$ref": "profiles",
+                    "$id": {
+                        "$binary": "8r2G5Lj5TmmGtJ3xBX0QZQ==",
+                        "$type": "03"
+                    }
+                },
+                "status": "A",
+                "role": "U",
+                "createdDate": {
+                    "$date": "2019-02-25T04:17:08.000Z"
+                }
+            },
+            {
+                "profile": {
+                    "$ref": "profiles",
+                    "$id": {
+                        "$binary": "0eEFqfhyTPyMFU6R2cD4BQ==",
+                        "$type": "03"
+                    }
+                },
+                "status": "A",
+                "role": "U",
+                "createdDate": {
+                    "$date": "2019-01-25T04:17:08.000Z"
+                }
+            }
+        ],
         "createdBy": {
             "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
             "$type": "03"

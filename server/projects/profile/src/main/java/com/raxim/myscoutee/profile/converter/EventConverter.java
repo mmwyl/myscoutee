@@ -14,11 +14,15 @@ public class EventConverter extends BaseConverter<Event, EventDTO> {
 
     @Override
     public EventDTO convert(Event event) {
-        LocalDateTime eventStart = event.getRange().getStart();
-        LocalDate groupKey = eventStart != null ? eventStart.toLocalDate() : null;
-        Long sortKey = eventStart != null ? eventStart.toInstant(ZoneOffset.UTC).toEpochMilli() : null;
-
-        return new EventDTO(event, groupKey, sortKey);
+        if ("A".equals(event.getType())) {
+            LocalDateTime eventStart = event.getRange().getStart();
+            LocalDate groupKey = eventStart != null ? eventStart.toLocalDate() : null;
+            Long sortKey = eventStart != null ? eventStart.toInstant(ZoneOffset.UTC).toEpochMilli() : null;
+            return new EventDTO(event, groupKey, sortKey);
+        } else {
+            String groupKey = event.getType();
+            return new EventDTO(event, groupKey, null);
+        }
     }
 
 }

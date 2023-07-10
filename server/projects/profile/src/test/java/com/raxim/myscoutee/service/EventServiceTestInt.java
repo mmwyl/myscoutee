@@ -27,7 +27,6 @@ import com.raxim.myscoutee.profile.converter.Converters;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.exception.MessageException;
-import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.PromotionRepository;
@@ -39,7 +38,7 @@ import com.raxim.myscoutee.profile.service.StatusService;
 @Import({ RepositoryConfig.class, JsonConfig.class })
 @TestPropertySource(properties = { "de.flapdoodle.mongodb.embedded.version=6.0.6",
                 "logging.level.org.springframework.data.mongodb=DEBUG" })
-@TestData({ "mongo/profiles.json", "mongo/list/items.json", "mongo/list/events.json" })
+@TestData({ "mongo/profiles.json", "mongo/list/events.json" })
 @TestExecutionListeners(value = MongoDataLoaderTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class EventServiceTestInt extends AbstractAlgoTest {
 
@@ -50,10 +49,7 @@ public class EventServiceTestInt extends AbstractAlgoTest {
         private EventRepository eventRepository;
 
         @Autowired
-        private EventItemRepository eventItemRepository;
-
-        @Autowired
-        //@Spy is not woring for repositories
+        // @Spy is not woring for repositories
         private PromotionRepository promotionRepository;
 
         private Converters converters = new Converters();
@@ -63,9 +59,9 @@ public class EventServiceTestInt extends AbstractAlgoTest {
 
         @BeforeEach
         public void init() {
-                eventService = new EventService(eventRepository, eventItemRepository, promotionRepository,
+                eventService = new EventService(eventRepository, promotionRepository,
                                 profileRepository, converters);
-                statusService = new StatusService(profileRepository, eventRepository, eventItemRepository,
+                statusService = new StatusService(profileRepository, eventRepository,
                                 promotionRepository);
         }
 

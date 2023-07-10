@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -21,8 +22,8 @@ import org.springframework.test.context.TestPropertySource;
 import com.raxim.myscoutee.common.config.RepositoryConfig;
 import com.raxim.myscoutee.common.repository.MongoDataLoaderTestExecutionListener;
 import com.raxim.myscoutee.common.repository.TestData;
+import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.handler.EventItemParamHandler;
 import com.raxim.myscoutee.profile.handler.EventParamHandler;
@@ -34,7 +35,7 @@ import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 @TestPropertySource(properties = { "de.flapdoodle.mongodb.embedded.version=6.0.6",
                 "logging.level.org.springframework.data.mongodb=DEBUG" })
 // @TestData({"profiles" = mongo/profiles.json})
-@TestData({ "mongo/profiles.json", "mongo/list/items.json", "mongo/list/events.json" })
+@TestData({ "mongo/profiles.json", "mongo/list/events.json" })
 @TestExecutionListeners(value = MongoDataLoaderTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class EventRepositoryListTest {
 
@@ -67,7 +68,7 @@ public class EventRepositoryListTest {
                 assertEquals(1, eventDTOs.size());
 
                 LocalDateTime untilM = until.atStartOfDay().minus(1, ChronoUnit.MILLIS);
-                assertEquals(untilM, eventDTOs.get(0).getEvent().getRange().getEnd());
+                assertEquals(untilM, eventDTOs.get(0).getItem().getRange().getEnd());
         }
 
         @Test
@@ -96,7 +97,7 @@ public class EventRepositoryListTest {
                 eventDTOs = this.eventRepository.findEventDown(pageParam,
                                 new String[] { "A", "P", "C" });
                 assertEquals(1, eventDTOs.size());
-                assertEquals("Event32", eventDTOs.get(0).getEvent().getName());
+                assertEquals("Event32", eventDTOs.get(0).getItem().getName());
 
                 String[] tOffsetM1 = eventDTOs.get(0).getOffset().stream()
                                 .map(Object::toString)
@@ -107,13 +108,13 @@ public class EventRepositoryListTest {
                 eventDTOs = this.eventRepository.findEventDown(pageParam,
                                 new String[] { "A", "P", "C" });
                 assertEquals(1, eventDTOs.size());
-                assertEquals("Event2", eventDTOs.get(0).getEvent().getName());
+                assertEquals("Event2", eventDTOs.get(0).getItem().getName());
 
                 eventDTOs = this.eventRepository.findEventUp(pageParam,
                                 new String[] { "A", "P", "C" });
                 assertEquals(1, eventDTOs.size());
                 assertEquals(1, eventDTOs.size());
-                assertEquals("Event31", eventDTOs.get(0).getEvent().getName());
+                assertEquals("Event31", eventDTOs.get(0).getItem().getName());
         }
 
         @Test
@@ -156,7 +157,9 @@ public class EventRepositoryListTest {
                 pageParam.setId(UUID_PROFILE_OLIVER);
                 pageParam.setGroupKey(EventItemParamHandler.DAY_FORMAT);
 
-                List<EventItemDTO> eventItemDTOs = this.eventRepository.findItemsByEvent(UUID_EVENT_32,
+                Optional<Event> optEvent = this.eventRepository.findById(UUID_EVENT_32);
+
+                List<EventDTO> eventItemDTOs = this.eventRepository.findItemsByEvent(UUID_EVENT_32,
                                 pageParam);
                 assertEquals(1, eventItemDTOs.size());
                 assertEquals("EventItem32", eventItemDTOs.get(0).getItem().getName());

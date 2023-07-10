@@ -4,7 +4,7 @@
             "$binary": "oEy7pm3PAx0lyLoCFSX6kg==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event1",
         "range": {
             "start": {
@@ -54,7 +54,7 @@
             "$binary": "pUQakRBTZ8lMwwVGHzQ3sg==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event11",
         "range": {
             "start": {
@@ -104,7 +104,7 @@
             "$binary": "f0XjJP5nYzMiKNTVqFsTlg==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event12",
         "range": {
             "start": {
@@ -154,7 +154,7 @@
             "$binary": "jEzsC2l500NzJTdJoWk7ow==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event2",
         "range": {
             "start": {
@@ -207,7 +207,7 @@
             "$binary": "7kUEsQ+WrRXY03is9usQhQ==",
             "$type": "03"
         },
-        "type": "P",
+        "type": "A",
         "name": "Event3",
         "range": {
             "start": {

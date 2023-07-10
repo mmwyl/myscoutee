@@ -28,52 +28,54 @@ import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 @DirtiesContext
 @Import({ RepositoryConfig.class })
 @TestPropertySource(properties = { "de.flapdoodle.mongodb.embedded.version=6.0.6",
-        "logging.level.org.springframework.data.mongodb=DEBUG" })
-@TestData({ "mongo/profiles.json", "mongo/list/items.json", "mongo/list/events.json" })
+                "logging.level.org.springframework.data.mongodb=DEBUG" })
+@TestData({ "mongo/profiles.json", "mongo/list/events.json" })
 @TestExecutionListeners(value = MongoDataLoaderTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class EventRepositoryMemberTest {
 
-    @Autowired
-    private EventRepository eventRepository;
+        @Autowired
+        private EventRepository eventRepository;
 
-    @Test
-    public void shouldGetMembersForEvent() {
-        String[] memberStatuses = new String[] { "A", "I", "J", "W" };
-        String status = "A";
-        LocalDate createdDate = LocalDate.of(1901, 1, 1);
-        String createdDateF = createdDate.atStartOfDay(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        @Test
+        public void shouldGetMembersForEvent() {
+                String[] memberStatuses = new String[] { "A", "I", "J", "W" };
+                String status = "A";
+                LocalDate createdDate = LocalDate.of(1901, 1, 1);
+                String createdDateF = createdDate.atStartOfDay(ZoneId.systemDefault())
+                                .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
-        String[] tOffset = new String[] { status, createdDateF };
+                String[] tOffset = new String[] { status, createdDateF };
 
-        PageParam pageParam = new PageParam();
-        pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
-        pageParam.setOffset(tOffset);
+                PageParam pageParam = new PageParam();
+                pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
+                pageParam.setOffset(tOffset);
 
-        List<MemberDTO> memberDTOs = this.eventRepository.findMembersByEvent(pageParam, AppTestConstants.UUID_EVENT_32,
-                memberStatuses);
-        assertEquals(4, memberDTOs.size());
+                List<MemberDTO> memberDTOs = this.eventRepository.findMembersByEvent(pageParam,
+                                AppTestConstants.UUID_EVENT_32,
+                                memberStatuses);
+                assertEquals(4, memberDTOs.size());
 
-        assertEquals(AppTestConstants.UUID_PROFILE_AVA, memberDTOs.get(3).getMember().getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_AVA, memberDTOs.get(3).getMember().getProfile().getId());
 
-        int limit = 3;
-        pageParam.setLimit(limit);
+                int limit = 3;
+                pageParam.setLimit(limit);
 
-        memberDTOs = this.eventRepository.findMembersByEvent(pageParam, AppTestConstants.UUID_EVENT_32, memberStatuses);
-        assertEquals(limit, memberDTOs.size());
+                memberDTOs = this.eventRepository.findMembersByEvent(pageParam, AppTestConstants.UUID_EVENT_32,
+                                memberStatuses);
+                assertEquals(limit, memberDTOs.size());
 
-        assertEquals(AppTestConstants.UUID_PROFILE_OLIVER, memberDTOs.get(0).getMember().getProfile().getId());
-        assertEquals(AppTestConstants.UUID_PROFILE_EMMA, memberDTOs.get(1).getMember().getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_OLIVER, memberDTOs.get(0).getMember().getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_EMMA, memberDTOs.get(1).getMember().getProfile().getId());
 
-        Object[] lOffset = CommonUtil.offset(memberDTOs, tOffset).toArray();
-        pageParam.setOffset(lOffset);
+                Object[] lOffset = CommonUtil.offset(memberDTOs, tOffset).toArray();
+                pageParam.setOffset(lOffset);
 
-        memberDTOs = this.eventRepository.findMembersByEvent(pageParam, AppTestConstants.UUID_EVENT_32, memberStatuses);
-        assertEquals(1, memberDTOs.size());
+                memberDTOs = this.eventRepository.findMembersByEvent(pageParam, AppTestConstants.UUID_EVENT_32,
+                                memberStatuses);
+                assertEquals(1, memberDTOs.size());
 
-        assertEquals(AppTestConstants.UUID_PROFILE_AVA, memberDTOs.get(0).getMember().getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_AVA, memberDTOs.get(0).getMember().getProfile().getId());
 
-
-    }
+        }
 
 }

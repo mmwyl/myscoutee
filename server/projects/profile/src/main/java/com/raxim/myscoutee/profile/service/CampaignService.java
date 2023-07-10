@@ -5,33 +5,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
-import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
-import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Idea;
 import com.raxim.myscoutee.profile.data.document.mongo.Job;
-import com.raxim.myscoutee.profile.data.document.mongo.Member;
-import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.Promotion;
-import com.raxim.myscoutee.profile.data.document.mongo.Slot;
 import com.raxim.myscoutee.profile.data.dto.rest.IdeaDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.JobDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PromotionDTO;
-import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.GroupRepository;
 import com.raxim.myscoutee.profile.repository.mongo.IdeaRepository;
 import com.raxim.myscoutee.profile.repository.mongo.JobRepository;
 import com.raxim.myscoutee.profile.repository.mongo.MemberRepository;
 import com.raxim.myscoutee.profile.repository.mongo.PromotionRepository;
-import com.raxim.myscoutee.profile.util.EventUtil;
 
 @Service
 public class CampaignService {
@@ -39,7 +29,6 @@ public class CampaignService {
     private final IdeaRepository ideaRepository;
     private final JobRepository jobRepository;
     private final EventRepository eventRepository;
-    private final EventItemRepository eventItemRepository;
     private final EventService eventService;
     private final GroupRepository groupRepository;
     private final MemberRepository memberRepository;
@@ -50,7 +39,6 @@ public class CampaignService {
             IdeaRepository ideaRepository,
             JobRepository jobRepository,
             EventRepository eventRepository,
-            EventItemRepository eventItemRepository,
             EventService eventService,
             GroupRepository groupRepository,
             MemberRepository memberRepository,
@@ -59,7 +47,6 @@ public class CampaignService {
         this.ideaRepository = ideaRepository;
         this.jobRepository = jobRepository;
         this.eventRepository = eventRepository;
-        this.eventItemRepository = eventItemRepository;
         this.eventService = eventService;
         this.groupRepository = groupRepository;
         this.memberRepository = memberRepository;
@@ -78,16 +65,17 @@ public class CampaignService {
         }
     }
 
-    public Optional<Pair<Promotion, Boolean>> getPromotion(
-            Promotion promotion,
+    //TODO: promotion fix
+    /*public Optional<Pair<EventMulti, Boolean>> getPromotion(
+            EventMulti promotion,
             Profile profile,
             boolean isUpdate,
             boolean isEvent) {
-        Optional<Promotion> promotionRes = promotion.getId() != null
+        Optional<EventMulti> promotionRes = promotion.getId() != null
                 ? this.promotionRepository.findById(promotion.getId())
                 : Optional.empty();
 
-        Promotion currPromotion = isEvent ? promotionRes.get()
+        EventMulti currPromotion = isEvent ? promotionRes.get()
                 : promotion;
 
         Group group = null;
@@ -101,22 +89,22 @@ public class CampaignService {
                 .findById(currPromotion.getItem().getId());
 
         if (promotionRes.isPresent()) {
-            Promotion oldPromotion = promotionRes.get();
+            EventMulti oldPromotion = promotionRes.get();
 
-            Promotion upPromotion = JsonUtil.clone(oldPromotion, objectMapper);
+            EventMulti upPromotion = JsonUtil.clone(oldPromotion, objectMapper);
             upPromotion.setItem(template.get());
             upPromotion.setGroup(group);
             upPromotion.setSlots(currPromotion.getSlots());
             upPromotion.setName(currPromotion.getName());
             upPromotion.setRange(currPromotion.getRange());
 
-            Pair<Promotion, Boolean> promoInfo = Pair.of(upPromotion,
+            Pair<EventMulti, Boolean> promoInfo = Pair.of(upPromotion,
                     promotionRes.get().getItem().getId() != template.get().getId());
             return Optional.of(promoInfo);
         } else {
             if (!isUpdate) {
 
-                Promotion newPromotion = JsonUtil.clone(currPromotion, objectMapper);
+                EventMulti newPromotion = JsonUtil.clone(currPromotion, objectMapper);
                 newPromotion.setItem(template.get());
                 newPromotion.setGroup(group);
                 newPromotion.setCreatedDate(new Date());
@@ -127,7 +115,7 @@ public class CampaignService {
                 return Optional.empty();
             }
         }
-    }
+    }*/
 
     // TODO: promotion fix
     /*public Optional<Promotion> savePromotion(

@@ -6,7 +6,7 @@
     },
     {
         "$lookup": {
-            "from": "items",
+            "from": "events",
             "localField": "items.$id",
             "foreignField": "_id",
             "as": "items"

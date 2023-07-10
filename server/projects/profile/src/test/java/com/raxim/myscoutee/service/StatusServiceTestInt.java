@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import com.raxim.myscoutee.common.repository.TestData;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.exception.MessageException;
-import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.PromotionRepository;
@@ -36,7 +34,7 @@ import com.raxim.myscoutee.profile.service.StatusService;
 @Import({ RepositoryConfig.class, JsonConfig.class })
 @TestPropertySource(properties = { "de.flapdoodle.mongodb.embedded.version=6.0.6",
                 "logging.level.org.springframework.data.mongodb=DEBUG" })
-@TestData({ "mongo/profiles.json", "mongo/list/items.json", "mongo/list/events.json" })
+@TestData({ "mongo/profiles.json", "mongo/list/events.json" })
 @TestExecutionListeners(value = MongoDataLoaderTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class StatusServiceTestInt extends AbstractAlgoTest {
 
@@ -45,9 +43,6 @@ public class StatusServiceTestInt extends AbstractAlgoTest {
 
         @Autowired
         private EventRepository eventRepository;
-
-        @Autowired
-        private EventItemRepository eventItemRepository;
 
         @Autowired
         private PromotionRepository promotionRepository;
@@ -76,14 +71,14 @@ public class StatusServiceTestInt extends AbstractAlgoTest {
                 assertEquals(AppTestConstants.UUID_PROFILE_EMMA, memberDTOs.get(1).getMember().getProfile().getId());
                 assertEquals("U", memberDTOs.get(1).getMember().getRole());
 
-                StatusService statusService = new StatusService(profileRepository, eventRepository, eventItemRepository,
+                StatusService statusService = new StatusService(profileRepository, eventRepository,
                                 promotionRepository);
 
                 statusService.changeStatusForEvent(
                                 AppTestConstants.UUID_EVENT_32.toString(), AppTestConstants.UUID_PROFILE_OLIVER, "L");
 
                 pageParam.setId(AppTestConstants.UUID_PROFILE_EMMA);
-                
+
                 memberDTOs = this.eventRepository.findMembersByEvent(pageParam, AppTestConstants.UUID_EVENT_32,
                                 memberStatuses);
                 assertEquals(3, memberDTOs.size());

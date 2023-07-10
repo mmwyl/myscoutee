@@ -15,12 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.FeedbackDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
-import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.service.CampaignService;
 import com.raxim.myscoutee.profile.service.EventService;
@@ -33,20 +31,17 @@ public class CampaignEventRestController {
     private final EventService eventService;
     private final PromotionService promotionService;
     private final EventRepository eventRepository;
-    private final EventItemRepository eventItemRepository;
     private final ProfileService profileService;
     private final CampaignService campaignService;
 
     public CampaignEventRestController(
             EventService eventService,
             EventRepository eventRepository,
-            EventItemRepository eventItemRepository,
             ProfileService profileService,
             CampaignService campaignService,
             PromotionService promotionService) {
         this.eventService = eventService;
         this.eventRepository = eventRepository;
-        this.eventItemRepository = eventItemRepository;
         this.profileService = profileService;
         this.campaignService = campaignService;
         this.promotionService = promotionService;

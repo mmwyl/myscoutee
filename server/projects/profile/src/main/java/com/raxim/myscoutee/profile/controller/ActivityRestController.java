@@ -25,12 +25,10 @@ import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.ControllerUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
-import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.handler.EventItemParamHandler;
@@ -131,48 +129,48 @@ public class ActivityRestController {
     }
 
     @PostMapping("events/{id}/items")
-    public ResponseEntity<EventItemDTO> addItem(@PathVariable String id, @RequestBody EventItem eventItem,
+    public ResponseEntity<EventDTO> addItem(@PathVariable String id, @RequestBody Event eventItem,
             Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = principal.getUser().getProfile();
 
-        ResponseEntity<EventItemDTO> response = ControllerUtil.handle((p, i, ei) -> eventService.saveItem(p, i, ei),
+        ResponseEntity<EventDTO> response = ControllerUtil.handle((p, i, ei) -> eventService.saveItem(p, i, ei),
                 profile, id, eventItem,
                 HttpStatus.CREATED);
         return response;
     }
 
     @PatchMapping("events/{id}/items/{itemId}")
-    public ResponseEntity<EventItemDTO> patchItem(@PathVariable String id, @PathVariable String itemId,
-            @RequestBody EventItem eventItem, Authentication auth) {
+    public ResponseEntity<EventDTO> patchItem(@PathVariable String id, @PathVariable String itemId,
+            @RequestBody Event eventItem, Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = principal.getUser().getProfile();
 
         eventItem.setId(UUID.fromString(itemId));
 
-        ResponseEntity<EventItemDTO> response = ControllerUtil.handle((p, i, ei) -> eventService.saveItem(p, i, ei),
+        ResponseEntity<EventDTO> response = ControllerUtil.handle((p, i, ei) -> eventService.saveItem(p, i, ei),
                 profile, id, eventItem,
                 HttpStatus.OK);
         return response;
     }
 
     @DeleteMapping("events/{id}/items/{itemId}")
-    public ResponseEntity<EventItemDTO> deleteItem(@PathVariable String id, @PathVariable String itemId,
+    public ResponseEntity<EventDTO> deleteItem(@PathVariable String id, @PathVariable String itemId,
             Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = principal.getUser().getProfile();
 
-        EventItem eventItem = new EventItem(UUID.fromString(itemId));
+        Event eventItem = new Event(UUID.fromString(itemId));
         eventItem.setStatus("D");
 
-        ResponseEntity<EventItemDTO> response = ControllerUtil.handle((p, i, ei) -> eventService.saveItem(p, i, ei),
+        ResponseEntity<EventDTO> response = ControllerUtil.handle((p, i, ei) -> eventService.saveItem(p, i, ei),
                 profile, id, eventItem,
                 HttpStatus.NO_CONTENT);
         return response;
     }
 
     @GetMapping(value = { "events/{id}/items", "invitations/{id}/items", "promotions/{id}/items" })
-    public ResponseEntity<PageDTO<EventItemDTO>> items(@PathVariable String id, PageParam pageParam,
+    public ResponseEntity<PageDTO<EventDTO>> items(@PathVariable String id, PageParam pageParam,
             Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = principal.getUser().getProfile();
@@ -180,7 +178,7 @@ public class ActivityRestController {
         // override page param
         pageParam = paramHandlers.handle(profile, pageParam, EventItemParamHandler.TYPE);
 
-        List<EventItemDTO> eventItems = eventService.getEventItems(pageParam, UUID.fromString(id));
+        List<EventDTO> eventItems = eventService.getEventItems(pageParam, UUID.fromString(id));
 
         List<Object> lOffset = CommonUtil.offset(eventItems, pageParam.getOffset());
 

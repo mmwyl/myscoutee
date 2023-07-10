@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
-import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
 import com.raxim.myscoutee.profile.data.document.mongo.RangeInt;
 import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
 
@@ -24,8 +23,8 @@ public class EventTest {
         LocalDateTime eventEnd = LocalDateTime.of(2020, 2, 1, 0, 0, 0);
         event.setRange(RangeLocal.of(eventStart, eventEnd));
 
-        List<EventItem> items = new ArrayList<>();
-        EventItem eventItem = new EventItem();
+        List<Event> items = new ArrayList<>();
+        Event eventItem = new Event();
         eventItem.setCapacity(RangeInt.of(3, 8));
 
         LocalDateTime itemStart = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
@@ -51,8 +50,8 @@ public class EventTest {
         LocalDateTime eventEnd = LocalDateTime.of(2020, 3, 1, 0, 0, 0);
         event.setRange(RangeLocal.of(eventStart, eventEnd));
 
-        List<EventItem> items = new ArrayList<>();
-        EventItem eventItem = new EventItem();
+        List<Event> items = new ArrayList<>();
+        Event eventItem = new Event();
         eventItem.setCapacity(RangeInt.of(3, 8));
 
         LocalDateTime itemStart = LocalDateTime.of(2020, 1, 1, 0, 0, 0);

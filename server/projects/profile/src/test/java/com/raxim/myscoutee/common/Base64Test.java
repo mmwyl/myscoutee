@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import com.raxim.myscoutee.algo.dto.Edge;
 import com.raxim.myscoutee.common.util.CommonUtil;
-import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
+import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
 
 public class Base64Test {
@@ -73,7 +73,7 @@ public class Base64Test {
     @Disabled
     @Test
     public void maxDate() {
-        List<EventItem> items = new ArrayList<>();
+        List<Event> items = new ArrayList<>();
         for (int i = 0; i <= 5; i++) {
             items.add(genEventItem());
         }
@@ -99,7 +99,7 @@ public class Base64Test {
         System.out.println(maxRange);
     }
 
-    private EventItem genEventItem() {
+    private Event genEventItem() {
         long startDay = LocalDateTime.of(1970, 1, 1, 0, 0)
                 .toEpochSecond(ZoneOffset.UTC);
         long maxDay = LocalDateTime.now()
@@ -117,7 +117,7 @@ public class Base64Test {
 
         RangeLocal range = new RangeLocal(start, end);
 
-        var eventItem = new EventItem();
+        var eventItem = new Event();
         eventItem.setRange(range);
         return eventItem;
     }

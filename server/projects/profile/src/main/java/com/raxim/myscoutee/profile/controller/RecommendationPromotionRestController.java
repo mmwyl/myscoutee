@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,12 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.config.properties.ConfigProperties;
 import com.raxim.myscoutee.common.util.CommonUtil;
-import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.FeedbackDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PromotionDTO;
@@ -34,7 +30,6 @@ import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.PromotionRepository;
 import com.raxim.myscoutee.profile.service.EventService;
 import com.raxim.myscoutee.profile.service.PromotionService;
-import com.raxim.myscoutee.profile.util.EventUtil;
 
 @RestController
 @RequestMapping("/api")
@@ -143,35 +138,45 @@ public class RecommendationPromotionRestController {
     }
 
     // TODO: promotion fix
-    /*@PostMapping("/promotions/{promoId}/events/{id}/clone")
-    public ResponseEntity<?> cloneEvent(
-            @PathVariable String promoId,
-            @PathVariable String id,
-            @RequestParam(value = "step", required = false) Integer step,
-            @RequestParam(value = "offset", required = false) String[] offset,
-            Authentication auth) {
-        FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
-        Profile profile = firebasePrincipal.getUser().getProfile();
-
-        List<Event> events = eventRepository.findPendingEvents(UUID.fromString(id), profile.getId());
-        Event promoter = events.stream()
-                .filter(event -> event.getInfo().getMembers().stream()
-                        .anyMatch(member -> member.getProfile().getId().equals(profile.getId())))
-                .findFirst()
-                .orElse(null);
-
-        if (promoter == null) {
-            Optional<Event> event = eventService.cloneEvent(UUID.fromString(id), profile);
-            if (event.isPresent()) {
-                EventDTO tEvent = EventUtil.transform(event.get());
-                return ResponseEntity.ok(tEvent);
-            } else {
-                return ResponseEntity.badRequest().build();
-            }
-        } else {
-            return ResponseEntity.badRequest().body(new ErrorDTO(450, "err.clone_not_allowed"));
-        }
-    }*/
+    /*
+     * @PostMapping("/promotions/{promoId}/events/{id}/clone")
+     * public ResponseEntity<?> cloneEvent(
+     * 
+     * @PathVariable String promoId,
+     * 
+     * @PathVariable String id,
+     * 
+     * @RequestParam(value = "step", required = false) Integer step,
+     * 
+     * @RequestParam(value = "offset", required = false) String[] offset,
+     * Authentication auth) {
+     * FirebasePrincipal firebasePrincipal = (FirebasePrincipal)
+     * auth.getPrincipal();
+     * Profile profile = firebasePrincipal.getUser().getProfile();
+     * 
+     * List<Event> events = eventRepository.findPendingEvents(UUID.fromString(id),
+     * profile.getId());
+     * Event promoter = events.stream()
+     * .filter(event -> event.getInfo().getMembers().stream()
+     * .anyMatch(member -> member.getProfile().getId().equals(profile.getId())))
+     * .findFirst()
+     * .orElse(null);
+     * 
+     * if (promoter == null) {
+     * Optional<Event> event = eventService.cloneEvent(UUID.fromString(id),
+     * profile);
+     * if (event.isPresent()) {
+     * EventDTO tEvent = EventUtil.transform(event.get());
+     * return ResponseEntity.ok(tEvent);
+     * } else {
+     * return ResponseEntity.badRequest().build();
+     * }
+     * } else {
+     * return ResponseEntity.badRequest().body(new ErrorDTO(450,
+     * "err.clone_not_allowed"));
+     * }
+     * }
+     */
 
     @GetMapping("/promotions/{promoId}/events/{id}/feedbacks")
     public ResponseEntity<PageDTO<FeedbackDTO>> getEventFeedbacks(
@@ -202,35 +207,42 @@ public class RecommendationPromotionRestController {
     }
 
     // TODO: promotion fix
-    /*@GetMapping("/promotions/{promoId}/events/{id}/items")
-    public ResponseEntity<PageDTO<EventItemDTO>> getEventItems(
-            @PathVariable String id,
-            @RequestParam(value = "step", required = false) Integer step,
-            @RequestParam(value = "offset", required = false) String[] offset,
-            Authentication auth) {
-        FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
-        Profile profile = firebasePrincipal.getUser().getProfile();
-
-        List<Object> tOffset;
-        if (offset != null && offset.length == 2) {
-            tOffset = Arrays.asList(CommonUtil.decode(offset[0]), CommonUtil.decode(offset[1]));
-        } else {
-            tOffset = Arrays.asList("1900-01-01", "1900-01-01");
-        }
-
-        List<EventItemDTO> eventItems = eventService.getEventItems(
-                UUID.fromString(id),
-                step,
-                tOffset.toArray(),
-                profile.getId());
-
-        List<Object> lastOffset;
-        if (!eventItems.isEmpty()) {
-            lastOffset = eventItems.get(eventItems.size() - 1).getOffset();
-        } else {
-            lastOffset = tOffset;
-        }
-
-        return ResponseEntity.ok(new PageDTO<>(eventItems, lastOffset));
-    }*/
+    /*
+     * @GetMapping("/promotions/{promoId}/events/{id}/items")
+     * public ResponseEntity<PageDTO<EventItemDTO>> getEventItems(
+     * 
+     * @PathVariable String id,
+     * 
+     * @RequestParam(value = "step", required = false) Integer step,
+     * 
+     * @RequestParam(value = "offset", required = false) String[] offset,
+     * Authentication auth) {
+     * FirebasePrincipal firebasePrincipal = (FirebasePrincipal)
+     * auth.getPrincipal();
+     * Profile profile = firebasePrincipal.getUser().getProfile();
+     * 
+     * List<Object> tOffset;
+     * if (offset != null && offset.length == 2) {
+     * tOffset = Arrays.asList(CommonUtil.decode(offset[0]),
+     * CommonUtil.decode(offset[1]));
+     * } else {
+     * tOffset = Arrays.asList("1900-01-01", "1900-01-01");
+     * }
+     * 
+     * List<EventItemDTO> eventItems = eventService.getEventItems(
+     * UUID.fromString(id),
+     * step,
+     * tOffset.toArray(),
+     * profile.getId());
+     * 
+     * List<Object> lastOffset;
+     * if (!eventItems.isEmpty()) {
+     * lastOffset = eventItems.get(eventItems.size() - 1).getOffset();
+     * } else {
+     * lastOffset = tOffset;
+     * }
+     * 
+     * return ResponseEntity.ok(new PageDTO<>(eventItems, lastOffset));
+     * }
+     */
 }

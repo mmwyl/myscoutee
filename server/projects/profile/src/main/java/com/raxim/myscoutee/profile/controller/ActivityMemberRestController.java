@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.ControllerUtil;
-import com.raxim.myscoutee.profile.data.document.mongo.EventItem;
+import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.CodeDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
@@ -31,7 +31,6 @@ import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
 import com.raxim.myscoutee.profile.handler.MemberParamHandler;
 import com.raxim.myscoutee.profile.handler.ParamHandlers;
-import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.service.EventService;
@@ -67,7 +66,6 @@ public class ActivityMemberRestController {
     private final EventService eventService;
 
     public ActivityMemberRestController(EventRepository eventRepository,
-            EventItemRepository eventItemRepository,
             ProfileService profileService,
             ProfileRepository profileRepository,
             StatusService statusService,
@@ -84,7 +82,7 @@ public class ActivityMemberRestController {
     @PostMapping("events/{id}/items/{itemId}/{type}")
     public ResponseEntity<?> changeStatusForItem(@PathVariable String itemId,
             @PathVariable String type,
-            @RequestBody EventItem eventItem, Authentication auth) {
+            @RequestBody Event eventItem, Authentication auth) {
         FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = firebasePrincipal.getUser().getProfile();
 
@@ -117,24 +115,32 @@ public class ActivityMemberRestController {
     // handle
     // when event locked, promoter will be invited to the event,
     // hence the events will appear in the invitations tab, not the promotion tab
-    // the promoter does not receive the chat messages, separate chat tab with admin?
-    // a normal event can cloned to a template and can be used for promotion later on
+    // the promoter does not receive the chat messages, separate chat tab with
+    // admin?
+    // a normal event can cloned to a template and can be used for promotion later
+    // on
     // promotion can be time based or just recommend something
     // (what you can show on recommendation tab -> like approximate time)
-    // can't rerecommend already promotion event - recommended event hasn't any promoter member also, it's just an empty event
+    // can't rerecommend already promotion event - recommended event hasn't any
+    // promoter member also, it's just an empty event
     // group event is also on recommendation tab -> different colouring
     // job/idea, is a promotion category, what you can filter on recommendation tab
-    // job is a group event of business, not dating -> advertise an event you need to have "A" = advertiser role
-    // dropdown box on profile editor, whether only advertiser for a group or participants also
+    // job is a group event of business, not dating -> advertise an event you need
+    // to have "A" = advertiser role
+    // dropdown box on profile editor, whether only advertiser for a group or
+    // participants also
     // there is no separate job group
     // promotion editor is on event tab
     // group event will be shown at invitations tab
     // (however members are not added to the event as invited members to simiplify)
-    // to join to a group is on profile screen (separate button etc.) -> remove from recommendations screen
-    // recommendation tab will be removed (when click on +, you can select -> it shows recommended 
-    //and promotional event in the same screen, no separate tab)
+    // to join to a group is on profile screen (separate button etc.) -> remove from
+    // recommendations screen
+    // recommendation tab will be removed (when click on +, you can select -> it
+    // shows recommended
+    // and promotional event in the same screen, no separate tab)
     // recommmended, promotion event needs geo position (longitude, lattitude
-    //built in map willbe later on -> the user coordinates to set for the time being)
+    // built in map willbe later on -> the user coordinates to set for the time
+    // being)
     @PostMapping(value = { "promotions/{id}/{type}" })
     public ResponseEntity<EventDTO> changeEventForPromotion(@PathVariable String id, @PathVariable String type,
             Authentication auth) {
@@ -182,7 +188,7 @@ public class ActivityMemberRestController {
         Profile profile = firebasePrincipal.getUser().getProfile();
 
         pageParam = paramHandlers.handle(profile, pageParam, MemberParamHandler.TYPE);
-        List<MemberDTO> members = this.eventService.getMembersByItem(pageParam, itemId);
+        List<MemberDTO> members = this.eventService.getMembersByEvent(pageParam, itemId);
         List<Object> lOffset = CommonUtil.offset(members, pageParam.getOffset());
 
         return ResponseEntity.ok(new PageDTO<>(members, lOffset));

@@ -1,4 +1,4 @@
-package com.raxim.myscoutee.profile.data.document.mongo;
+package com.raxim.myscoutee.profile.data.document.mongo.iface;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -8,11 +8,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.raxim.myscoutee.profile.data.document.mongo.Amount;
+import com.raxim.myscoutee.profile.data.document.mongo.Member;
+import com.raxim.myscoutee.profile.data.document.mongo.RangeInt;
+import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
 
 public abstract class EventBase implements Cloneable {
-    @JsonProperty(value = "type")
-    private String type;
-
     @JsonProperty(value = "name")
     private String name;
 
@@ -21,13 +22,6 @@ public abstract class EventBase implements Cloneable {
 
     @JsonProperty(value = "range")
     private RangeLocal range;
-
-    // price
-    @JsonProperty(value = "amount")
-    private Amount amount;
-
-    @JsonProperty(value = "capacity")
-    private RangeInt capacity;
 
     // Active (A), Deleted (D), Timed Out (T), Pending (P)
     @JsonProperty(value = "status")
@@ -40,13 +34,26 @@ public abstract class EventBase implements Cloneable {
     @JsonIgnore
     private UUID createdBy; // can be system uuid also, not only a valid profile
 
-    @JsonIgnore
-    @JsonProperty(value = "members")
-    private Set<Member> members;
+    @JsonProperty(value = "type")
+    private String type;
+
+    // price
+    @JsonProperty(value = "amount")
+    private Amount amount;
+
+    @JsonProperty(value = "capacity")
+    private RangeInt capacity;
+
+    @JsonProperty(value = "urlRef")
+    private String urlRef;
 
     // number of members, nem tudom, hogy kell-e...
     @JsonProperty(value = "num")
-    private int num;
+    private int numOfMembers;
+
+    @JsonIgnore
+    @JsonProperty(value = "members")
+    private Set<Member> members;
 
     public String getType() {
         return type;
@@ -54,6 +61,46 @@ public abstract class EventBase implements Cloneable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public RangeInt getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(RangeInt capacity) {
+        this.capacity = capacity;
+    }
+
+    public Amount getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Amount amount) {
+        this.amount = amount;
+    }
+
+    public String getUrlRef() {
+        return urlRef;
+    }
+
+    public void setUrlRef(String urlRef) {
+        this.urlRef = urlRef;
+    }
+
+    public Set<Member> getMembers() {
+        return members;
+    }
+
+    public void setMembers(Set<Member> members) {
+        this.members = members;
+    }
+
+    public int getNumOfMembers() {
+        return numOfMembers;
+    }
+
+    public void setNumOfMembers(int num) {
+        this.numOfMembers = num;
     }
 
     public String getName() {
@@ -78,38 +125,6 @@ public abstract class EventBase implements Cloneable {
 
     public void setRange(RangeLocal range) {
         this.range = range;
-    }
-
-    public RangeInt getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(RangeInt capacity) {
-        this.capacity = capacity;
-    }
-
-    public Amount getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Amount amount) {
-        this.amount = amount;
-    }
-
-    public Set<Member> getMembers() {
-        return members;
-    }
-
-    public void setMembers(Set<Member> members) {
-        this.members = members;
-    }
-
-    public int getNum() {
-        return num;
-    }
-
-    public void setNum(int num) {
-        this.num = num;
     }
 
     public UUID getCreatedBy() {

@@ -1,22 +1,8 @@
 package com.raxim.myscoutee.profile.controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
 import org.springframework.data.rest.webmvc.RepositoryRestController;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
-import com.raxim.myscoutee.common.util.CommonUtil;
-import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
-import com.raxim.myscoutee.profile.repository.mongo.EventItemRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.service.EventService;
 
@@ -25,15 +11,12 @@ import com.raxim.myscoutee.profile.service.EventService;
 public class CampaignTemplateRestController {
     private final EventService eventService;
     private final EventRepository eventRepository;
-    private final EventItemRepository eventItemRepository;
 
     public CampaignTemplateRestController(
             EventService eventService,
-            EventRepository eventRepository,
-            EventItemRepository eventItemRepository) {
+            EventRepository eventRepository) {
         this.eventService = eventService;
         this.eventRepository = eventRepository;
-        this.eventItemRepository = eventItemRepository;
     }
 
     // TODO: promotion fix

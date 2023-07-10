@@ -26,3 +26,97 @@ event editor (event item editor is not needed for the time being, simplified ver
 2) the rule should be moved to event, instead if eventItem, the priority flag etc. also
 3) event has status P (Pending), or T (timed out), eventItem has not
 4) for optional eventItems, the members of event can request permission (like car, which can be accepted)
+
+New TODO:
+1) az ujak listaja egy nagy kepernyo, nem egy lista, igy nem lehet atugorni embereket
+2) Azok, akik legalabb 30 szavazatot kaptak, ne jelenjenek meg az ujak listajaban -> folyamat felgyorsitas
+3) mongodb objectid instead of uuid, to make horizontal scaling
+   redis db (stores uuid, objectid pairs), hence you can pass an objectid to the query
+
+   rewrite url where the uuid is there
+   shard key can't be geo spatial + only one shardKey does exist by collection (create shardIndex for e.g. _id)
+   we have hash based and range based (ObjectId can be range based as it's a sequence like id, can be gte)
+4) create multikey on eventItem.member, to query efficiently
+5) qrcode -> when we have optional event, 
+   while scanning showing which optional event he requested, it will be moved from eventItem to event
+6) capacity
+   (eventItem max. capacity should be less than the event max. capacity -> validate on the screen)
+   max. capacity can't be more than 1000 (chat won't work also) -> validate on screen
+   if priority has been set, it' changes the max. capacity to 20, if the value is greater than 20.
+7) invitation will appear only in the chat, clicking on it, can can look into the event. 
+   (it won't appear on the event list, until it's not accepted
+8) clickable notification
+9) new chat tab on event screen -first one
+10) when you click on event (view/qrcode menu appears, not the eventItem list)
+11) event, when you click on the panel, you have info (has edit button bottom left corner) + eventitems list + members list
+12) if profile set its status to non-A/F, 
+    its member status for all events will be set LD (late delete), D (delete), RD (reject delete), AD (access delete -> from All to friends only)
+13) if admin leaves, the highest priority among admin and the certain member will get the admin role
+14) lock/unlock event (isLocked???)
+15) threadpool -> CTree-vel -> querying by 1000 records in a loop (maybe we don't need limit to make it simpler)
+16) multislot/multistage event does not need to use BTree algorithm, only at rule.mutual inside the memebr list
+17) close stage, might merge slots together, if min capacity hasn't been reached,
+    and ask whether accept the date change (memberGrace) Invite next one
+18) clone event or item inside the event or promotion, form will have a number of clones field
+19) on recommendation screen, only one event will be shown by slot, and just the first stage, anyway disappears form the list
+20) in the promotion editor, the number of available slots will appear and the number of booked one
+    Cancel a whole slot, or decrease the number to make it partially. (notify the last booked ones for cancellation)
+    assign admin/admins for each slot (from one of the team inside that group)
+21) team
+    you can create teams inside groups, and invite members (logical, only shown to you, if it's discreet)
+    two types of view on member list screen (grouped by team or sorted by rate)
+    you can invite members from outside (invitation link) or inside to a group or a team
+    you can invite someone from outside and priority rate in the same way (filter bar, whether it has been invited from outside)
+
+    Team{
+      members,
+      profileId (profileId is by group)
+    }
+
+
+    while creating an event, can select the whole team to invite
+    team list is visible from group list screen also, while entering a group, you can change the view type to team.
+
+    default team, nobody has been assigned to a team in there (name is "Unassigned") -> it's just shown on the member list screen, but hasn't been saved
+22) On profile screen, you can switch between groups, look for other groups to join, create groups etc. (private/public)
+23) activity/events/slots utvonalon lehet elerni addEvent
+24) don't allow (put to wait list) other participant to join or invite until the ratio is not balanced (number of man/woman is equal)
+    invite man or woman first
+25) if event has the same range.tart and range.end => it will be shown in the same slot group on the screen,
+    but as it hasn't been cloned, other ones won't update it, while editing.
+26) assign admins to event (either me or different profiles)
+27) if there are slots in different time the first slot is the most preferred members, if the member hasn't added any preference (prefer for, available for)
+28) if max stage is not reached, algorithm invites to the next stage events based on selection mode
+    rate/join menu on promotion
+    event inside promotion has prefer and available menu  (opt for, favor for), available only for
+29) save event as template
+30) when adding to event either promotion or create new one, can select an already saved template.
+31) The name has a sequence number to differenciate.
+    (it does not have this number saved with the name it just appears in view, in multiple pages, how to handle??? - maybe on the view)
+32) groupkey = stage + relevant slot
+33) events inside the slot, can be handled independently, like cancel, delete, merge into other etc. 
+    add event to a slot on the event editor
+34) multislot and multi stage event coloured differently (event can be filtered by name also)
+35) before approving an event, alert if there is any other event crossing the range
+36) competition - ranking algorithm
+    cross matrix (win, loose, draw scores) are predefined
+    penalty/reward scores are predefined (matrix)
+
+    roundrobin invitation for cross match
+    scores are recalculated by stages
+
+    for every time all the member score has been recalculated and saved to event table (Match finished)
+
+    every match calculate score and if all score equal, than within equal add to a score an reversed order like score, first position +3, second +2, third +1
+    sorsolas, add reverse order score also
+
+    check whether harmonic mean is the same how football ranking works
+
+
+
+
+
+
+
+
+

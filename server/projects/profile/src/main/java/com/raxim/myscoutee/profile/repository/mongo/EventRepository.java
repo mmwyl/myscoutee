@@ -16,7 +16,6 @@ import com.raxim.myscoutee.profile.data.document.mongo.EventWithCandidates;
 import com.raxim.myscoutee.profile.data.document.mongo.Token;
 import com.raxim.myscoutee.profile.data.dto.rest.CodeDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.FeedbackDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
@@ -26,7 +25,7 @@ import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 public interface EventRepository extends MongoRepository<Event, UUID> {
 
         @Query("{'type': ?0}")
-        List<Event> findEventItemsByType(String type);
+        List<Event> findEventByType(String type);
 
         @Aggregation(pipeline = "findCandidates")
         List<EventWithCandidates> findCandidates();
@@ -79,7 +78,7 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
                         @Param("status") String status);
 
         @Aggregation(pipeline = "findItemsByEvent")
-        List<EventItemDTO> findItemsByEvent(
+        List<EventDTO> findItemsByEvent(
                         @Param("eventId") UUID eventId,
                         @Param("param") PageParam param);
 

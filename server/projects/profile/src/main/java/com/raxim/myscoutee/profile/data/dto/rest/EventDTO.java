@@ -8,8 +8,8 @@ import com.raxim.myscoutee.profile.data.document.mongo.Event;
 @JsonRootName("event")
 public class EventDTO extends PageItemDTO implements Convertable {
 
-    @JsonProperty(value = "event")
-    private Event event;
+    @JsonProperty(value = "item")
+    private Event item;
 
     @JsonProperty(value = "groupKey")
     private Object groupKey;
@@ -20,12 +20,6 @@ public class EventDTO extends PageItemDTO implements Convertable {
     @JsonProperty(value = "rate")
     private Integer rate;
 
-    @JsonProperty(value = "groupType")
-    private String groupType;
-
-    @JsonProperty(value = "promoType")
-    private String promoType;
-
     @JsonProperty(value = "isPromotion")
     private Boolean isPromotion;
 
@@ -33,24 +27,28 @@ public class EventDTO extends PageItemDTO implements Convertable {
     private String role;
 
     public EventDTO(Event event) {
-        this.event = event;
+        this.item = event;
     }
 
     public EventDTO() {
     }
 
+    public EventDTO(Event event, Object groupKey) {
+        this(event, groupKey, null);
+    }
+
     public EventDTO(Event event, Object groupKey, Object sortKey) {
-        this.event = event;
+        this.item = event;
         this.groupKey = groupKey;
         this.sortKey = sortKey;
     }
 
-    public Event getEvent() {
-        return event;
+    public Event getItem() {
+        return item;
     }
 
-    public void setEvent(Event event) {
-        this.event = event;
+    public void setItem(Event event) {
+        this.item = event;
     }
 
     public Object getGroupKey() {
@@ -75,22 +73,6 @@ public class EventDTO extends PageItemDTO implements Convertable {
 
     public void setRate(Integer rate) {
         this.rate = rate;
-    }
-
-    public String getGroupType() {
-        return groupType;
-    }
-
-    public void setGroupType(String groupType) {
-        this.groupType = groupType;
-    }
-
-    public String getPromoType() {
-        return promoType;
-    }
-
-    public void setPromoType(String promoType) {
-        this.promoType = promoType;
     }
 
     public Boolean getPromotion() {

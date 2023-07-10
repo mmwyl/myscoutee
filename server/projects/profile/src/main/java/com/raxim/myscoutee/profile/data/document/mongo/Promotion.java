@@ -2,7 +2,6 @@ package com.raxim.myscoutee.profile.data.document.mongo;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
@@ -11,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 
 @Document(collection = "promotions")
 public class Promotion {
@@ -22,32 +20,16 @@ public class Promotion {
     @JsonProperty(value = "name")
     private String name;
 
-    // job, idea, event
-    @JsonProperty(value = "type")
-    private String type;
-
     // advertise date from, to
     @JsonProperty(value = "range")
     private RangeLocal range;
 
-    // select template
-    //@DBRef
-    @JsonProperty(value = "item")
-    private Event item;
-
     @JsonIgnore
-    private int cnt;
+    private int numOfEvents;
 
     @DBRef
     @JsonIgnore
     private List<Event> events;
-
-    // accordion item by slot
-    @JsonProperty(value = "slots")
-    private Set<Slot> slots;
-
-    @JsonProperty(value = "groupType")
-    private String groupType;
 
     @DBRef
     @JsonProperty(value = "group")
@@ -75,14 +57,6 @@ public class Promotion {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public RangeLocal getRange() {
         return range;
     }
@@ -91,20 +65,12 @@ public class Promotion {
         this.range = range;
     }
 
-    public Event getItem() {
-        return item;
+    public int getNumOfEvents() {
+        return numOfEvents;
     }
 
-    public void setItem(Event item) {
-        this.item = item;
-    }
-
-    public int getCnt() {
-        return cnt;
-    }
-
-    public void setCnt(int cnt) {
-        this.cnt = cnt;
+    public void setNumOfEvents(int cnt) {
+        this.numOfEvents = cnt;
     }
 
     public List<Event> getEvents() {
@@ -113,22 +79,6 @@ public class Promotion {
 
     public void setEvents(List<Event> events) {
         this.events = events;
-    }
-
-    public Set<Slot> getSlots() {
-        return slots;
-    }
-
-    public void setSlots(Set<Slot> slots) {
-        this.slots = slots;
-    }
-
-    public String getGroupType() {
-        return groupType;
-    }
-
-    public void setGroupType(String groupType) {
-        this.groupType = groupType;
     }
 
     public Group getGroup() {
@@ -155,7 +105,7 @@ public class Promotion {
         this.createdBy = createdBy;
     }
 
-    //TODO: promotion sync
+    // TODO: promotion sync
     public void sync() {
 
     }

@@ -10,22 +10,85 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.raxim.myscoutee.common.repository.GeoJsonPointDeserializer;
 import com.raxim.myscoutee.profile.converter.Convertable;
+import com.raxim.myscoutee.profile.data.document.mongo.iface.EventBase;
+import com.raxim.myscoutee.profile.data.document.mongo.iface.Shiftable;
+import com.raxim.myscoutee.profile.data.document.mongo.iface.Syncable;
 
 @Document(collection = "events")
-public class Event extends EventBase implements Convertable {
+public class Event extends EventBase implements Convertable, Syncable, Shiftable {
     @Id
     @JsonProperty(value = "key")
     private UUID id;
 
-    // should be filtered by group
+    // type = active event vs template vs Item (I = item)
+
+    // urlRef is the template
+
+    // status
+    // Accepted (A) (by Organizer), Published/Promotion/Pending (P) ?? -> not sure
+    // published/promotion is needed, it's only pending,
+    // Inactive (I), Template (T), Under Review (U) ??, Reviewed/Recommended (R),
+    // Rejected/Deleted (D),
+    // Cancelled (C)
+    // auto publish when general has been added
+    // inactive means, just edited locally, before being published
+    // when accepted by organizer, create chat room
+
+    // lock event (status A) -> no new members can be added or removed (event can be
+    // unlocked (status P, based on graceTime, it can be A)
+    // also, priority algorithm also filtering it out)
+    // it's important for promotional event, when you need to notify the promoter
+    // activity/promotion/{id} -> promotional event list can be filtered for events
+    // with status A (locked)
+    // any event which is locked, any late invitation accept also does not work,
+    // will go to "W" (wait list) immadiately
+
+    // friends only (F) vs all members inside the group (A)
+    @JsonProperty(value = "access")
+    private String access;
+
+    // for individuals vs for groups (for groups does not exist in friends only
+    // access)
+    @JsonProperty(value = "audience")
+    private String audience;
+
+    // only admin of the group can do it,
+    // this kind of event is going directly to the invitation tab of eny member of
+    // the group
+    @JsonProperty(value = "autoInvite")
+    private Boolean autoInvite;
+
+    // members with User role do not see each other
+    // it does mean separate chat window
+    @JsonProperty(value = "discreet")
+    private Boolean discreet;
+
+    @JsonProperty(value = "multislot")
+    private Boolean multislot;
+
+    // counter of stage
+    @JsonProperty(value = "stage")
+    private Integer stage;
+
+    // ref counter
     @JsonIgnore
-    private UUID group;
+    private int refCnt;
+
+    // cloned from
+    // can be from the recommendation screen or inside a multislot event
+    @DBRef
+    @JsonIgnore
+    private Event ref;
 
     @JsonProperty(value = "rule")
     private Rule rule;
@@ -34,7 +97,30 @@ public class Event extends EventBase implements Convertable {
     @JsonProperty(value = "ticket")
     private Boolean ticket;
 
-    // type = person, idea, job, template
+    // ??, lehet, hogy az eventItem-nek kell az event.id tartalmaznia es ez ide nem
+    // kell
+    // lekerdezesek vizsgalata kell-e ez az optimalizacio
+
+    @JsonIgnore
+    private int numOfEvents;
+
+    @DBRef
+    @JsonIgnore
+    private List<Event> items;
+
+    // a Feedback-nel van event.id, es nem kell ide, lekerdezeseket checkkolni,
+    // kell-e ez az optimalizacio
+    @DBRef
+    @JsonIgnore
+    private List<Feedback> feedbacks;
+
+    // it is used to calculate absolute score of the members
+    private List<Match> matches;
+
+    @GeoSpatialIndexed(name = "position", type = GeoSpatialIndexType.GEO_2DSPHERE)
+    @JsonDeserialize(using = GeoJsonPointDeserializer.class)
+    @JsonProperty(value = "position")
+    private GeoJsonPoint position;
 
     /* local, global */
     /*
@@ -43,56 +129,22 @@ public class Event extends EventBase implements Convertable {
      * the category will be reused to identify the real category (sport, reading
      * etc.)
      */
+    // mabe sub category also
     @JsonProperty(value = "category")
     private String category;
 
-    // status
-    // Accepted (A) (by Organizer), Published/Promotion/Pending (P) ?? -> not sure published/promotion is needed, it's only pending,
-    // Inactive (I), Template (T), Under Review (U) ??, Reviewed/Recommended (R),
-    // Rejected/Deleted (D),
-    // Cancelled (C)
-    // auto publish when general has been added
-    // inactive means, just edited locally, before being published
-    // when accepted by organizer, create chat room
-
-    // lock event (status A) -> no new members can be added or removed (event can be unlocked (status P, based on graceTime, it can be A)
-    // also, priority algorithm also filtering it out)
-    // it's important for promotional event, when you need to notify the promoter
-    // activity/promotion/{id} -> promotional event list can be filtered for events
-    // with status A (locked)
-    // any event which is locked, any late invitation accept also does not work,
-    // will go to "W" (wait list) immadiately
-
-    // ref counter
+    // should be filtered by group
     @JsonIgnore
-    private int cnt;
+    private UUID group;
 
-    // cloned from
-    @DBRef
-    @JsonIgnore
-    private Event ref;
+    // rate average from feedback, maybe harmonic mean
+    @JsonProperty(value = "rate")
+    public Integer rate;
 
-    // ??, lehet, hogy az eventItem-nek kell az event.id tartalmaznia es ez ide nem
-    // kell
-    // lekerdezesek vizsgalata kell-e ez az optimalizacio
-    @DBRef
-    @JsonIgnore
-    private List<EventItem> items;
-
-    // a Feedback-nel van event.id, es nem kell ide, lekerdezeseket checkkolni,
-    // kell-e ez az optimalizacio
-    @DBRef
-    @JsonIgnore
-    private List<Feedback> feedbacks;
-
-    @JsonIgnore
-    private GeoJsonPoint position;
-
-    public UUID getId() {
-        return id;
+    public Event() {
     }
 
-    public void setId(UUID id) {
+    public Event(UUID id) {
         this.id = id;
     }
 
@@ -104,11 +156,27 @@ public class Event extends EventBase implements Convertable {
         this.category = category;
     }
 
-    public List<EventItem> getItems() {
+    public UUID getGroup() {
+        return group;
+    }
+
+    public void setGroup(UUID group) {
+        this.group = group;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public List<Event> getItems() {
         return items;
     }
 
-    public void setItems(List<EventItem> items) {
+    public void setItems(List<Event> items) {
         this.items = items;
     }
 
@@ -120,20 +188,12 @@ public class Event extends EventBase implements Convertable {
         this.feedbacks = feedbacks;
     }
 
-    public int getCnt() {
-        return cnt;
+    public int getRefCnt() {
+        return refCnt;
     }
 
-    public void setCnt(int cnt) {
-        this.cnt = cnt;
-    }
-
-    public UUID getGroup() {
-        return group;
-    }
-
-    public void setGroup(UUID group) {
-        this.group = group;
+    public void setRefCnt(int cnt) {
+        this.refCnt = cnt;
     }
 
     public GeoJsonPoint getPosition() {
@@ -172,7 +232,7 @@ public class Event extends EventBase implements Convertable {
     public void sync() {
         if (getItems() != null) {
             // max capacity can be changed only from the event
-            List<EventItem> items = getItems().stream().map(item -> {
+            List<Event> items = getItems().stream().map(item -> {
                 if (getCapacity() != null && item.getCapacity() != null) {
 
                     if (item.getCapacity().getMax() > getCapacity().getMax()) {
@@ -218,7 +278,7 @@ public class Event extends EventBase implements Convertable {
 
         if (getMembers() != null) {
             int cnt = (int) getMembers().stream().filter(member -> "A".equals(member.getStatus())).count();
-            setNum(cnt);
+            setNumOfMembers(cnt);
 
             getMembers().stream().map(member -> {
                 if ("L".equals(member.getStatus())
@@ -269,8 +329,8 @@ public class Event extends EventBase implements Convertable {
                             .collect(Collectors.toList());
                 }
 
-                if (getNum() >= getCapacity().getMin()) {
-                    if (LocalDateTime.now().isAfter(graceTime) && getNum() >= getCapacity().getMin()) {
+                if (getNumOfMembers() >= getCapacity().getMin()) {
+                    if (LocalDateTime.now().isAfter(graceTime) && getNumOfMembers() >= getCapacity().getMin()) {
                         setStatus("A");
                     } else {
                         setStatus("C");
@@ -281,7 +341,7 @@ public class Event extends EventBase implements Convertable {
             }
         }
 
-        if (getNum() == 0) {
+        if (getNumOfMembers() == 0) {
             setStatus("C");
         }
     }
@@ -297,7 +357,7 @@ public class Event extends EventBase implements Convertable {
                 Duration duration = Duration.between(start, getRange().getStart());
                 long diffInMillis = duration.get(ChronoUnit.SECONDS);
                 if (diffInMillis > 0) {
-                    List<EventItem> lItems = getItems().stream()
+                    List<Event> lItems = getItems().stream()
                             .map(item -> {
                                 LocalDateTime lEventItemStart = item.getRange().getStart().plusSeconds(diffInMillis);
                                 LocalDateTime lEventItemEnd = item.getRange().getEnd().plusSeconds(diffInMillis);
@@ -327,5 +387,77 @@ public class Event extends EventBase implements Convertable {
     public Object clone()
             throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    public String getAccess() {
+        return access;
+    }
+
+    public void setAccess(String accessLevel) {
+        this.access = accessLevel;
+    }
+
+    public String getAudience() {
+        return audience;
+    }
+
+    public void setAudience(String audience) {
+        this.audience = audience;
+    }
+
+    public Boolean getAutoInvite() {
+        return autoInvite;
+    }
+
+    public void setAutoInvite(Boolean autoInvite) {
+        this.autoInvite = autoInvite;
+    }
+
+    public Integer getStage() {
+        return stage;
+    }
+
+    public void setStage(Integer stage) {
+        this.stage = stage;
+    }
+
+    public Boolean getMultislot() {
+        return multislot;
+    }
+
+    public void setMultislot(Boolean multislot) {
+        this.multislot = multislot;
+    }
+
+    public int getNumOfEvents() {
+        return numOfEvents;
+    }
+
+    public void setNumOfEvents(int numOfEvents) {
+        this.numOfEvents = numOfEvents;
+    }
+
+    public Boolean getDiscreet() {
+        return discreet;
+    }
+
+    public void setDiscreet(Boolean discreet) {
+        this.discreet = discreet;
+    }
+
+    public Integer getRate() {
+        return rate;
+    }
+
+    public void setRate(Integer rate) {
+        this.rate = rate;
+    }
+
+    public List<Match> getMatches() {
+        return matches;
+    }
+
+    public void setMatches(List<Match> matches) {
+        this.matches = matches;
     }
 }

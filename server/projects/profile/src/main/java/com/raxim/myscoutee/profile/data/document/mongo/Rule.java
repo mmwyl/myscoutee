@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Document(collection = "rules")
 public class Rule {
+    // join first vs priority (rate based)
     @JsonProperty(value = "priority")
     private Boolean priority;
 
@@ -30,17 +31,33 @@ public class Rule {
     @JsonProperty(value = "memberGrace")
     private int memberGrace;
 
+    // by rate (isRank = false) vs. by score (isRank = true)
+    @JsonProperty(value = "isRank")
+    private Boolean isRank;
+
+    // don't invite less than 2-3 rated people for the event
+    @JsonProperty(value = "rate")
+    private Integer rate;
+
+    // fifa ranking etc.
+    @JsonProperty(value = "rankType")
+    private String rankType;
+
+    // the first x (value of breaker) is going to the next round
+    @JsonProperty(value = "breaker")
+    private String breaker;
+
     /*
      * kesobb boviteni lehet
      * met field has been removed we might need to look at one level down,
      * (ismeros ismerosei)
      */
+    /*
+     * in the case of competition it has a different meaning
+     * -> defines the most liked person inside an event can go to the next stage
+     */
     @JsonProperty(value = "mutual")
     private Boolean mutual;
-
-    // don't invite less than 2-3 rated people for the event
-    @JsonProperty(value = "rate")
-    private Integer rate;
 
     // ehelyett utolso x esemeny - ido bar-on kivalasztva
     // nem regebbi mint 'from' esemeny

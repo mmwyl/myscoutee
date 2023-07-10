@@ -22,14 +22,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.JsonUtil;
-import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Role;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.EventItemDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.FeedbackDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
@@ -40,7 +38,6 @@ import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.RoleRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 import com.raxim.myscoutee.profile.service.EventService;
-import com.raxim.myscoutee.profile.util.EventUtil;
 
 @RepositoryRestController
 @RequestMapping("recommendations")
@@ -203,22 +200,29 @@ public class RecommendationRestController {
     }
 
     // TODO: promotion fix
-    /*@PostMapping("events/{id}/clone")
-    public ResponseEntity<EventDTO> cloneEvent(
-            @PathVariable String id,
-            @RequestParam("step") Integer step,
-            @RequestParam("offset") String[] offset,
-            Authentication auth) {
-        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
-
-        Optional<Event> eventDto = eventService.cloneEvent(UUID.fromString(id), profile);
-        if (eventDto.isPresent()) {
-            EventDTO event = EventUtil.transform(eventDto.get());
-            return ResponseEntity.ok(event);
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }*/
+    /*
+     * @PostMapping("events/{id}/clone")
+     * public ResponseEntity<EventDTO> cloneEvent(
+     * 
+     * @PathVariable String id,
+     * 
+     * @RequestParam("step") Integer step,
+     * 
+     * @RequestParam("offset") String[] offset,
+     * Authentication auth) {
+     * Profile profile = ((FirebasePrincipal)
+     * auth.getPrincipal()).getUser().getProfile();
+     * 
+     * Optional<Event> eventDto = eventService.cloneEvent(UUID.fromString(id),
+     * profile);
+     * if (eventDto.isPresent()) {
+     * EventDTO event = EventUtil.transform(eventDto.get());
+     * return ResponseEntity.ok(event);
+     * } else {
+     * return ResponseEntity.badRequest().build();
+     * }
+     * }
+     */
 
     // People who you haven't met, but your surroundings are ordered by rate
     @Deprecated
@@ -271,42 +275,48 @@ public class RecommendationRestController {
         }
     }
 
-    //promotion fix
-    /*@GetMapping(value = { "events/{id}/items", "invitations/{id}/items" })
-    public ResponseEntity<PageDTO<EventItemDTO>> items(
-            @PathVariable String id,
-            @RequestParam("step") Integer step,
-            @RequestParam("offset") String[] offset,
-            Authentication auth) {
-        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
-
-        String[] tOffset;
-        if (offset != null && offset.length == 2) {
-            tOffset = new String[] { offset[0], offset[1] };
-        } else {
-            tOffset = new String[] { "1900-01-01", "1900-01-01" };
-        }
-
-        List<EventItemDTO> eventItems = eventRepository.findItemsByEvent(
-                UUID.fromString(id),
-                20,
-                step != null ? step : 5,
-                "%Y-%m-%d",
-                profile.getId(),
-                tOffset);
-
-        // http://dolszewski.com/spring/how-to-bind-requestparam-to-object/
-
-        List<Object> lOffset;
-        if (!eventItems.isEmpty()) {
-            lOffset = eventItems.get(eventItems.size() - 1).getOffset();
-        } else {
-            lOffset = Arrays.asList(tOffset);
-        }
-
-        return ResponseEntity.ok(
-                new PageDTO<>(eventItems, lOffset));
-    }*/
+    // promotion fix
+    /*
+     * @GetMapping(value = { "events/{id}/items", "invitations/{id}/items" })
+     * public ResponseEntity<PageDTO<EventItemDTO>> items(
+     * 
+     * @PathVariable String id,
+     * 
+     * @RequestParam("step") Integer step,
+     * 
+     * @RequestParam("offset") String[] offset,
+     * Authentication auth) {
+     * Profile profile = ((FirebasePrincipal)
+     * auth.getPrincipal()).getUser().getProfile();
+     * 
+     * String[] tOffset;
+     * if (offset != null && offset.length == 2) {
+     * tOffset = new String[] { offset[0], offset[1] };
+     * } else {
+     * tOffset = new String[] { "1900-01-01", "1900-01-01" };
+     * }
+     * 
+     * List<EventItemDTO> eventItems = eventRepository.findItemsByEvent(
+     * UUID.fromString(id),
+     * 20,
+     * step != null ? step : 5,
+     * "%Y-%m-%d",
+     * profile.getId(),
+     * tOffset);
+     * 
+     * // http://dolszewski.com/spring/how-to-bind-requestparam-to-object/
+     * 
+     * List<Object> lOffset;
+     * if (!eventItems.isEmpty()) {
+     * lOffset = eventItems.get(eventItems.size() - 1).getOffset();
+     * } else {
+     * lOffset = Arrays.asList(tOffset);
+     * }
+     * 
+     * return ResponseEntity.ok(
+     * new PageDTO<>(eventItems, lOffset));
+     * }
+     */
 
     @GetMapping(value = { "events/{id}/feedbacks", "invitations/{id}/feedbacks" })
     public ResponseEntity<PageDTO<FeedbackDTO>> feedbacks(
