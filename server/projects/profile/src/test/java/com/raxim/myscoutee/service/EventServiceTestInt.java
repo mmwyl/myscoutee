@@ -107,10 +107,10 @@ public class EventServiceTestInt extends AbstractAlgoTest {
                 assertEquals(AppTestConstants.UUID_PROFILE_LIAM, memberDTOs.get(5).getMember().getProfile().getId());
                 assertEquals("I", memberDTOs.get(5).getMember().getStatus());
 
-                statusService.changeStatusForEvent(AppTestConstants.UUID_EVENT_32.toString(),
+                statusService.change(AppTestConstants.UUID_EVENT_32.toString(),
                                 AppTestConstants.UUID_PROFILE_LIAM, "A");
                 // late accept
-                statusService.changeStatusForEvent(AppTestConstants.UUID_EVENT_32.toString(),
+                statusService.change(AppTestConstants.UUID_EVENT_32.toString(),
                                 AppTestConstants.UUID_PROFILE_ETHAN, "A");
 
                 memberDTOs = this.eventRepository.findMembersByEvent(pageParam, AppTestConstants.UUID_EVENT_32,

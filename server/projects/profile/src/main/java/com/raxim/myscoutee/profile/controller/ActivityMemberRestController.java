@@ -124,7 +124,7 @@ public class ActivityMemberRestController {
 
         String actionType = MemberAction.valueOf(type).getType();
 
-        return ControllerUtil.handle((i, s, p) -> statusService.changeStatusForEvent(i, s, p),
+        return ControllerUtil.handle((i, s, p) -> statusService.change(i, s, p),
                 id, profile.getId(), actionType,
                 HttpStatus.OK);
     }
@@ -138,7 +138,7 @@ public class ActivityMemberRestController {
 
         String actionType = MemberAction.valueOf(type).getType();
 
-        return ControllerUtil.handle((i, m, s, p) -> statusService.manageMemberStatusForEvent(i, m, s, p),
+        return ControllerUtil.handle((i, m, s, p) -> statusService.change(i, m, s, p),
                 eventId, memberId, profile.getId(), actionType,
                 HttpStatus.OK);
     }

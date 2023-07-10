@@ -34,7 +34,7 @@ public class StatusService {
     }
 
     // approve, kick etc.
-    public Optional<EventDTO> manageMemberStatusForEvent(String id, String profileUid, UUID byUuid, String status)
+    public Optional<EventDTO> change(String id, String profileUid, UUID byUuid, String status)
             throws MessageException {
         Optional<Event> eventRes = id != null ? this.eventRepository.findById(UUID.fromString(id))
                 : Optional.empty();
@@ -69,7 +69,7 @@ public class StatusService {
     }
 
     // promotion accept event -> message to participant, or cancel event
-    public Optional<EventDTO> changeStatusForEvent(String id, UUID profileUid, String status)
+    public Optional<EventDTO> change(String id, UUID profileUid, String status)
             throws MessageException {
 
         Optional<Event> eventRes = id != null ? this.eventRepository.findById(UUID.fromString(id)) : Optional.empty();
