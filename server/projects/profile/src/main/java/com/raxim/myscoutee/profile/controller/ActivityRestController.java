@@ -88,7 +88,7 @@ public class ActivityRestController {
 
         if (profile.getPosition() != null) {
             List<EventDTO> events = eventService.getEvents(pageParam,
-                    new String[] { "A", "P", "C" });
+                    new String[] { "A", "P", "C" }); //the statuses is coming from the page filter (SettingsRepository)
 
             List<Object> lOffset = CommonUtil.offset(events, pageParam.getOffset());
 

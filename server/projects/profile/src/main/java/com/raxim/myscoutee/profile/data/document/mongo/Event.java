@@ -3,6 +3,7 @@ package com.raxim.myscoutee.profile.data.document.mongo;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.raxim.myscoutee.common.repository.GeoJsonPointDeserializer;
+import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.profile.converter.Convertable;
 import com.raxim.myscoutee.profile.data.document.mongo.iface.EventBase;
 import com.raxim.myscoutee.profile.data.document.mongo.iface.Shiftable;
@@ -77,11 +79,12 @@ public class Event extends EventBase implements Convertable, Syncable, Shiftable
     private Boolean multislot;
 
     // based on created date make a slotIdx (sync method)
-    //leave it 0, if there is only one item in the slot
+    // leave it 0, if there is only one item in the slot
     @JsonIgnore
     private int slotCnt;
 
-    // counter of stage - stage should be greater than 0, if it's multistage
+    // counter of stage - stage should be greater than 0, if it's multistage, on the
+    // main event (promotion, it's the current stage)
     @JsonProperty(value = "stage")
     private int stage;
 
@@ -96,7 +99,7 @@ public class Event extends EventBase implements Convertable, Syncable, Shiftable
     private Event ref;
 
     @JsonProperty(value = "rule")
-    private Rule rule;
+    private Rule rule = new Rule();
 
     // qr code generation
     @JsonProperty(value = "ticket")
@@ -270,22 +273,40 @@ public class Event extends EventBase implements Convertable, Syncable, Shiftable
             }
         } else {
             if (getItems() != null) {
-                // max capacity can be changed only from the event
-                List<Event> items = getItems().stream().map(item -> {
-                    if (getCapacity() != null && item.getCapacity() != null) {
 
-                        if (item.getCapacity().getMax() > getCapacity().getMax()) {
-                            item.getCapacity().setMax(getCapacity().getMax());
+                if (Boolean.TRUE.equals(getMultislot())) {
+                    List<Event> items = getItems().stream()
+                            .collect(Collectors.groupingBy(item -> item.getRange())) // Group items by range
+                            .values().stream()
+                            .flatMap(group -> CommonUtil.mapIndexed(
+                                    group.stream().sorted(Comparator.comparing(Event::getCreatedDate)).toList(),
+                                    (index, item) -> {
+                                        item.slotCnt = ++index;
+                                        return item;
+                                    }))
+                            .toList();
+                    setItems(items);
+                }
+
+                if (!Boolean.TRUE.equals(getMultislot())) {
+                    // max capacity can be changed only from the event
+                    List<Event> items = getItems().stream().map(item -> {
+                        if (getCapacity() != null && item.getCapacity() != null) {
+
+                            if (item.getCapacity().getMax() > getCapacity().getMax()) {
+                                item.getCapacity().setMax(getCapacity().getMax());
+                            }
+
+                            if (item.getCapacity().getMin() > getCapacity().getMax()) {
+                                item.getCapacity().setMin(getCapacity().getMax());
+                            }
                         }
+                        return item;
+                    }).toList();
+                    setItems(items);
+                }
 
-                        if (item.getCapacity().getMin() > getCapacity().getMax()) {
-                            item.getCapacity().setMin(getCapacity().getMax());
-                        }
-                    }
-                    return item;
-                }).toList();
-                setItems(items);
-
+                //TODO: multislot fix hierarchy -> if item is added, than event and promotion needs to be updated until upper level
                 Optional<LocalDateTime> optStart = getItems().stream().filter(item -> item.getRange() != null)
                         .map(item -> item.getRange().getStart())
                         .min((cap1, cap2) -> cap1.isBefore(cap2) ? -1 : 1);
@@ -327,22 +348,26 @@ public class Event extends EventBase implements Convertable, Syncable, Shiftable
                     return member;
                 });
 
+                //TODO: multislot fix
                 // admin or promoter
                 if (getRef() != null) {
                     int promoterCnt = (int) getMembers().stream()
-                            .filter(member -> "P".equals(member.getRole()) && "A".equals(member.getStatus())).count();
+                            .filter(member -> "P".equals(member.getRole()) && "A".equals(member.getStatus()))
+                            .count();
 
                     if (promoterCnt == 0) {
                         setStatus("C");
                     }
                 } else {
                     int adminCnt = (int) getMembers().stream()
-                            .filter(member -> "A".equals(member.getRole()) && "A".equals(member.getStatus())).count();
+                            .filter(member -> "A".equals(member.getRole()) && "A".equals(member.getStatus()))
+                            .count();
 
                     if (adminCnt == 0) {
                         Optional<Member> optMemberMin = getMembers().stream()
                                 .filter(member -> "U".equals(member.getRole()))
-                                .min((cap1, cap2) -> cap1.getCreatedDate().isBefore(cap2.getCreatedDate()) ? -1 : 1);
+                                .min((cap1, cap2) -> cap1.getCreatedDate().isBefore(cap2.getCreatedDate()) ? -1
+                                        : 1);
 
                         if (optMemberMin.isPresent()) {
                             Member memberMin = optMemberMin.get();
@@ -352,6 +377,7 @@ public class Event extends EventBase implements Convertable, Syncable, Shiftable
                     }
                 }
 
+                //TODO: multislot fix
                 if (getCapacity() != null) {
 
                     // if invitation has been accepted, but the screen was not uptodate -> accept

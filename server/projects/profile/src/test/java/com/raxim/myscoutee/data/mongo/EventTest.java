@@ -70,4 +70,31 @@ public class EventTest {
         LocalDateTime expectedEventEnd = LocalDateTime.of(2021, 2, 1, 0, 0, 0);
         assertEquals(expectedEventEnd, event.getRange().getEnd());
     }
+
+    @Test
+    public void shouldSyncSlotCnt() {
+        Event event = new Event();
+        event.setMultislot(true);
+
+        List<Event> items = new ArrayList<>();
+
+        Event eventItem = new Event();
+        LocalDateTime itemStart = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
+        LocalDateTime itemEnd = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
+        eventItem.setRange(RangeLocal.of(itemStart, itemEnd));
+        items.add(eventItem);
+
+        eventItem = new Event();
+        itemStart = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
+        itemEnd = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
+        eventItem.setRange(RangeLocal.of(itemStart, itemEnd));
+        items.add(eventItem);
+
+        event.setItems(items);
+
+        event.sync();
+
+        assertEquals(1, event.getItems().get(0).getSlotCnt());
+        assertEquals(2, event.getItems().get(1).getSlotCnt());
+    }
 }

@@ -4,8 +4,7 @@
             "type": "A",
             "members": {
                 "$elemMatch": {
-                    "profile.$id": "?#{#param.id}",
-                    "status": "A"
+                    "profile.$id": "?#{#param.id}"
                 }
             }
         }

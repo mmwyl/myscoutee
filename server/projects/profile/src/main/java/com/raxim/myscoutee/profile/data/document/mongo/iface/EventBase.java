@@ -21,7 +21,7 @@ public abstract class EventBase implements Cloneable {
     private String desc;
 
     @JsonProperty(value = "range")
-    private RangeLocal range;
+    private RangeLocal range = new RangeLocal();
 
     // Active (A), Deleted (D), Timed Out (T), Pending (P)
     @JsonProperty(value = "status")

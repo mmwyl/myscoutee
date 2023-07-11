@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.function.TriFunction;
 import org.bson.BsonBinary;
@@ -142,5 +143,14 @@ public class CommonUtil {
 
     public static <T extends PageItemDTO> List<Object> offset(List<T> list, Object[] offset) {
         return !list.isEmpty() ? list.get(list.size() - 1).getOffset() : List.of();
+    }
+
+    public interface IndexedFunction<T, R> {
+        R apply(int index, T element);
+    }
+
+    public static <T, R> Stream<R> mapIndexed(List<T> list, IndexedFunction<T, R> mapper) {
+        return IntStream.range(0, list.size())
+                .mapToObj(index -> mapper.apply(index, list.get(index)));
     }
 }
