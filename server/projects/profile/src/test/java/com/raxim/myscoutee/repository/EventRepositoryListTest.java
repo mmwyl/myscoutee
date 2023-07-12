@@ -25,8 +25,8 @@ import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.handler.EventItemParamHandler;
-import com.raxim.myscoutee.profile.handler.EventParamHandler;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 @DataMongoTest
 @DirtiesContext
@@ -56,7 +56,7 @@ public class EventRepositoryListTest {
 
                 String[] tOffset = new String[] { fromF, createdDateF, untilF };
 
-                PageParam pageParam = new PageParam(tOffset, EventParamHandler.MONTH);
+                PageParam pageParam = new PageParam(tOffset, AppConstants.MONTH);
                 pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
 
                 List<EventDTO> eventDTOs = this.eventRepository.findEventByMonth(pageParam,
@@ -79,9 +79,9 @@ public class EventRepositoryListTest {
 
                 String[] tOffset = new String[] { fromF, createdDateF };
 
-                PageParam pageParam = new PageParam(tOffset, EventParamHandler.MONTH);
+                PageParam pageParam = new PageParam(tOffset, AppConstants.MONTH);
                 pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
-                pageParam.setGroupKey(EventParamHandler.DAY_FORMAT);
+                pageParam.setGroupKey(AppConstants.DAY_FORMAT);
 
                 List<EventDTO> eventDTOs = this.eventRepository.findEventDown(pageParam,
                                 new String[] { "A", "P", "C" });
@@ -125,9 +125,9 @@ public class EventRepositoryListTest {
 
                 String[] tOffset = new String[] { fromF, createdDateF };
 
-                PageParam pageParam = new PageParam(tOffset, EventParamHandler.MONTH);
+                PageParam pageParam = new PageParam(tOffset, AppConstants.MONTH);
                 pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
-                pageParam.setGroupKey(EventParamHandler.WEEK_FORMAT);
+                pageParam.setGroupKey(AppConstants.WEEK_FORMAT);
 
                 List<EventDTO> eventDTOs = this.eventRepository.findEventDown(pageParam,
                                 new String[] { "A", "P", "C" });
@@ -150,7 +150,7 @@ public class EventRepositoryListTest {
 
                 Object[] tOffset = new Object[] { fromF, createdDateF, stage };
 
-                PageParam pageParam = new PageParam(tOffset, EventParamHandler.MONTH);
+                PageParam pageParam = new PageParam(tOffset, AppConstants.MONTH);
                 pageParam.setId(AppTestConstants.UUID_PROFILE_AVA);
                 pageParam.setGroupKey(EventItemParamHandler.DAY_FORMAT);
                 pageParam.setLimit(2);

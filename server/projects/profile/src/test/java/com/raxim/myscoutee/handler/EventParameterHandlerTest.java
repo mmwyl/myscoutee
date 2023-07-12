@@ -23,6 +23,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.handler.EventParamHandler;
 import com.raxim.myscoutee.profile.service.SettingsService;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 @DirtiesContext
 @ExtendWith({ SpringExtension.class })
@@ -40,10 +41,10 @@ public class EventParameterHandlerTest extends AbstractAlgoTest {
     @Test
     public void shouldHandleParam() {
         when(settingsService.getViewType(any(), any()))
-                                .thenReturn(EventParamHandler.DAY);
+                                .thenReturn(AppConstants.DAY);
 
         PageParam pageParam = eventParamHandler.handle(new Profile(UUID_PROFILE_OLIVER), new PageParam());
-        assertEquals(EventParamHandler.DAY_FORMAT, pageParam.getGroupKey());
+        assertEquals(AppConstants.DAY_FORMAT, pageParam.getGroupKey());
         assertEquals(UUID_PROFILE_OLIVER, pageParam.getId());
         assertEquals(3, pageParam.getOffset().length);
         

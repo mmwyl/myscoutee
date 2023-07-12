@@ -4,7 +4,7 @@
             "$binary": "oEy7pm3PAx0lyLoCFSX6kg==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event1",
         "range": {
@@ -25,6 +25,9 @@
             "max": 6
         },
         "createdDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
+        },
+        "updatedDate": {
             "$date": "2021-01-30T04:17:08.000Z"
         },
         "numOfMembers": 1,
@@ -55,7 +58,7 @@
             "$binary": "pUQakRBTZ8lMwwVGHzQ3sg==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event11",
         "range": {
@@ -76,6 +79,9 @@
             "max": 6
         },
         "createdDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
+        },
+        "updatedDate": {
             "$date": "2021-01-30T04:17:08.000Z"
         },
         "numOfMembers": 1,
@@ -106,7 +112,7 @@
             "$binary": "f0XjJP5nYzMiKNTVqFsTlg==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event12",
         "range": {
@@ -127,6 +133,9 @@
             "max": 6
         },
         "createdDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
+        },
+        "updatedDate": {
             "$date": "2021-01-30T04:17:08.000Z"
         },
         "numOfMembers": 1,
@@ -157,7 +166,7 @@
             "$binary": "jEzsC2l500NzJTdJoWk7ow==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event2",
         "range": {
@@ -170,6 +179,9 @@
         },
         "status": "A",
         "createdDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
+        },
+        "updatedDate": {
             "$date": "2021-01-30T04:17:08.000Z"
         },
         "numOfMembers": 2,
@@ -211,7 +223,7 @@
             "$binary": "yUSGxbxr2t/cEdXAbUbNvg==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event31",
         "range": {
@@ -225,6 +237,9 @@
         "status": "A",
         "createdDate": {
             "$date": "2019-01-30T04:17:08.000Z"
+        },
+        "updatedDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
         },
         "numOfMembers": 2,
         "members": [
@@ -265,7 +280,7 @@
             "$binary": "7kUEsQ+WrRXY03is9usQhQ==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event32",
         "range": {
@@ -279,6 +294,9 @@
         "status": "A",
         "createdDate": {
             "$date": "2020-01-30T04:17:08.000Z"
+        },
+        "updatedDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
         },
         "numOfMembers": 4,
         "capacity": {
@@ -392,7 +410,7 @@
             "$binary": "8Ev2c8o1pCw13zY02oBNrA==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event33",
         "range": {
@@ -405,6 +423,9 @@
         },
         "status": "A",
         "createdDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
+        },
+        "updatedDate": {
             "$date": "2021-01-30T04:17:08.000Z"
         },
         "numOfMembers": 2,
@@ -461,6 +482,9 @@
         "status": "A",
         "createdDate": {
             "$date": "2020-01-29T04:17:08.000Z"
+        },
+        "updatedDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
         },
         "numOfMembers": 4,
         "members": [
@@ -547,6 +571,9 @@
         "createdDate": {
             "$date": "2020-01-29T04:17:08.001Z"
         },
+        "updatedDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
+        },
         "numOfMembers": 4,
         "members": [
             {
@@ -630,6 +657,9 @@
         "status": "A",
         "createdDate": {
             "$date": "2020-01-29T04:17:08.000Z"
+        },
+        "updatedDate": {
+            "$date": "2021-01-30T04:17:08.000Z"
         },
         "numOfMembers": 4,
         "members": [

@@ -1,5 +1,6 @@
 package com.raxim.myscoutee.profile.util;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
@@ -20,6 +21,16 @@ import org.bson.codecs.configuration.CodecRegistries;
 public class AppConstants {
         public static final String WOMAN = "w";
         public static final String MAN = "m";
+
+        public static final String MONTH = "m";
+        public static final String WEEK = "w";
+        public static final String DAY = "d";
+
+        public static final String MONTH_FORMAT = "%Y-%m";
+        public static final String WEEK_FORMAT = "%Y %U";
+        public static final String DAY_FORMAT = "%Y-%m-%d";
+
+        public static final LocalDate DATE_MIN = LocalDate.of(1900, 1, 1);
 
         public final static BsonTypeClassMap TYPE_MAP = new BsonTypeClassMap(Map.of(BsonType.BINARY, UUID.class));
         public static final Codec<Document> UUID_CODEC = CodecRegistries

@@ -79,6 +79,28 @@ public class ActivityRestController {
         }
     }
 
+    @GetMapping("invitations")
+    @Transactional
+    public ResponseEntity<Object> getInvitations(PageParam pageParam, Authentication auth) {
+        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
+        Profile profile = principal.getUser().getProfile();
+
+        // override page param
+        pageParam = paramHandlers.handle(profile, pageParam, EventParamHandler.TYPE);
+
+        if (profile.getPosition() != null) {
+            List<EventDTO> events = eventService.getInvitations(pageParam,
+                    new String[] { "A", "P", "C" }); // the statuses is coming from the page filter (SettingsRepository)
+
+            List<Object> lOffset = CommonUtil.offset(events, pageParam.getOffset());
+
+            return ResponseEntity.ok(
+                    new PageDTO<>(events, lOffset, 1, pageParam.getType()));
+        } else {
+            return ResponseEntity.badRequest().body(new ErrorDTO(450, "err.no_profile"));
+        }
+    }
+
     // TODO: multislot fix - saveEvent and saveItem should be the same method!!!
     // status needs to be filled in the event either T or P
     @PostMapping("events")
@@ -178,45 +200,6 @@ public class ActivityRestController {
      * 
      * return eventDto.map(event -> ResponseEntity.ok(event))
      * .orElse(ResponseEntity.badRequest().build());
-     * }
-     */
-
-    // TODO invitation fix
-    /*
-     * @GetMapping("invitations")
-     * 
-     * @Transactional
-     * public ResponseEntity<?> getInvitations(@RequestParam(value = "step",
-     * required = false) Integer step,
-     * 
-     * @RequestParam(value = "offset", required = false) String[] offset,
-     * Authentication auth) {
-     * 
-     * String[] tOffset = offset != null && offset.length == 5 ? new String[] {
-     * CommonUtil.decode(offset[0]),
-     * CommonUtil.decode(offset[1]),
-     * CommonUtil.decode(offset[2]),
-     * CommonUtil.decode(offset[3]),
-     * CommonUtil.decode(offset[4])
-     * }
-     * : new String[] { "0.0", "0.0", "0.0", "0.0",
-     * LocalDate.now().atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME) };
-     * 
-     * FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-     * Profile profile = principal.getUser().getProfile();
-     * 
-     * if (profile.getPosition() != null) {
-     * List<EventDTO> events = eventService.getInvitations(profile.getId(),
-     * CommonUtil.point(profile.getPosition()), 20,
-     * step != null ? step : 5, profile.getGroup(), tOffset, 1.5);
-     * 
-     * List<Object> lOffset = !events.isEmpty() ? events.get(events.size() -
-     * 1).getOffset() : List.of();
-     * 
-     * return ResponseEntity.ok(new PageDTO<>(events, lOffset, 0));
-     * } else {
-     * return ResponseEntity.badRequest().body(new ErrorDTO(450, "err.no_profile"));
-     * }
      * }
      */
 

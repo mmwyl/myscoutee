@@ -4,7 +4,7 @@
             "$binary": "oEy7pm3PAx0lyLoCFSX6kg==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event1",
         "range": {
@@ -55,7 +55,7 @@
             "$binary": "pUQakRBTZ8lMwwVGHzQ3sg==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event11",
         "range": {
@@ -106,7 +106,7 @@
             "$binary": "f0XjJP5nYzMiKNTVqFsTlg==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event12",
         "range": {
@@ -157,7 +157,7 @@
             "$binary": "jEzsC2l500NzJTdJoWk7ow==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event2",
         "range": {
@@ -211,7 +211,7 @@
             "$binary": "yUSGxbxr2t/cEdXAbUbNvg==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event31",
         "range": {
@@ -265,7 +265,7 @@
             "$binary": "7kUEsQ+WrRXY03is9usQhQ==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "multislot": true,
         "name": "Event32",
@@ -393,7 +393,7 @@
             "$binary": "8Ev2c8o1pCw13zY02oBNrA==",
             "$type": "03"
         },
-        "type": "A",
+        "type": "E",
         "stage": 0,
         "name": "Event33",
         "range": {

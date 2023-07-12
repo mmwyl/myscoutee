@@ -50,6 +50,11 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
                         @Param("param") PageParam param,
                         @Param("status") String[] status);
 
+        @Aggregation(pipeline = "findInvitationDown")
+        List<EventDTO> findInvitationDown(
+                        @Param("param") PageParam param,
+                        @Param("status") String[] status);
+
         @Aggregation(pipeline = "findEventUp")
         List<EventDTO> findEventUp(
                         @Param("param") PageParam param,
@@ -98,14 +103,4 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
 
         @Aggregation(pipeline = "findTokensByEvent")
         List<Token> findTokensByEvent(@Param("eventIds") UUID[] eventId);
-
-        @Aggregation(pipeline = "findInvitationByProfile")
-        List<EventDTO> findInvitationByProfile(
-                        @Param("currentId") UUID currentId,
-                        @Param("loc") Point loc,
-                        @Param("limit") int limit,
-                        @Param("step") int step,
-                        @Param("groupId") UUID groupId,
-                        @Param("offset") Object[] offset,
-                        @Param("type") double type);
 }

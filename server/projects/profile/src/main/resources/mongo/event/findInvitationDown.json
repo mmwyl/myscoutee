@@ -4,7 +4,8 @@
             "type": "E",
             "members": {
                 "$elemMatch": {
-                    "profile.$id": "?#{#param.id}"
+                    "profile.$id": "?#{#param.id}",
+                    "status": "I"
                 }
             }
         }
@@ -14,34 +15,10 @@
             "$expr": {
                 "$and": [
                     {
-                        "$or": [
+                        "$lt": [
+                            "$updatedDate",
                             {
-                                "$gt": [
-                                    "$range.start",
-                                    {
-                                        "$toDate": "?#{#param.offset[0]}"
-                                    }
-                                ]
-                            },
-                            {
-                                "$and": [
-                                    {
-                                        "$eq": [
-                                            "$range.start",
-                                            {
-                                                "$toDate": "?#{#param.offset[0]}"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "$lt": [
-                                            "$createdDate",
-                                            {
-                                                "$toDate": "?#{#param.offset[1]}"
-                                            }
-                                        ]
-                                    }
-                                ]
+                                "$toDate": "?#{#param.offset[0]}"
                             }
                         ]
                     },
@@ -57,8 +34,7 @@
     },
     {
         "$sort": {
-            "range.start": 1,
-            "createdDate": -1
+            "updatedDate": -1
         }
     },
     {
@@ -130,11 +106,10 @@
                             ]
                         },
                         "sortKey": {
-                            "$toLong": "$range.start"
+                            "$toLong": "$updatedDate"
                         },
                         "offset": [
-                            "$range.start",
-                            "$createdDate"
+                            "$updatedDate"
                         ]
                     }
                 ]

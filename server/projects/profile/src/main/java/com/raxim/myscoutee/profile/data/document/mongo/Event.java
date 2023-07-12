@@ -32,7 +32,7 @@ public class Event extends EventBase implements Convertable, Syncable, Shiftable
     @JsonProperty(value = "key")
     private UUID id;
 
-    // type = active event vs template vs Item (I = item)
+    // type = event (E) vs template??? (T) vs Item (I = item)
 
     // urlRef is the template
 

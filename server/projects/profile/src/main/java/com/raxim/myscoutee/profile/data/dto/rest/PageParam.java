@@ -2,7 +2,7 @@ package com.raxim.myscoutee.profile.data.dto.rest;
 
 import java.util.UUID;
 
-public class PageParam {
+public class PageParam implements Cloneable {
     private Object[] offset;
     private String type;
     private int direction;
@@ -85,6 +85,12 @@ public class PageParam {
 
     public void setGroupKey(String groupKey) {
         this.groupKey = groupKey;
+    }
+
+    @Override
+    public Object clone()
+            throws CloneNotSupportedException {
+        return super.clone();
     }
 
 }

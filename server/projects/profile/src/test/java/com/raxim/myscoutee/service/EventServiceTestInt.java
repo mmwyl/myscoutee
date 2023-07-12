@@ -24,6 +24,7 @@ import com.raxim.myscoutee.common.config.RepositoryConfig;
 import com.raxim.myscoutee.common.repository.MongoDataLoaderTestExecutionListener;
 import com.raxim.myscoutee.common.repository.TestData;
 import com.raxim.myscoutee.profile.converter.Converters;
+import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.exception.MessageException;
@@ -31,6 +32,7 @@ import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.service.EventService;
 import com.raxim.myscoutee.profile.service.StatusService;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 @DataMongoTest
 @DirtiesContext
@@ -60,7 +62,7 @@ public class EventServiceTestInt extends AbstractAlgoTest {
         }
 
         @Test
-        public void shouldEventAdminInviteAndAcceptFirst() throws MessageException {
+        public void shouldEventAdminInviteAndAcceptFirst() throws MessageException, CloneNotSupportedException {
                 String[] memberStatuses = new String[] { "A", "I", "J", "W" };
                 String status = "A";
                 LocalDate createdDate = LocalDate.of(1901, 1, 1);
@@ -86,6 +88,22 @@ public class EventServiceTestInt extends AbstractAlgoTest {
 
                 eventService.invite(AppTestConstants.UUID_EVENT_32.toString(), invitedIds,
                                 AppTestConstants.UUID_PROFILE_OLIVER);
+
+                String[] eventStatuses = new String[] { "A", "P", "C" };
+                LocalDate updatedDate = LocalDate.now();
+                String updatedDateF = updatedDate.atStartOfDay(ZoneId.systemDefault())
+                                .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+                Object[] iOffSet = new Object[] { updatedDateF };
+
+                PageParam pageParamInv = new PageParam();
+                pageParamInv.setId(AppTestConstants.UUID_PROFILE_LIAM);
+                pageParamInv.setOffset(iOffSet);
+                pageParamInv.setGroupKey(AppConstants.DAY_FORMAT);
+
+                List<EventDTO> invitations = eventService.getInvitations(pageParamInv, eventStatuses);
+                assertEquals(1, invitations.size());
+                assertEquals(AppTestConstants.UUID_EVENT_32, invitations.get(0).getItem().getId());
 
                 memberDTOs = this.eventRepository.findMembersByEvent(pageParam,
                                 AppTestConstants.UUID_EVENT_32,

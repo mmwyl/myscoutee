@@ -31,8 +31,15 @@ public abstract class EventBase implements Cloneable {
     @JsonProperty(value = "createdDate")
     private LocalDateTime createdDate = LocalDateTime.now();
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonProperty(value = "updatedDate")
+    private LocalDateTime updatedDate = LocalDateTime.now();
+
     @JsonIgnore
     private UUID createdBy; // can be system uuid also, not only a valid profile
+
+    @JsonIgnore
+    private UUID updatedBy; // can be system uuid also, not only a valid profile
 
     @JsonProperty(value = "type")
     private String type;
@@ -149,6 +156,22 @@ public abstract class EventBase implements Cloneable {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public LocalDateTime getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDateTime updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public UUID getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(UUID updatedBy) {
+        this.updatedBy = updatedBy;
     }
 
     @Override

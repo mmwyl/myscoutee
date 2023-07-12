@@ -23,9 +23,9 @@ import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.exception.IllegalAccessException;
 import com.raxim.myscoutee.profile.exception.MessageException;
-import com.raxim.myscoutee.profile.handler.EventParamHandler;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 @Service
 public class EventService {
@@ -103,22 +103,22 @@ public class EventService {
      */
     public List<EventDTO> getEvents(PageParam pageParam, String[] status) {
         List<EventDTO> events = Collections.emptyList();
-        if (EventParamHandler.DAY.equals(pageParam.getType())) {
+        if (AppConstants.DAY.equals(pageParam.getType())) {
             if (pageParam.getDirection() == 1) {
                 events = eventRepository.findEventDown(pageParam, status);
             } else {
                 events = eventRepository.findEventUp(pageParam, status);
             }
-        } else if (EventParamHandler.WEEK.equals(pageParam.getType())) {
+        } else if (AppConstants.WEEK.equals(pageParam.getType())) {
             events = eventRepository.findEventDown(pageParam, status);
-        } else if (EventParamHandler.MONTH.equals(pageParam.getType())) {
+        } else if (AppConstants.MONTH.equals(pageParam.getType())) {
             events = eventRepository.findEventByMonth(pageParam, status);
         }
         return events;
     }
 
-    public List<EventDTO> getInvitations(PageParam pageParam) {
-        return this.eventRepository.findInvitationByProfile(null, null, 0, 0, null, null, 0);
+    public List<EventDTO> getInvitations(PageParam pageParam, String[] status) {
+        return this.eventRepository.findInvitationDown(pageParam, status);
     }
 
     // TODO: promotion fix

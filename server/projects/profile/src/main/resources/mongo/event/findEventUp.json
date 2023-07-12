@@ -1,7 +1,7 @@
 [
     {
         "$match": {
-            "type": "A",
+            "type": "E",
             "members": {
                 "$elemMatch": {
                     "profile.$id": "?#{#param.id}"
@@ -34,7 +34,7 @@
                                         ]
                                     },
                                     {
-                                        "$lt": [
+                                        "$gt": [
                                             "$createdDate",
                                             {
                                                 "$toDate": "?#{#param.offset[1]}"

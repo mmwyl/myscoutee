@@ -2,7 +2,7 @@
     {
         "$match": {
             "status": "P",
-            "type": "A",
+            "type": "E",
             "rule.priority": true
         }
     },
