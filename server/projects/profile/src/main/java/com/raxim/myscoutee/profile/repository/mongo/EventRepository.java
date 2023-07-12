@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import com.mongodb.client.model.geojson.Point;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.EventWithCandidates;
 import com.raxim.myscoutee.profile.data.document.mongo.Token;
@@ -32,18 +31,6 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
 
         @Query("{'status': 'P', 'ref.$id': ?0, 'info.members.profile.$id': ?1}")
         List<Event> findPendingEvents(UUID eventId, UUID profileId);
-
-        @Query("{'status': { $in: :#{#status} }, 'ref.$id': { $in: :#{#refIds} } }")
-        List<Event> findActiveEvents(
-                        @Param("status") String[] status,
-                        @Param("refIds") UUID[] refIds);
-
-        @Aggregation(pipeline = "findEventsByStatus")
-        List<EventDTO> findEventsByStatus(
-                        @Param("group") UUID group,
-                        @Param("limit") int limit,
-                        @Param("offset") String[] offset,
-                        @Param("status") String status);
 
         @Aggregation(pipeline = "findEventDown")
         List<EventDTO> findEventDown(

@@ -33,14 +33,6 @@ public class CampaignService {
         this.objectMapper = objectMapper;
     }
 
-    public List<Event> getAllActiveEvents(UUID[] refIds) {
-        if (refIds != null && refIds.length > 0) {
-            return this.eventService.getAllActiveEvents(refIds);
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
     // TODO: promotion fix
     /*
      * public Optional<Pair<EventMulti, Boolean>> getPromotion(

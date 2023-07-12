@@ -26,14 +26,11 @@ import com.raxim.myscoutee.common.config.properties.ConfigProperties;
 import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Badge;
-import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Link;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Role;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
-import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.LinkDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.LinkInfoDTO;
@@ -83,136 +80,6 @@ public class UserGroupRestController {
         this.linkRepository = linkRepository;
         this.config = config;
         this.objectMapper = objectMapper;
-    }
-
-    // TODO: group event
-    @GetMapping("/groups/{groupId}/events")
-    @Transactional
-    public ResponseEntity<?> getEvents(@PathVariable String groupId, @RequestParam(name = "step") String step,
-            @RequestParam(name = "offset") String[] offset, Authentication auth) {
-        String[] tOffset;
-        if (offset != null && offset.length == 1) {
-            tOffset = new String[] { CommonUtil.decode(offset[0]) };
-        } else {
-            tOffset = new String[] { "1900-01-01" };
-        }
-
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        Profile profile = principal.getUser().getProfile();
-
-        if (profile.getPosition() != null) {
-            List<EventDTO> events = eventService.getEventsByStatus(tOffset, UUID.fromString(groupId), "U");
-
-            List<Object> lOffset;
-            if (!events.isEmpty()) {
-                lOffset = events.get(events.size() - 1).getOffset();
-            } else {
-                lOffset = Arrays.asList(tOffset, List.class);
-            }
-
-            PageDTO<EventDTO> pageDto = new PageDTO<>(events, lOffset);
-            pageDto.setScroll(0);
-            return ResponseEntity.ok(pageDto);
-        } else {
-            return ResponseEntity.badRequest().body(new ErrorDTO(450, "err.no_profile"));
-        }
-    }
-
-    // TODO: group event
-    /*
-     * @PatchMapping("/groups/{groupId}/events/{id}")
-     * 
-     * @Transactional
-     * public ResponseEntity<?> patchEvent(@PathVariable String id, @RequestBody
-     * EventItem eventItem,
-     * Authentication auth) {
-     * FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-     * Profile profile = principal.getUser().getProfile();
-     * return EventItemUtil.update(eventService, eventItem, id, profile);
-     * }
-     */
-
-    // TODO: group event
-    /*
-     * @PostMapping("/groups/{groupId}/events/{id}/items")
-     * public ResponseEntity<EventItemDTO> addItem(@PathVariable String
-     * id, @RequestBody EventItem eventItem,
-     * Authentication auth) {
-     * FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-     * Profile profile = principal.getUser().getProfile();
-     * return EventItemUtil.save(eventService, eventItem, id, profile);
-     * }
-     */
-
-    // TODO: group event
-    /*
-     * @PatchMapping("/groups/{groupId}/events/{id}/items/{itemId}")
-     * public ResponseEntity<EventItemDTO> patchItem(@PathVariable String
-     * id, @PathVariable String itemId,
-     * 
-     * @RequestBody EventItem eventItem, Authentication auth) {
-     * FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-     * Profile profile = principal.getUser().getProfile();
-     * return EventItemUtil.update(eventService, eventItem, id, itemId, profile);
-     * }
-     */
-
-    // TODO: group event
-    /*
-     * @GetMapping("/groups/{groupId}/events/{id}/items")
-     * public ResponseEntity<PageDTO<EventItemDTO>> items(@PathVariable String
-     * id, @RequestParam("step") Integer step,
-     * 
-     * @RequestParam("offset") String[] offset, Authentication auth) {
-     * FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-     * Profile profile = principal.getUser().getProfile();
-     * 
-     * String[] tOffset;
-     * if (offset != null && offset.length == 2) {
-     * tOffset = new String[] { CommonUtil.decode(offset[0]),
-     * CommonUtil.decode(offset[1]) };
-     * } else {
-     * tOffset = new String[] { "1900-01-01", "1900-01-01" };
-     * }
-     * 
-     * List<EventItemDTO> eventItems =
-     * eventService.getEventItems(UUID.fromString(id), step, tOffset,
-     * profile.getId());
-     * 
-     * List<Object> lOffset;
-     * if (!eventItems.isEmpty()) {
-     * EventItemDTO lastEventItem = eventItems.get(eventItems.size() - 1);
-     * lOffset = lastEventItem.getOffset();
-     * } else {
-     * lOffset = Arrays.asList(tOffset, List.class);
-     * }
-     * 
-     * return ResponseEntity.ok(new PageDTO<>(eventItems, lOffset));
-     * }
-     */
-
-    // TODO: group event, anyone from the group can join -> meetup.com style (only
-    // admin can create)
-    @PostMapping("/groups/{id}/events/{eventId}/publish")
-    public ResponseEntity<EventDTO> publish(@PathVariable String eventId, Authentication auth) {
-        Event event = eventRepository.findById(UUID.fromString(eventId)).get();
-        event.setStatus("R");
-        event = eventRepository.save(event);
-
-        EventDTO resEvent = new EventDTO(
-                event);
-        return ResponseEntity.ok(resEvent);
-    }
-
-    @PostMapping("/groups/{id}/events/{eventId}/reject")
-    public ResponseEntity<EventDTO> reject(@PathVariable String eventId, Authentication auth) {
-        Event event = eventRepository.findById(UUID.fromString(eventId)).get();
-        event.setStatus("D");
-        event = eventRepository.save(event);
-
-        EventDTO resEvent = new EventDTO(
-                event);
-        return ResponseEntity.ok(resEvent);
     }
 
     @PostMapping("/groups/{groupId}/leave")

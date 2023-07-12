@@ -41,14 +41,6 @@ public class EventService {
         this.converters = converters;
     }
 
-    public List<EventDTO> getEventsByStatus(String[] tOffset, UUID group, String status) {
-        return eventRepository.findEventsByStatus(group, 20, tOffset, status);
-    }
-
-    public List<Event> getAllActiveEvents(UUID[] refIds) {
-        return eventRepository.findActiveEvents(new String[] { "A", "P" }, refIds);
-    }
-
     public List<Token> getAllActiveTokens(UUID[] refIds) {
         return eventRepository.findTokensByEvent(refIds);
     }
