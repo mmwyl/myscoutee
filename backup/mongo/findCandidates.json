@@ -149,8 +149,7 @@
             "from": "events",
             "let": {
                 "createdBy": "$createdBy",
-                "currentEvent": "$$ROOT",
-                "currentMembers": "$currentMembers"
+                "currentEvent": "$$ROOT"
             },
             "pipeline": [
                 {

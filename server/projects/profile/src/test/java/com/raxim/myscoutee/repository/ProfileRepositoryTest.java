@@ -18,8 +18,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 
-import com.mongodb.client.model.geojson.Point;
-import com.mongodb.client.model.geojson.Position;
+import com.raxim.myscoutee.common.AppTestConstants;
 import com.raxim.myscoutee.common.config.RepositoryConfig;
 import com.raxim.myscoutee.common.repository.MongoDataLoaderTestExecutionListener;
 import com.raxim.myscoutee.common.repository.TestData;
@@ -41,17 +40,7 @@ import com.raxim.myscoutee.profile.util.AppConstants;
 @TestExecutionListeners(value = MongoDataLoaderTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class ProfileRepositoryTest {
 
-        private final static UUID UUID_GROUP_DATING = UUID.fromString("b33ec186-aea8-4636-b635-4a2f620a0c54");
-        private final static Point LOCATION_DEFAULT = new Point(new Position(List.of(47.497912, 19.040235)));
         private final static Object[] OFFSET_START_DEFAULT = new Object[] { 0, 0, 0, "1900-01-01" };
-
-        private final static UUID UUID_PROFILE_OLIVER = UUID.fromString("534ccc6b-2547-4bf0-ad91-dca739943ea4");
-        private final static UUID UUID_PROFILE_LIAM = UUID.fromString("8f4bd3a8-1195-01b0-172a-a04f052f5982");
-        private final static UUID UUID_PROFILE_AMELIA = UUID.fromString("a84e4e95-d9c6-bd2c-2ed8-66e52cf2f5bb");
-        private final static UUID UUID_PROFILE_MIA = UUID.fromString("4f837de6-5d83-2ddb-f545-c12539f490bc");
-        private final static UUID UUID_PROFILE_CHARLOTTE = UUID.fromString("2b418324-7733-97ed-6730-bd1e3d589aa8");
-        private final static UUID UUID_PROFILE_LILY = UUID.fromString("ed49d5e2-2227-681a-4017-2c21cb1c68bc");
-        private final static UUID UUID_PROFILE_EVELYIN = UUID.fromString("428c6c68-23b9-07c7-71e7-720b001abdb7");
 
         @Autowired
         private ProfileRepository profileRepository;
@@ -69,19 +58,19 @@ public class ProfileRepositoryTest {
                 pageParam.setOffset(OFFSET_START_DEFAULT);
                 pageParam.setLimit(limit);
                 pageParam.setStep(step);
-                pageParam.setId(UUID_PROFILE_OLIVER);
+                pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
 
                 List<ProfileDTO> profiles = this.profileRepository.findProfile(
                                 pageParam,
-                                LOCATION_DEFAULT, AppConstants.WOMAN,
-                                UUID_GROUP_DATING,
+                                AppTestConstants.LOCATION_PROFILE_OLIVER, AppConstants.WOMAN,
+                                AppTestConstants.UUID_GROUP_DATING,
                                 direction, 0);
 
                 assertEquals(1, profiles.size());
 
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(2000.0, profile1.getGroupKey());
-                assertEquals(UUID_PROFILE_AMELIA, profile1.getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_AMELIA, profile1.getProfile().getId());
                 assertEquals(0d, profile1.getRate());
                 assertFalse(profile1.getMet());
         }
@@ -89,8 +78,8 @@ public class ProfileRepositoryTest {
         @Test
         public void testShouldNotFindProfilesNotRatedForOliverMet() {
 
-                Profile profileOliver = this.profileRepository.findById(UUID_PROFILE_OLIVER).get();
-                Profile profileAmelia = this.profileRepository.findById(UUID_PROFILE_AMELIA).get();
+                Profile profileOliver = this.profileRepository.findById(AppTestConstants.UUID_PROFILE_OLIVER).get();
+                Profile profileAmelia = this.profileRepository.findById(AppTestConstants.UUID_PROFILE_AMELIA).get();
 
                 Event event = new Event();
                 event.setId(UUID.randomUUID());
@@ -112,12 +101,12 @@ public class ProfileRepositoryTest {
                 pageParam.setOffset(OFFSET_START_DEFAULT);
                 pageParam.setLimit(limit);
                 pageParam.setStep(step);
-                pageParam.setId(UUID_PROFILE_OLIVER);
+                pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
 
                 List<ProfileDTO> profiles = this.profileRepository.findProfile(
                                 pageParam,
-                                LOCATION_DEFAULT, AppConstants.WOMAN,
-                                UUID_GROUP_DATING,
+                                AppTestConstants.LOCATION_PROFILE_OLIVER, AppConstants.WOMAN,
+                                AppTestConstants.UUID_GROUP_DATING,
                                 direction, 0);
 
                 assertEquals(0, profiles.size());
@@ -133,25 +122,25 @@ public class ProfileRepositoryTest {
                 pageParam.setOffset(OFFSET_START_DEFAULT);
                 pageParam.setLimit(limit);
                 pageParam.setStep(step);
-                pageParam.setId(UUID_PROFILE_LIAM);
+                pageParam.setId(AppTestConstants.UUID_PROFILE_LIAM);
 
                 List<ProfileDTO> profiles = this.profileRepository.findProfile(
                                 pageParam,
-                                LOCATION_DEFAULT, AppConstants.WOMAN,
-                                UUID_GROUP_DATING,
+                                AppTestConstants.LOCATION_PROFILE_LIAM, AppConstants.WOMAN,
+                                AppTestConstants.UUID_GROUP_DATING,
                                 direction, 0);
 
                 assertEquals(2, profiles.size());
 
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(1000.0, profile1.getGroupKey());
-                assertEquals(UUID_PROFILE_MIA, profile1.getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_MIA, profile1.getProfile().getId());
                 assertEquals(0d, profile1.getRate());
                 assertFalse(profile1.getMet());
 
                 ProfileDTO profile2 = profiles.get(1);
                 assertEquals(2000.0, profile2.getGroupKey());
-                assertEquals(UUID_PROFILE_CHARLOTTE, profile2.getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_CHARLOTTE, profile2.getProfile().getId());
                 assertEquals(0d, profile2.getRate());
                 assertFalse(profile2.getMet());
 
@@ -160,15 +149,15 @@ public class ProfileRepositoryTest {
                 pageParam.setOffset(nextOffset);
 
                 profiles = this.profileRepository.findProfile(pageParam,
-                                LOCATION_DEFAULT, AppConstants.WOMAN,
-                                UUID_GROUP_DATING,
+                                AppTestConstants.LOCATION_PROFILE_LIAM, AppConstants.WOMAN,
+                                AppTestConstants.UUID_GROUP_DATING,
                                 direction, 0);
 
                 assertEquals(1, profiles.size());
 
                 profile1 = profiles.get(0);
                 assertEquals(2000.0, profile1.getGroupKey());
-                assertEquals(UUID_PROFILE_AMELIA, profile1.getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_AMELIA, profile1.getProfile().getId());
                 assertEquals(0d, profile1.getRate());
                 assertFalse(profile1.getMet());
         }
@@ -183,18 +172,18 @@ public class ProfileRepositoryTest {
                 pageParam.setOffset(OFFSET_START_DEFAULT);
                 pageParam.setLimit(limit);
                 pageParam.setStep(step);
-                pageParam.setId(UUID_PROFILE_OLIVER);
+                pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
 
                 List<ProfileDTO> profiles = this.profileRepository.findProfile(
                                 pageParam,
-                                LOCATION_DEFAULT, AppConstants.WOMAN,
-                                UUID_GROUP_DATING,
+                                AppTestConstants.LOCATION_PROFILE_OLIVER, AppConstants.WOMAN,
+                                AppTestConstants.UUID_GROUP_DATING,
                                 direction, 0);
 
                 assertEquals(1, profiles.size());
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(2000.0, profile1.getGroupKey());
-                assertEquals(UUID_PROFILE_CHARLOTTE, profile1.getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_CHARLOTTE, profile1.getProfile().getId());
                 assertEquals(9d, profile1.getRate());
                 assertFalse(profile1.getMet());
         }
@@ -210,25 +199,25 @@ public class ProfileRepositoryTest {
                 pageParam.setOffset(OFFSET_START_DEFAULT);
                 pageParam.setLimit(limit);
                 pageParam.setStep(step);
-                pageParam.setId(UUID_PROFILE_OLIVER);
+                pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
 
                 List<ProfileDTO> profiles = this.profileRepository.findProfile(
                                 pageParam,
-                                LOCATION_DEFAULT, AppConstants.WOMAN,
-                                UUID_GROUP_DATING,
+                                AppTestConstants.LOCATION_PROFILE_OLIVER, AppConstants.WOMAN,
+                                AppTestConstants.UUID_GROUP_DATING,
                                 direction, 0);
 
                 assertEquals(2, profiles.size());
 
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(1000.0, profile1.getGroupKey());
-                assertEquals(UUID_PROFILE_LILY, profile1.getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_LILY, profile1.getProfile().getId());
                 assertEquals(0d, profile1.getRate()); // does not show the rate of received (avoid bias)
                 assertFalse(profile1.getMet());
 
                 ProfileDTO profile2 = profiles.get(1);
                 assertEquals(1000.0, profile2.getGroupKey());
-                assertEquals(UUID_PROFILE_EVELYIN, profile2.getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_EVELYIN, profile2.getProfile().getId());
                 assertEquals(0d, profile2.getRate()); // does not show the rate of received (avoid bias)
                 assertFalse(profile2.getMet());
         }
@@ -244,19 +233,19 @@ public class ProfileRepositoryTest {
                 pageParam.setOffset(OFFSET_START_DEFAULT);
                 pageParam.setLimit(limit);
                 pageParam.setStep(step);
-                pageParam.setId(UUID_PROFILE_OLIVER);
+                pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
 
                 List<ProfileDTO> profiles = this.profileRepository.findProfile(
                                 pageParam,
-                                LOCATION_DEFAULT, AppConstants.WOMAN,
-                                UUID_GROUP_DATING,
+                                AppTestConstants.LOCATION_PROFILE_OLIVER, AppConstants.WOMAN,
+                                AppTestConstants.UUID_GROUP_DATING,
                                 direction, 0);
 
                 assertEquals(1, profiles.size());
 
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(1000.0, profile1.getGroupKey());
-                assertEquals(UUID_PROFILE_MIA, profile1.getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_MIA, profile1.getProfile().getId());
                 assertEquals(6.461538461538462d, profile1.getRate());
                 assertFalse(profile1.getMet());
         }
@@ -264,8 +253,8 @@ public class ProfileRepositoryTest {
         @Test
         public void testShouldFindProfilesRateBothForOliverMet() {
 
-                Profile profileOliver = this.profileRepository.findById(UUID_PROFILE_OLIVER).get();
-                Profile profileMia = this.profileRepository.findById(UUID_PROFILE_MIA).get();
+                Profile profileOliver = this.profileRepository.findById(AppTestConstants.UUID_PROFILE_OLIVER).get();
+                Profile profileMia = this.profileRepository.findById(AppTestConstants.UUID_PROFILE_MIA).get();
 
                 Event event = new Event();
                 event.setId(UUID.randomUUID());
@@ -287,18 +276,18 @@ public class ProfileRepositoryTest {
                 pageParam.setOffset(OFFSET_START_DEFAULT);
                 pageParam.setLimit(limit);
                 pageParam.setStep(step);
-                pageParam.setId(UUID_PROFILE_OLIVER);
+                pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
 
                 List<ProfileDTO> profiles = this.profileRepository.findProfile(pageParam,
-                                LOCATION_DEFAULT, AppConstants.WOMAN,
-                                UUID_GROUP_DATING,
+                                AppTestConstants.LOCATION_PROFILE_OLIVER, AppConstants.WOMAN,
+                                AppTestConstants.UUID_GROUP_DATING,
                                 direction, 0);
 
                 assertEquals(1, profiles.size());
 
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(1000.0, profile1.getGroupKey());
-                assertEquals(UUID_PROFILE_MIA, profile1.getProfile().getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_MIA, profile1.getProfile().getId());
                 assertEquals(6.461538461538462d, profile1.getRate());
                 assertTrue(profile1.getMet());
         }

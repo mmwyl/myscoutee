@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import com.mongodb.client.model.geojson.Point;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.EventWithCandidates;
 import com.raxim.myscoutee.profile.data.document.mongo.Token;
@@ -41,6 +42,13 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
         List<EventDTO> findInvitationDown(
                         @Param("param") PageParam param,
                         @Param("status") String[] status);
+
+        @Aggregation(pipeline = "findRecommendation")
+        List<EventDTO> findRecommendation(
+                        @Param("param") PageParam param,
+                        @Param("loc") Point loc,
+                        @Param("groupId") UUID groupId,
+                        @Param("status") String status);
 
         @Aggregation(pipeline = "findEventUp")
         List<EventDTO> findEventUp(

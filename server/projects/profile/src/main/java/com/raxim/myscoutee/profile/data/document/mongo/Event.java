@@ -55,7 +55,7 @@ public class Event extends EventBase implements Convertable, Syncable, Shiftable
     // any event which is locked, any late invitation accept also does not work,
     // will go to "W" (wait list) immadiately
 
-    // friends only (F) vs all members inside the group (A)
+    // friends only (F) vs all members inside the group (A) vs P (private)
     @JsonProperty(value = "access")
     private String access;
 

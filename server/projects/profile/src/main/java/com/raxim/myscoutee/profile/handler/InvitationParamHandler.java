@@ -13,7 +13,7 @@ import com.raxim.myscoutee.profile.util.AppConstants;
 
 @Component
 public class InvitationParamHandler implements IParamHandler {
-    public static final String TYPE = "event";
+    public static final String TYPE = "invitation";
 
     @Override
     public PageParam handle(Profile profile, PageParam pageParam) {

@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
 import com.raxim.myscoutee.profile.converter.Converters;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
@@ -107,6 +109,10 @@ public class EventService {
             events = eventRepository.findEventByMonth(pageParam, status);
         }
         return events;
+    }
+
+    public List<EventDTO> getRecommendations(PageParam pageParam, Point position, UUID groupId, String status) {
+        return this.eventRepository.findRecommendation(pageParam, position, groupId, status);
     }
 
     public List<EventDTO> getInvitations(PageParam pageParam, String[] status) {

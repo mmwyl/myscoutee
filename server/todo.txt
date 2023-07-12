@@ -188,11 +188,8 @@ New TODO:
         //join or rate on promotion event, and the sub event you can prefer
 
         //if an event is full, promoter will get the invitation by the system
-
-
-
-
-
-
-
-
+39) groupKey (by 5km), range.start, dateUpdated - score is coloring
+    mutual filter (friend's friend adertisements??)
+40) recommendation list
+    (small rounded profile picture (similar to select member for invitation at top bar) 
+    left top corener of each panel, who has created)

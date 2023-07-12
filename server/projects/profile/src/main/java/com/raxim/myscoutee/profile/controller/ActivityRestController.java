@@ -25,9 +25,11 @@ import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
-import com.raxim.myscoutee.profile.handler.EventItemParamHandler;
 import com.raxim.myscoutee.profile.handler.EventParamHandler;
+import com.raxim.myscoutee.profile.handler.InvitationParamHandler;
+import com.raxim.myscoutee.profile.handler.LikeParamHandler;
 import com.raxim.myscoutee.profile.handler.ParamHandlers;
+import com.raxim.myscoutee.profile.handler.RecommendationParamHandler;
 import com.raxim.myscoutee.profile.service.EventService;
 
 enum EventAction {
@@ -174,14 +176,15 @@ public class ActivityRestController {
 
     // TODO: promotion fix, only events for the current stage can be shown
     @GetMapping(value = { "events/{eventId}/items", "events/{id}/items/{eventId}/items",
-            "invitations/{eventId}/items", "promotions/{id}/items" })
+            "invitations/{eventId}/items",
+            "recommendations/{id}/items", "recommendations/{id}/items/{eventId}/items", })
     public ResponseEntity<PageDTO<EventDTO>> getItems(@PathVariable String eventId,
             PageParam pageParam, Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = principal.getUser().getProfile();
 
         // override page param
-        pageParam = paramHandlers.handle(profile, pageParam, EventItemParamHandler.TYPE);
+        pageParam = paramHandlers.handle(profile, pageParam, InvitationParamHandler.TYPE);
 
         List<EventDTO> eventItems = eventService.getEventItems(pageParam, eventId);
         List<Object> lOffset = CommonUtil.offset(eventItems, pageParam.getOffset());
@@ -203,10 +206,27 @@ public class ActivityRestController {
      * }
      */
 
-    // TODO: recommendation fix
     @GetMapping("recommendations")
     @Transactional
     public ResponseEntity<?> getRecommendations(PageParam pageParam, Authentication auth) {
-        return null;
+        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
+
+        pageParam = paramHandlers.handle(profile, pageParam, RecommendationParamHandler.TYPE);
+
+        if (profile.getPosition() != null) {
+            List<EventDTO> eventDTOs = this.eventService.getRecommendations(
+                    pageParam,
+                    CommonUtil.point(profile.getPosition()),
+                    profile.getGroup(),
+                    profile.getStatus());
+
+            // http://dolszewski.com/spring/how-to-bind-requestparam-to-object/
+
+            List<Object> lOffset = CommonUtil.offset(eventDTOs, pageParam.getOffset());
+
+            return ResponseEntity.ok(new PageDTO<>(eventDTOs, lOffset));
+        } else {
+            return ResponseEntity.badRequest().body(new ErrorDTO(450, "err.no_profile"));
+        }
     }
 }
