@@ -142,9 +142,13 @@ public class EventService {
                 events.addAll(clonedEvent.flatten());
             }
 
+            //clone event from promotion (for Group promotion)
+            Member pMember = new Member(profile);
             if (dbEvents.size() == 2) {
                 Event parent = dbEvents.get(1);
-                parent.getItems().addAll(childs);
+                if (parent.getMembers().contains(pMember)) {
+                    parent.getItems().addAll(childs);
+                }
                 events.add(parent);
             }
 
