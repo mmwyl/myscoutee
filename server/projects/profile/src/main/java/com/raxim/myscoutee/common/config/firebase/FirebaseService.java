@@ -1,7 +1,6 @@
 package com.raxim.myscoutee.common.config.firebase;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -20,12 +19,10 @@ import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Link;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.Role;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.repository.mongo.GroupRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LinkRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
-import com.raxim.myscoutee.profile.repository.mongo.RoleRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 
 @Service
@@ -35,7 +32,6 @@ public class FirebaseService {
 
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final GroupRepository groupRepository;
     private final ConfigProperties config;
     private final LinkRepository linkRepository;
@@ -44,14 +40,12 @@ public class FirebaseService {
     public FirebaseService(
             ProfileRepository profileRepository,
             UserRepository userRepository,
-            RoleRepository roleRepository,
             GroupRepository groupRepository,
             ConfigProperties config,
             LinkRepository linkRepository,
             ObjectMapper objectMapper) {
         this.profileRepository = profileRepository;
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.groupRepository = groupRepository;
         this.config = config;
         this.linkRepository = linkRepository;
@@ -70,22 +64,11 @@ public class FirebaseService {
                 for (Group grp : groups) {
                     Profile profile = new Profile();
                     profile.setGroup(grp.getId());
+                    profile.setRole("A");
                     profiles.add(profile);
                 }
 
                 profileSaved = this.profileRepository.saveAll(profiles);
-
-                List<Role> roles = new ArrayList<>();
-                for (Profile profile : profileSaved) {
-
-                    Role role = new Role();
-                    role.setId(UUID.randomUUID());
-                    role.setProfileId(profile.getId());
-                    role.setRole(ROLE_ADMIN);
-                    roles.add(role);
-                }
-
-                this.roleRepository.saveAll(roles);
 
                 group = groups.stream().filter(g -> g.getType().equals("b")).findFirst().orElse(null);
             } else {
@@ -95,20 +78,11 @@ public class FirebaseService {
                 for (Group grp : groups) {
                     Profile profile = new Profile();
                     profile.setGroup(grp.getId());
+                    profile.setRole("U");
                     profiles.add(profile);
                 }
 
                 profileSaved = this.profileRepository.saveAll(profiles);
-
-                List<Role> roles = new ArrayList<>();
-                for (Profile profile : profileSaved) {
-                    Role role = new Role();
-                    role.setId(UUID.randomUUID());
-                    role.setProfileId(profile.getId());
-                    role.setRole(ROLE_USER);
-                    roles.add(role);
-                }
-                this.roleRepository.saveAll(roles);
 
                 group = groups.stream().filter(g -> g.getType().equals("d")).findFirst().orElse(null);
             }
@@ -139,18 +113,13 @@ public class FirebaseService {
                             if (optionalGroup.isPresent()) {
                                 Profile profile = new Profile();
                                 profile.setGroup(optionalGroup.get().getId());
+                                profile.setRole("U");
                                 Profile lProfileSaved = this.profileRepository.save(profile);
-
-                                Role role = new Role();
-                                role.setId(UUID.randomUUID());
-                                role.setProfileId(lProfileSaved.getId());
-                                role.setRole("ROLE_USER");
-                                this.roleRepository.save(role);
 
                                 User userNew = JsonUtil.clone(user, objectMapper);
                                 userNew.getProfiles().add(profile);
                                 userNew.setGroup(optionalGroup.get().getId());
-                                userNew.setProfile(profile);
+                                userNew.setProfile(lProfileSaved);
                                 this.userRepository.save(userNew);
                             }
                             break;
@@ -162,12 +131,10 @@ public class FirebaseService {
                     this.linkRepository.save(link);
                 }
             }
-            ;
         }
 
-        List<Role> roles = user.getProfile() != null ? this.roleRepository.findRoleByProfile(user.getProfile().getId())
-                : Collections.emptyList();
+        String role = user.getProfile() != null ? user.getProfile().getRole() : null;
 
-        return new FirebasePrincipal(user, roles);
+        return new FirebasePrincipal(user, role);
     }
 }

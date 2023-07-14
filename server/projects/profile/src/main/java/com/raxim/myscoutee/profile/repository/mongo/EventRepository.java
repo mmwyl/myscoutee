@@ -30,8 +30,8 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
         @Aggregation(pipeline = "findCandidates")
         List<EventWithCandidates> findCandidates();
 
-        @Query("{'status': 'P', 'ref.$id': ?0, 'info.members.profile.$id': ?1}")
-        List<Event> findPendingEvents(UUID eventId, UUID profileId);
+        @Query("{'status': 'P', 'members.profile.$id': ?0}")
+        List<Event> findPendingEvents(UUID profileId);
 
         @Aggregation(pipeline = "findEventDown")
         List<EventDTO> findEventDown(

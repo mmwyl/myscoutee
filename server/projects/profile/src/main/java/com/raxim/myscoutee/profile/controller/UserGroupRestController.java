@@ -29,52 +29,40 @@ import com.raxim.myscoutee.profile.data.document.mongo.Badge;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Link;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.Role;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.LinkDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.LinkInfoDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.ProfileStatusDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.UserDTO;
-import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.GroupRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LinkRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
-import com.raxim.myscoutee.profile.repository.mongo.RoleRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
-import com.raxim.myscoutee.profile.service.EventService;
 import com.raxim.myscoutee.profile.service.ProfileService;
 
 @RepositoryRestController
 @RequestMapping("user")
 public class UserGroupRestController {
     private final GroupRepository groupRepository;
-    private final EventService eventService;
-    private final EventRepository eventRepository;
     private final ProfileService profileService;
     private final ProfileRepository profileRepository;
-    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final LinkRepository linkRepository;
     private final ConfigProperties config;
     private final ObjectMapper objectMapper;
 
-    public UserGroupRestController(GroupRepository groupRepository, EventService eventService,
-            EventRepository eventRepository, ProfileService profileService,
-            ProfileRepository profileRepository, RoleRepository roleRepository,
+    public UserGroupRestController(GroupRepository groupRepository, ProfileService profileService,
+            ProfileRepository profileRepository,
             UserRepository userRepository, LikeRepository likeRepository,
             LinkRepository linkRepository, ConfigProperties config,
             ObjectMapper objectMapper) {
         this.groupRepository = groupRepository;
-        this.eventService = eventService;
-        this.eventRepository = eventRepository;
         this.profileService = profileService;
         this.profileRepository = profileRepository;
-        this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.likeRepository = likeRepository;
         this.linkRepository = linkRepository;
@@ -135,9 +123,9 @@ public class UserGroupRestController {
             Authentication auth,
             @PathVariable String groupId,
             @PathVariable String profileId,
-            @RequestBody ProfileStatusDTO profileStatus) {
+            @RequestBody Profile pProfile) {
 
-        ProfileDTO profile = profileService.saveProfileStatus(profileId, profileStatus);
+        ProfileDTO profile = profileService.saveProfile(profileId, pProfile);
         if (profile == null) {
             return ResponseEntity.notFound().build();
         } else {
@@ -216,6 +204,7 @@ public class UserGroupRestController {
 
         Profile profile = new Profile();
         profile.setGroup(groupSaved.getId());
+        profile.setRole("A");
         Profile profileSaved = profileRepository.save(profile);
 
         User user = userRepository.findUserByEmail(auth.getName());
@@ -229,12 +218,6 @@ public class UserGroupRestController {
 
         user.getProfiles().add(profileSaved);
         userRepository.save(user);
-
-        Role roleToSave = new Role();
-        roleToSave.setId(UUID.randomUUID());
-        roleToSave.setProfileId(profileSaved.getId());
-        roleToSave.setRole(FirebaseService.ROLE_ADMIN);
-        roleRepository.save(roleToSave);
 
         return ResponseEntity.ok(groupProfileSaved);
     }

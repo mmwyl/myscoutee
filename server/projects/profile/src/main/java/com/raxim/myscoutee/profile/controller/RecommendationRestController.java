@@ -22,14 +22,12 @@ import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.Role;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.repository.mongo.GroupRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
-import com.raxim.myscoutee.profile.repository.mongo.RoleRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 
 @RepositoryRestController
@@ -38,19 +36,16 @@ public class RecommendationRestController {
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
-    private final RoleRepository roleRepository;
     private final ObjectMapper objectMapper;
 
     public RecommendationRestController(
             ProfileRepository profileRepository,
             UserRepository userRepository,
             GroupRepository groupRepository,
-            RoleRepository roleRepository,
             ObjectMapper objectMapper) {
         this.profileRepository = profileRepository;
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
-        this.roleRepository = roleRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -125,13 +120,8 @@ public class RecommendationRestController {
             profileToSave.setId(UUID.randomUUID());
             profileToSave.setGroup(UUID.fromString(groupId));
             profileToSave.setStatus("P");
+            profileToSave.setRole("U");
             Profile profileSaved = profileRepository.save(profileToSave);
-
-            Role role = new Role();
-            role.setId(UUID.randomUUID());
-            role.setProfileId(profileSaved.getId());
-            role.setRole("ROLE_USER");
-            roleRepository.save(role);
 
             User userToSave = userRepository.findById(user.getId()).get();
             userToSave.getProfiles().add(profileSaved);

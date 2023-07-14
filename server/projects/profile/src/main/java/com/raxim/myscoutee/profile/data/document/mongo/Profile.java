@@ -147,6 +147,9 @@ public class Profile implements Cloneable {
     @JsonProperty(value = "status")
     private String status = "I";
 
+    @JsonProperty(value = "role")
+    private String role;
+
     @JsonIgnore
     private Date createdDate;
 
@@ -369,6 +372,14 @@ public class Profile implements Cloneable {
 
     public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override

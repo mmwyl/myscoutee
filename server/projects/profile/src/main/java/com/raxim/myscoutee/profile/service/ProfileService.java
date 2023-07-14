@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,18 +13,17 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Car;
+import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.document.mongo.Role;
 import com.raxim.myscoutee.profile.data.document.mongo.School;
 import com.raxim.myscoutee.profile.data.dto.rest.CarDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.ProfileStatusDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
 import com.raxim.myscoutee.profile.repository.mongo.CarEventHandler;
 import com.raxim.myscoutee.profile.repository.mongo.CarRepository;
+import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileEventHandler;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
-import com.raxim.myscoutee.profile.repository.mongo.RoleRepository;
 import com.raxim.myscoutee.profile.repository.mongo.SchoolRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 import com.raxim.myscoutee.profile.util.ProfileUtil;
@@ -38,49 +38,77 @@ import com.raxim.myscoutee.profile.util.ProfileUtil;
 public class ProfileService {
 
     private final ProfileRepository profileRepository;
+    private final EventRepository eventRepository;
     private final ProfileEventHandler profileEventHandler;
     private final CarRepository carRepository;
     private final CarEventHandler carEventHandler;
     private final SchoolRepository schoolRepository;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final ObjectMapper objectMapper;
 
     public ProfileService(
             ProfileRepository profileRepository,
+            EventRepository eventRepository,
             ProfileEventHandler profileEventHandler,
             CarRepository carRepository,
             CarEventHandler carEventHandler,
             SchoolRepository schoolRepository,
             UserRepository userRepository,
-            RoleRepository roleRepository,
             ObjectMapper objectMapper) {
         this.profileRepository = profileRepository;
+        this.eventRepository = eventRepository;
         this.profileEventHandler = profileEventHandler;
         this.carRepository = carRepository;
         this.carEventHandler = carEventHandler;
         this.schoolRepository = schoolRepository;
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.objectMapper = objectMapper;
     }
 
-    public ProfileDTO saveProfileStatus(String profileId,
-            ProfileStatusDTO profileStatus) {
-        UUID uuid = UUID.fromString(profileId);
-        return profileRepository.findById(uuid).map(profile -> {
-            Profile profileToSave = JsonUtil.clone(profile, objectMapper);
-            profileToSave.setStatus(profileStatus.getStatus());
-            Profile profileSaved = profileRepository.save(profileToSave);
+    public ProfileDTO saveProfile(String profileId,
+            Profile pProfile) {
+        UUID pProfileUuid = UUID.fromString(profileId);
+        Optional<Profile> dbProfile = profileRepository.findById(pProfileUuid);
 
-            List<Role> role = this.roleRepository.findRoleByProfile(profileSaved.getId());
+        if (dbProfile.isPresent()) {
+            Profile profile = dbProfile.get();
+            // ??? - default is U, and admin of the group can change it
+            profile.setRole(pProfile.getRole());
+            profile.setStatus(pProfile.getStatus());
 
-            Role firstRole = JsonUtil.clone(role.get(0), objectMapper);
-            firstRole.setRole(profileStatus.getRole());
-            this.roleRepository.save(firstRole);
+            List<Event> events = this.eventRepository.findAll();
 
+            List<Event> sEvents = null;
+            // friends only
+            if ("F".equals(pProfile.getStatus())) {
+                sEvents = changeStatus(profile, events.stream()
+                        .filter(event -> "P".equals(event.getStatus()) && "A".equals(event.getAccess())), "LF");
+            } else if ("I".equals(pProfile.getStatus())) {
+                sEvents = changeStatus(profile, events.stream()
+                        .filter(event -> "P".equals(event.getStatus()) && !"P".equals(event.getAccess())), "LI");
+            } else if ("S".equals(pProfile.getStatus())) {
+                sEvents = changeStatus(profile, events.stream()
+                        .filter(event -> "P".equals(event.getStatus())), "LS");
+            } else if ("L".equals(pProfile.getStatus())) {
+                sEvents = changeStatus(profile, events.stream(), "LG");
+            }
+            this.eventRepository.saveAll(sEvents);
+
+            Profile profileSaved = profileRepository.save(profile);
             return new ProfileDTO(profileSaved);
-        }).orElse(null);
+        }
+        return null;
+    }
+
+    private List<Event> changeStatus(Profile profile, Stream<Event> sEvents, String toStatus) {
+        return sEvents.map(event -> {
+            event.getMembers().stream().filter(member -> profile.getId().equals(member.getProfile().getId()))
+                    .map(member -> {
+                        member.setStatus(toStatus); // friends only leave
+                        return member;
+                    });
+            return event;
+        }).toList();
     }
 
     public ProfileDTO saveProfile(UUID userId, UUID profileId, UUID group,
