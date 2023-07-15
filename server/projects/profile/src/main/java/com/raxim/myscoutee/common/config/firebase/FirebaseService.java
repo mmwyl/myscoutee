@@ -1,6 +1,5 @@
 package com.raxim.myscoutee.common.config.firebase;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -27,9 +26,6 @@ import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 
 @Service
 public class FirebaseService {
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_USER = "ROLE_USER";
-
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
@@ -54,49 +50,28 @@ public class FirebaseService {
 
     public UserDetails loadUserByUsername(String username, String xLink) {
         User user = this.userRepository.findUserByEmail(username);
-        List<Profile> profileSaved;
 
         if (user == null) {
-            Group group;
-            if (config.getAdminUser().equals(username)) {
-                List<Group> groups = this.groupRepository.findSystemGroups();
-                List<Profile> profiles = new ArrayList<>();
-                for (Group grp : groups) {
-                    Profile profile = new Profile();
-                    profile.setGroup(grp.getId());
-                    profile.setRole("A");
-                    profiles.add(profile);
-                }
+            List<Group> groups = this.groupRepository.findSystemGroups();
 
-                profileSaved = this.profileRepository.saveAll(profiles);
+            List<Profile> profiles = groups.stream().map(group -> {
+                Profile profile = new Profile();
+                profile.setGroup(group.getId());
 
-                group = groups.stream().filter(g -> g.getType().equals("b")).findFirst().orElse(null);
-            } else {
-                List<Group> groups = new ArrayList<>(this.groupRepository.findSystemGroups());
+                String role = config.getAdminUser().equals(username) ? "A" : "U";
+                profile.setRole(role);
+                return profile;
+            }).toList();
 
-                List<Profile> profiles = new ArrayList<>();
-                for (Group grp : groups) {
-                    Profile profile = new Profile();
-                    profile.setGroup(grp.getId());
-                    profile.setRole("U");
-                    profiles.add(profile);
-                }
-
-                profileSaved = this.profileRepository.saveAll(profiles);
-
-                group = groups.stream().filter(g -> g.getType().equals("d")).findFirst().orElse(null);
-            }
-
-            Profile profile = profileSaved.stream().filter(p -> Objects.equals(p.getGroup(), group.getId())).findFirst()
-                    .orElse(null);
+            List<Profile> savedProfiles = this.profileRepository.saveAll(profiles);
 
             User userToSave = new User();
             userToSave.setId(UUID.randomUUID());
             userToSave.setEmail(username);
             userToSave.setCreatedDate(new Date());
-            userToSave.setGroup(group.getId());
-            userToSave.setProfile(profile);
-            userToSave.setProfiles(new HashSet<>(profileSaved));
+            userToSave.setGroup(savedProfiles.get(0).getGroup());
+            userToSave.setProfile(savedProfiles.get(0));
+            userToSave.setProfiles(new HashSet<>(savedProfiles));
 
             user = this.userRepository.save(userToSave);
         }
