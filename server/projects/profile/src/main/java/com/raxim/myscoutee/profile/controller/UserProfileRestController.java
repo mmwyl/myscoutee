@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.rest.webmvc.RepositoryRestController;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -37,6 +38,7 @@ import com.raxim.myscoutee.profile.data.dto.rest.RewardDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.UserDTO;
 import com.raxim.myscoutee.profile.repository.mongo.GroupRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LinkRepository;
+import com.raxim.myscoutee.profile.service.LinkService;
 import com.raxim.myscoutee.profile.service.ProfileService;
 
 @RepositoryRestController
@@ -44,12 +46,15 @@ import com.raxim.myscoutee.profile.service.ProfileService;
 public class UserProfileRestController {
     private final ProfileService profileService;
     private final GroupRepository groupRepository;
+    private final LinkService linkService;
     private final LinkRepository linkRepository;
 
     public UserProfileRestController(ProfileService profileService, GroupRepository groupRepository,
+            LinkService linkService,
             LinkRepository linkRepository) {
         this.profileService = profileService;
         this.groupRepository = groupRepository;
+        this.linkService = linkService;
         this.linkRepository = linkRepository;
     }
 
@@ -129,93 +134,5 @@ public class UserProfileRestController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    // Type is a group link
-    @GetMapping("/profile/teams/{id}/share")
-    @Transactional
-    public ResponseEntity<LinkDTO> shareTeam() {
-        return null;
-    }
-
-    // list groups of the current profile
-    @GetMapping("/profile/teams")
-    public ResponseEntity<PageDTO<GroupDTO>> getGroups(
-            Authentication auth,
-            @RequestParam(value = "step", required = false) Integer step,
-            @RequestParam(value = "offset", required = false) String[] offset) {
-
-        String[] tOffset;
-        if (offset != null && offset.length == 1) {
-            tOffset = new String[] { CommonUtil.decode(offset[0]) };
-        } else {
-            tOffset = new String[] { "1900-01-01" };
-        }
-
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        User user = principal.getUser();
-        UUID profileId = user.getProfile().getId();
-        Optional<Group> group = groupRepository.findById(user.getGroup());
-        boolean isAdmin = group.get().getType().equals("b");
-
-        List<GroupDTO> groups = userRepository.findGroupsByEmail(
-                auth.getName(), FirebaseService.ROLE_ADMIN, isAdmin, profileId, 20, step != null ? step : 5, tOffset);
-
-        List<Object> lOffset;
-        if (!groups.isEmpty()) {
-            lOffset = groups.get(groups.size() - 1).getOffset();
-        } else {
-            lOffset = Arrays.asList(tOffset, List.class);
-        }
-
-        return ResponseEntity.ok(new PageDTO<>(groups, lOffset));
-    }
-
-    // teams list and inside teams list you can look at profiles if the group is not
-    // dicreet
-    @GetMapping("/profile/teams/{teamId}/profiles")
-    public ResponseEntity<PageDTO<ProfileDTO>> getProfilesByGroup(
-            Authentication auth,
-            @PathVariable String groupId,
-            @RequestParam(value = "step", required = false) Integer step,
-            @RequestParam(value = "offset", required = false) String[] offset) {
-
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        UUID profileId = principal.getUser().getProfile().getId();
-
-        String[] tOffset;
-        if (offset != null && offset.length == 1) {
-            tOffset = new String[] { CommonUtil.decode(offset[0]) };
-        } else {
-            tOffset = new String[] { "1900-01-01" };
-        }
-
-        List<ProfileDTO> profiles = profileRepository.findProfilesByGroup(
-                profileId, CommonUtil.parseUUID(groupId), 20, step != null ? step : 5, tOffset);
-
-        List<Object> lOffset;
-        if (!profiles.isEmpty()) {
-            lOffset = profiles.get(profiles.size() - 1).getOffset();
-        } else {
-            lOffset = Arrays.asList(tOffset, List.class);
-        }
-
-        return ResponseEntity.ok(new PageDTO<>(profiles, lOffset));
-    }
-
-    // Suspend/activate account from a group or all groups managed by a particular
-    // user
-    @PatchMapping("/profile/teams/{teamId}/profiles/{profileId}")
-    @Transactional
-    public ResponseEntity<ProfileDTO> suspendProfile(
-            Authentication auth,
-            @PathVariable String profileId,
-            @RequestBody Profile pProfile) {
-
-        ResponseEntity<ProfileDTO> response = ControllerUtil.handle(
-                (i, a) -> profileService.saveProfile(profileId, pProfile),
-                profileId, pProfile,
-                HttpStatus.OK);
-        return response;
     }
 }

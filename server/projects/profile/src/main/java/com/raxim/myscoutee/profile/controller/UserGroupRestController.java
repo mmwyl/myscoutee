@@ -77,15 +77,21 @@ public class UserGroupRestController {
         this.paramHandlers = paramHandlers;
     }
 
-    @GetMapping("groups")
+    @GetMapping({ "groups", "{type}/groups" })
     @Transactional
-    public ResponseEntity<Object> groups(PageParam pageParam, Authentication auth) {
+    public ResponseEntity<Object> groups(PageParam pageParam, @PathVariable String type, Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         User user = principal.getUser();
         Profile profile = user.getProfile();
 
         pageParam = paramHandlers.handle(profile, pageParam, UserParamHandler.TYPE);
-        List<GroupDTO> groupDTOs = this.userService.getGroupsByUser(user.getId(), pageParam);
+        List<GroupDTO> groupDTOs = null;
+
+        if (type == null) {
+            groupDTOs = this.userService.getGroupsByUser(user.getId(), pageParam);
+        } else {
+            groupDTOs = this.profileService.getGroupsByProfile(profile.getId(), pageParam);
+        }
 
         List<Object> lOffset = CommonUtil.offset(groupDTOs, pageParam.getOffset());
 
@@ -94,8 +100,8 @@ public class UserGroupRestController {
     }
 
     // add button on the group list screen
-    @PostMapping("/groups")
-    public ResponseEntity<GroupDTO> saveGroup(
+    @PostMapping({ "/groups", "profile/groups" })
+    public ResponseEntity<GroupDTO> saveGroup(@PathVariable String type,
             Authentication auth,
             @RequestBody Group group) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
@@ -108,7 +114,7 @@ public class UserGroupRestController {
         return response;
     }
 
-    @PatchMapping("/groups/{id}")
+    @PatchMapping({ "/groups/{id}", "profile/groups/{id}" })
     @Transactional
     public ResponseEntity<GroupDTO> patchGroup(
             Authentication auth,
@@ -128,7 +134,7 @@ public class UserGroupRestController {
     // consider discreet group also
     // clicking on + button, show the "met" tab, hence you can choose members
     // already met to invite
-    @GetMapping("/groups/{groupId}/profiles")
+    @GetMapping({ "/groups/{groupId}/profiles", "/profile/groups/{groupId}/profiles" })
     public ResponseEntity<PageDTO<ProfileDTO>> getProfilesByGroup(@PathVariable String groupId, PageParam pageParam,
             Authentication auth) {
         Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
@@ -143,7 +149,8 @@ public class UserGroupRestController {
                 new PageDTO<>(profileDTOs, lOffset, 0));
     }
 
-    @PostMapping("/groups/{groupId}/profiles/{profileId}/{type}")
+    @PostMapping({ "/groups/{groupId}/profiles/{profileId}/{type}",
+            "/profile/groups/{groupId}/profiles/{profileId}/{type}" })
     public ResponseEntity<ProfileDTO> manage(@PathVariable String groupId, @PathVariable String profileId,
             @PathVariable String type,
             Authentication auth) {
@@ -156,7 +163,7 @@ public class UserGroupRestController {
                 HttpStatus.OK);
     }
 
-    @PostMapping("/groups/{groupId}/profiles")
+    @PostMapping({ "/groups/{groupId}/profiles", "/profile/groups/{groupId}/profiles" })
     public ResponseEntity<List<ProfileDTO>> invite(@PathVariable String groupId, @RequestBody List<String> profileids,
             Authentication auth) {
         Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
@@ -169,7 +176,7 @@ public class UserGroupRestController {
     }
 
     // leave group/delete group etc. -> notify other users
-    @PostMapping("/groups/{groupId}/{type}")
+    @PostMapping({ "/groups/{groupId}/{type}", "/profile/groups/{groupId}/{type}" })
     public ResponseEntity<ProfileDTO> change(@PathVariable String groupId, @PathVariable String type,
             Authentication auth) {
         Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
@@ -182,7 +189,7 @@ public class UserGroupRestController {
     }
 
     // Type is a group link
-    @GetMapping("/groups/{id}/share")
+    @GetMapping({ "/groups/{id}/share", "/profile/groups/{id}/share" })
     @Transactional
     public ResponseEntity<LinkDTO> shareGroup(
             Authentication auth,

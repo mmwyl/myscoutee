@@ -14,6 +14,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Car;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.School;
 import com.raxim.myscoutee.profile.data.dto.rest.CarDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
@@ -65,5 +66,10 @@ public interface ProfileRepository extends MongoRepository<Profile, UUID> {
         @Aggregation(pipeline = "findProfilesByGroup")
         List<ProfileDTO> findProfilesByGroup(
                         @Param("groupId") UUID groupId,
+                        @Param("param") PageParam pageParam);
+
+        @Aggregation(pipeline = "findGroupsByProfile")
+        List<GroupDTO> findGroupsByProfile(
+                        @Param("profileId") UUID profileId,
                         @Param("param") PageParam pageParam);
 }

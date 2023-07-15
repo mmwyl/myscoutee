@@ -17,6 +17,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.School;
 import com.raxim.myscoutee.profile.data.dto.rest.CarDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
@@ -68,6 +69,10 @@ public class ProfileService {
 
     public List<ProfileDTO> getProfiles(UUID groupUuid, PageParam pageParam) {
         return this.profileRepository.findProfilesByGroup(groupUuid, pageParam);
+    }
+
+    public List<GroupDTO> getGroupsByProfile(UUID profileId, PageParam pageParam) {
+        return this.profileRepository.findGroupsByProfile(profileId, pageParam);
     }
 
     public Optional<ProfileDTO> saveProfile(String profileId,

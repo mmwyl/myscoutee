@@ -49,7 +49,6 @@ public class GroupService {
             Group groupSaved = this.groupRepository.save(pGroup);
             return Optional.of(new GroupDTO(groupSaved));
         } else {
-
             Profile profile = new Profile();
             profile.setId(UUID.randomUUID());
             profile.setRole("A");
