@@ -1,0 +1,72 @@
+[
+    {
+        "$match": {
+            "type": "T",
+            "members": {
+                "$elemMatch": {
+                    "createdBy": "?#{#param.id}",
+                    "status": {
+                        "$ne": "I"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$and": [
+                    {
+                        "$gt": [
+                            "$createdDate",
+                            {
+                                "$toDate": "?#{#param.offset[1]}"
+                            }
+                        ]
+                    },
+                    {
+                        "$in": [
+                            "$status",
+                            ":#{#status}"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "$sort": {
+            "createdDate": -1
+        }
+    },
+    {
+        "$limit": "?#{#param.limit}"
+    },
+    {
+        "$addFields": {
+            "groupKey": {
+                "$dateToString": {
+                    "format": "?#{#param.groupKey}",
+                    "date": "$createdDate"
+                }
+            }
+        }
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": {
+                "$mergeObjects": [
+                    {
+                        "item": "$$ROOT"
+                    },
+                    {
+                        "groupKey": "$groupKey",
+                        "offset": [
+                            "$createdDate"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

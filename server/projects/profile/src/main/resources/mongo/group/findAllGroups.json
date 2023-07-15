@@ -6,34 +6,71 @@
             "minDistance": "?#{#param.offset[0]}",
             "distanceField": "distance",
             "query": {
-                "type": "E",
-                "status": "P",
-                "members": {
-                    "$not": {
-                        "$elemMatch": {
-                            "profile.$id": {
-                                "$in": [
-                                    "?#{#param.id}"
-                                ]
-                            }
-                        }
-                    }
+                "status": {
+                    "$nin": [
+                        "D",
+                        "P"
+                    ]
                 },
                 "access": {
                     "$in": [
                         "A",
                         "F"
                     ]
-                },
-                "group": ":#{#groupId}"
+                }
             }
+        }
+    },
+    {
+        "$lookup": {
+            "from": "users",
+            "let": {
+                "groupId": "$_id"
+            },
+            "pipeline": [
+                {
+                    "$lookup": {
+                        "from": "users",
+                        "localField": "profiles.$id",
+                        "foreignField": "_id",
+                        "as": "profiles"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$profiles"
+                    }
+                },
+                {
+                    "$elemMatch": {
+                        "profile.group": "$$groupId"
+                    }
+                }
+            ],
+            "as": "profiles"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$profiles",
+            "preserveNullAndEmptyArrays": true
+        }
+    },
+    {
+        "$match": {
+            "$in": [
+                "$profiles",
+                [
+                    null,
+                    []
+                ]
+            ]
         }
     },
     {
         "$lookup": {
             "from": "events",
             "let": {
-                "group": ":#{#groupId}",
                 "createdBy": "$createdBy"
             },
             "pipeline": [
@@ -41,18 +78,6 @@
                     "$match": {
                         "$expr": {
                             "$and": [
-                                {
-                                    "$eq": [
-                                        ":#{#status}",
-                                        "F"
-                                    ]
-                                },
-                                {
-                                    "$eq": [
-                                        "$$group",
-                                        "$group"
-                                    ]
-                                },
                                 {
                                     "$eq": [
                                         "$status",
@@ -166,7 +191,7 @@
                                 "$and": [
                                     {
                                         "$eq": [
-                                            ":#{#status}",
+                                            ":#{#access}",
                                             "F"
                                         ]
                                     },
@@ -185,7 +210,7 @@
                             },
                             {
                                 "$eq": [
-                                    ":#{#status}",
+                                    ":#{#access}",
                                     "A"
                                 ]
                             }
@@ -211,20 +236,16 @@
                                         "$or": [
                                             {
                                                 "$gt": [
-                                                    "$range.start",
-                                                    {
-                                                        "$toDate": "?#{#param.offset[1]}"
-                                                    }
+                                                    "$access",
+                                                    "?#{#param.offset[1]}"
                                                 ]
                                             },
                                             {
                                                 "$and": [
                                                     {
                                                         "$eq": [
-                                                            "$range.start",
-                                                            {
-                                                                "$toDate": "?#{#param.offset[1]}"
-                                                            }
+                                                            "$access",
+                                                            "?#{#param.offset[1]}"
                                                         ]
                                                     },
                                                     {
@@ -248,9 +269,15 @@
         }
     },
     {
+        "$unwind": {
+            "path": "$events",
+            "preserveNullAndEmptyArrays": true
+        }
+    },
+    {
         "$sort": {
             "groupKey": 1,
-            "range.start": 1,
+            "access": -1,
             "updatedDate": -1
         }
     },
@@ -268,10 +295,28 @@
                         "groupKey": "$groupKey",
                         "offset": [
                             "$groupKey",
-                            "$range.start",
+                            "$access",
                             "$updatedDate"
-                        ],
-                        "sortKey": "$events.createdBy"
+                        ]
+                    },
+                    {
+                        "access": {
+                            "$cond": [
+                                {
+                                    "$gt": [
+                                        {
+                                            "$ifNull": [
+                                                "$events.count",
+                                                0
+                                            ]
+                                        },
+                                        0
+                                    ]
+                                },
+                                "F",
+                                "A"
+                            ]
+                        }
                     }
                 ]
             }

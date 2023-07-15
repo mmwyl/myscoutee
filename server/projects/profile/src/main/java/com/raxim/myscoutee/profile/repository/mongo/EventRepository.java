@@ -38,6 +38,11 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
                         @Param("param") PageParam param,
                         @Param("status") String[] status);
 
+        @Aggregation(pipeline = "findTemplates")
+        List<EventDTO> findTemplates(
+                        @Param("param") PageParam param,
+                        @Param("status") String[] status);
+
         @Aggregation(pipeline = "findInvitationDown")
         List<EventDTO> findInvitationDown(
                         @Param("param") PageParam param,

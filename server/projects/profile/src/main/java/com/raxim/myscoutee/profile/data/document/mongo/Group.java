@@ -32,8 +32,8 @@ public class Group implements Cloneable {
     private String category;
 
     // public
-    @JsonProperty(value = "visibility")
-    private String visibility;
+    @JsonProperty(value = "access")
+    private String access;
 
     @JsonProperty(value = "images")
     private List<Image> images;
@@ -53,9 +53,19 @@ public class Group implements Cloneable {
     @JsonProperty(value = "createdDate")
     private LocalDateTime createdDate = LocalDateTime.now();
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonProperty(value = "updatedDate")
+    private LocalDateTime updatedDate = LocalDateTime.now();
+
     // profileId
     @JsonIgnore
     private UUID createdBy;
+
+    @JsonIgnore
+    private UUID updatedBy;
+
+    @JsonProperty(value = "status")
+    private String status = "P";
 
     public UUID getId() {
         return id;
@@ -73,12 +83,12 @@ public class Group implements Cloneable {
         this.name = name;
     }
 
-    public String getVisibility() {
-        return visibility;
+    public String getAccess() {
+        return access;
     }
 
-    public void setVisibility(String visibility) {
-        this.visibility = visibility;
+    public void setAccess(String visibility) {
+        this.access = visibility;
     }
 
     public List<Image> getImages() {
@@ -141,5 +151,29 @@ public class Group implements Cloneable {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDateTime updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public UUID getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(UUID updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

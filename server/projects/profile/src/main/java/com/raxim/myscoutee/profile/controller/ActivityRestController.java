@@ -30,6 +30,7 @@ import com.raxim.myscoutee.profile.handler.EventParamHandler;
 import com.raxim.myscoutee.profile.handler.InvitationParamHandler;
 import com.raxim.myscoutee.profile.handler.ParamHandlers;
 import com.raxim.myscoutee.profile.handler.RecommendationParamHandler;
+import com.raxim.myscoutee.profile.handler.TemplateParamHandler;
 import com.raxim.myscoutee.profile.service.EventService;
 
 enum EventAction {
@@ -81,6 +82,26 @@ public class ActivityRestController {
         }
     }
 
+    @GetMapping("templates")
+    @Transactional
+    public ResponseEntity<Object> getTemplates(PageParam pageParam, Authentication auth) {
+
+        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
+        Profile profile = principal.getUser().getProfile();
+
+        // override page param
+        pageParam = paramHandlers.handle(profile, pageParam, TemplateParamHandler.TYPE);
+
+        List<EventDTO> events = eventService.getTemplates(pageParam); // the statuses is coming from the page filter
+                                                                      // (SettingsRepository)
+
+        List<Object> lOffset = CommonUtil.offset(events, pageParam.getOffset());
+
+        return ResponseEntity.ok(
+                new PageDTO<>(events, lOffset, 0));
+
+    }
+
     @GetMapping("invitations")
     @Transactional
     public ResponseEntity<Object> getInvitations(PageParam pageParam, Authentication auth) {
@@ -120,7 +141,7 @@ public class ActivityRestController {
     }
 
     // can lock event, filter for own events (organized by me)
-    @PatchMapping("events/{id}")
+    @PatchMapping({ "events/{id}", "templates/{id}" })
     @Transactional
     public ResponseEntity<?> patchEvent(@PathVariable String id, @RequestBody Event event,
             Authentication auth) {
@@ -133,7 +154,7 @@ public class ActivityRestController {
         return response;
     }
 
-    @PostMapping({ "events/{id}/items", "events/{parentId}/items/{id}/items" })
+    @PostMapping({ "events/{id}/items", "events/{parentId}/items/{id}/items", "templates/{id}/items" })
     public ResponseEntity<EventDTO> addItem(@PathVariable String id, @RequestBody Event eventItem,
             Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
@@ -145,7 +166,8 @@ public class ActivityRestController {
         return response;
     }
 
-    @PatchMapping({ "events/{id}/items/{itemId}", "events/{parentId}/items/{id}/items/{itemId}" })
+    @PatchMapping({ "events/{id}/items/{itemId}", "events/{parentId}/items/{id}/items/{itemId}",
+            "templates/{id}/items/{itemId}" })
     public ResponseEntity<EventDTO> patchItem(@PathVariable String id, @PathVariable String itemId,
             @RequestBody Event eventItem, Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
@@ -159,7 +181,8 @@ public class ActivityRestController {
         return response;
     }
 
-    @DeleteMapping({ "events/{id}/items/{itemId}", "events/{parentId}/items/{id}/items/{itemId}" })
+    @DeleteMapping({ "events/{id}/items/{itemId}", "events/{parentId}/items/{id}/items/{itemId}",
+            "templates/{id}/items/{itemId}" })
     public ResponseEntity<EventDTO> deleteItem(@PathVariable String id, @PathVariable String itemId,
             Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
@@ -177,7 +200,7 @@ public class ActivityRestController {
     // TODO: promotion fix, only events for the current stage can be shown
     @GetMapping(value = { "events/{eventId}/items", "events/{id}/items/{eventId}/items",
             "invitations/{eventId}/items",
-            "recommendations/{id}/items", "recommendations/{id}/items/{eventId}/items", })
+            "recommendations/{id}/items", "recommendations/{id}/items/{eventId}/items", "templates/{eventId}/items" })
     public ResponseEntity<PageDTO<EventDTO>> getItems(@PathVariable String eventId,
             PageParam pageParam, Authentication auth) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();

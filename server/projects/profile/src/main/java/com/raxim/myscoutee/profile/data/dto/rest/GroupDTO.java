@@ -16,6 +16,10 @@ public class GroupDTO extends PageItemDTO {
     @JsonProperty(value = "groupKey")
     private Object groupKey;
 
+    // friends only vs all
+    @JsonProperty(value = "access")
+    private String access;
+
     @JsonProperty(value = "role")
     private Object role;
 
@@ -59,5 +63,13 @@ public class GroupDTO extends PageItemDTO {
 
     public void setOffset(List<Object> offset) {
         this.offset = offset;
+    }
+
+    public String getAccess() {
+        return access;
+    }
+
+    public void setAccess(String access) {
+        this.access = access;
     }
 }

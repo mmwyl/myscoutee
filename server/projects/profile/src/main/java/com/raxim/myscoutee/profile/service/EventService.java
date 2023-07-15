@@ -54,6 +54,10 @@ public class EventService {
                 new String[] { "A", "I", "J", "W" });
     }
 
+    public List<EventDTO> getTemplates(PageParam pageParam) {
+        return eventRepository.findTemplates(pageParam, new String[] { "A", "P", "C" });
+    }
+
     public Optional<CodeDTO> getCodeByEvent(String eventId, UUID profileUuid) {
         UUID eventUUId = UUID.fromString(eventId);
         Optional<CodeDTO> code = this.eventRepository.findCodeByEvent(eventUUId, profileUuid);

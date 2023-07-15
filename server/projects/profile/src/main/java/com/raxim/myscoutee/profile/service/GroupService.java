@@ -1,15 +1,18 @@
 package com.raxim.myscoutee.profile.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.mongodb.client.model.geojson.Point;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.repository.mongo.GroupRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
@@ -26,6 +29,10 @@ public class GroupService {
         this.groupRepository = groupRepository;
         this.profileRepository = profileRepository;
         this.userRepository = userRepository;
+    }
+
+    public List<GroupDTO> getAllGroups(PageParam pageParam, Point position, String access) {
+        return this.groupRepository.findAllGroups(pageParam, position, access);
     }
 
     public Optional<GroupDTO> saveGroup(Group pGroup, User user) throws CloneNotSupportedException {

@@ -29,6 +29,9 @@ public class User {
     @JsonIgnore
     private Set<Profile> profiles;
 
+    //suspend the user, hence all profiles are "S"
+    //status
+
     public UUID getId() {
         return id;
     }
