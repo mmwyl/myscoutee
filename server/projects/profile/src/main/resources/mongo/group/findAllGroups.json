@@ -6,6 +6,7 @@
             "minDistance": "?#{#param.offset[0]}",
             "distanceField": "distance",
             "query": {
+                "system": false,
                 "status": {
                     "$nin": [
                         "D",

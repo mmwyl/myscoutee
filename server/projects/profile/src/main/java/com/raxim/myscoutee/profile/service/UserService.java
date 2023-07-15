@@ -10,8 +10,9 @@ import org.springframework.stereotype.Service;
 import com.raxim.myscoutee.profile.data.document.mongo.Badge;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
+import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.UserDTO;
-import com.raxim.myscoutee.profile.repository.mongo.GroupRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
@@ -23,15 +24,17 @@ public class UserService {
     private final ProfileRepository profileRepository;
     private final ProfileService profileService;
     private final LikeRepository likeRepository;
-    private final GroupRepository groupRepository;
 
     public UserService(UserRepository userRepository, ProfileRepository profileRepository,
-            ProfileService profileService, LikeRepository likeRepository, GroupRepository groupRepository) {
+            ProfileService profileService, LikeRepository likeRepository) {
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
         this.profileService = profileService;
         this.likeRepository = likeRepository;
-        this.groupRepository = groupRepository;
+    }
+
+    public List<GroupDTO> getGroupsByUser(UUID userId, PageParam pageParam) {
+        return this.userRepository.findGroupsByUser(userId, pageParam);
     }
 
     public Optional<UserDTO> changeStatus(User user, String groupId, String status) {

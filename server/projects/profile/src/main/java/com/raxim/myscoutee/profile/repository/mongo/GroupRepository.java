@@ -26,13 +26,4 @@ public interface GroupRepository extends MongoRepository<Group, UUID> {
             @Param("loc") Point loc,
             @Param("access") String access);
 
-    @Aggregation(pipeline = "findGroupByProfile")
-    List<GroupDTO> findGroupByProfile(
-            @Param("type") String type,
-            @Param("loc") Point loc,
-            @Param("limit") int limit,
-            @Param("step") int step,
-            @Param("uuids") List<UUID> uuids,
-            @Param("offset") Object[] offset);
-
 }

@@ -27,20 +27,6 @@ import com.raxim.myscoutee.profile.handler.TemplateParamHandler;
 import com.raxim.myscoutee.profile.service.GroupService;
 import com.raxim.myscoutee.profile.service.UserService;
 
-enum GroupAction {
-    join("J");
-
-    private final String type;
-
-    GroupAction(final String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-}
-
 @RepositoryRestController
 @RequestMapping("groups")
 public class GroupRestController {

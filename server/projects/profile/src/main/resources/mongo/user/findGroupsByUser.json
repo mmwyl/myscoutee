@@ -1,0 +1,113 @@
+[
+    {
+        "$match": {
+            "_id": ":#{#userId}"
+        }
+    },
+    {
+        "$unwind": "$profiles"
+    },
+    {
+        "$lookup": {
+            "from": "users",
+            "localField": "profiles.$id",
+            "foreignField": "_id",
+            "as": "profiles"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$profiles"
+        }
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": "$profiles"
+        }
+    },
+    {
+        "$lookup": {
+            "from": "groups",
+            "let": {
+                "g_id": "$group"
+            },
+            "pipeline": [
+                {
+                    "$match": {
+                        "$expr": {
+                            "$eq": [
+                                "$$g_id",
+                                "$_id"
+                            ],
+                            "$ne": [
+                                "$system",
+                                false
+                            ]
+                        }
+                    }
+                }
+            ],
+            "as": "group"
+        }
+    },
+    {
+        "$unwind": "$group"
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$or": [
+                    {
+                        "$gt": [
+                            "$role",
+                            "?#{#param.offset[0]}"
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$eq": [
+                                    "$role",
+                                    "?#{#param.offset[0]}"
+                                ]
+                            },
+                            {
+                                "$lt": [
+                                    "$updatedDate",
+                                    "?#{#param.offset[1]}"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "$sort": {
+            "role": 1,
+            "updatedDate": -1
+        }
+    },
+    {
+        "$limit": "?#{#param.limit}"
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": {
+                "$mergeObjects": [
+                    {
+                        "group": "$group"
+                    },
+                    {
+                        "role": "$role",
+                        "offset": [
+                            "$role",
+                            "$updatedDate"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

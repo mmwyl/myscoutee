@@ -147,6 +147,7 @@ public class Profile implements Cloneable {
     @JsonProperty(value = "status")
     private String status = "P";
 
+    //group's role
     @JsonProperty(value = "role")
     private String role;
 

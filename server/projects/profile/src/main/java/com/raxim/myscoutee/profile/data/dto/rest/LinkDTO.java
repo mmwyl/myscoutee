@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import com.raxim.myscoutee.profile.data.document.mongo.Link;
 
 @JsonRootName("link")
-public class LinkDTO {
+public class LinkDTO extends PageItemDTO {
     @JsonProperty(value = "link")
     private Link link;
 

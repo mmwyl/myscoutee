@@ -12,6 +12,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import com.raxim.myscoutee.profile.data.document.mongo.Topic;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 
 @RepositoryRestResource(collectionResourceRel = "users", path = "users")
 public interface UserRepository extends MongoRepository<User, UUID>, UserExtRepository {
@@ -19,15 +20,10 @@ public interface UserRepository extends MongoRepository<User, UUID>, UserExtRepo
         @Query("{email: ?0}")
         User findUserByEmail(String email);
 
-        @Aggregation(pipeline = "findGroupsByEmail")
-        List<GroupDTO> findGroupsByEmail(
-                        @Param("email") String email,
-                        @Param("role") String role,
-                        @Param("isAdmin") boolean isAdmin,
-                        @Param("profile") UUID profile,
-                        @Param("limit") int limit,
-                        @Param("step") int step,
-                        @Param("offset") Object[] offset);
+        @Aggregation(pipeline = "findGroupsByUser")
+        List<GroupDTO> findGroupsByUser(
+                        @Param("userId") UUID userId,
+                        @Param("param") PageParam pageParam);
 
         @Aggregation(pipeline = "findDeviceWithProfileStatusAll")
         List<Topic> findDeviceWithProfileStatusAll(

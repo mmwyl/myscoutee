@@ -1,12 +1,11 @@
 package com.raxim.myscoutee.profile.controller;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.data.rest.webmvc.RepositoryRestController;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,22 +16,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.ControllerUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
-import com.raxim.myscoutee.profile.data.document.mongo.Link;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
-import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.LinkDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.LinkInfoDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.UserDTO;
+import com.raxim.myscoutee.profile.handler.ParamHandlers;
+import com.raxim.myscoutee.profile.handler.UserParamHandler;
 import com.raxim.myscoutee.profile.repository.mongo.GroupRepository;
+import com.raxim.myscoutee.profile.service.GroupService;
+import com.raxim.myscoutee.profile.service.LinkService;
+import com.raxim.myscoutee.profile.service.UserService;
 
 enum GroupAction {
     suspend("S"),
@@ -57,10 +58,35 @@ enum GroupAction {
 @RepositoryRestController
 @RequestMapping("user")
 public class UserGroupRestController {
+    private final GroupService groupService;
+    private final UserService userService;
+    private final LinkService linkService;
     private final GroupRepository groupRepository;
+    private final ParamHandlers paramHandlers;
 
-    public UserGroupRestController(GroupRepository groupRepository) {
+    public UserGroupRestController(GroupService groupService, UserService userService, LinkService linkService,
+            GroupRepository groupRepository, ParamHandlers paramHandlers) {
+        this.groupService = groupService;
+        this.userService = userService;
+        this.linkService = linkService;
         this.groupRepository = groupRepository;
+        this.paramHandlers = paramHandlers;
+    }
+
+    @GetMapping("groups")
+    @Transactional
+    public ResponseEntity<Object> groups(PageParam pageParam, Authentication auth) {
+        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
+        User user = principal.getUser();
+        Profile profile = user.getProfile();
+
+        pageParam = paramHandlers.handle(profile, pageParam, UserParamHandler.TYPE);
+        List<GroupDTO> groupDTOs = this.userService.getGroupsByUser(user.getId(), pageParam);
+
+        List<Object> lOffset = CommonUtil.offset(groupDTOs, pageParam.getOffset());
+
+        return ResponseEntity.ok(
+                new PageDTO<>(groupDTOs, lOffset, 0, pageParam.getType()));
     }
 
     // add button on the group list screen
@@ -104,7 +130,7 @@ public class UserGroupRestController {
 
         String actionType = MemberAction.valueOf(type).getType();
 
-        return ControllerUtil.handle((u, g, s) -> userService.changeStatus(u, g, s),
+        return ControllerUtil.handle((u, g, s) -> this.userService.changeStatus(u, g, s),
                 user, groupId, actionType,
                 HttpStatus.OK);
     }
@@ -115,33 +141,20 @@ public class UserGroupRestController {
     public ResponseEntity<LinkDTO> shareGroup(
             Authentication auth,
             @PathVariable String id) {
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        UUID profileId = principal.getUser().getProfile().getId();
-
-        Link link = new Link();
-        link.setKey(UUID.randomUUID());
-        link.setRefId(UUID.fromString(id));
-        link.setType("g");
-        link.setCreatedBy(profileId);
-        Link linkSaved = linkRepository.save(link);
+        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
 
         Optional<Group> group = groupRepository.findById(UUID.fromString(id));
 
+        Pair<String, String> info = null;
         if (group.isPresent()) {
-            Group groupReq = group.get();
-            LinkInfoDTO linkInfo = new LinkInfoDTO("Please be invited for " + groupReq.getName() + " group!",
-                    groupReq.getDesc());
-            LinkDTO linkResp = new LinkDTO(linkSaved, linkInfo);
-            return ResponseEntity.ok(linkResp);
-        } else {
-            return ResponseEntity.notFound().build();
+            Group lGroup = group.get();
+            Pair.of(lGroup.getName(), lGroup.getDesc());
         }
+
+        ResponseEntity<LinkDTO> response = ControllerUtil.handle(
+                (p, i, d) -> linkService.saveLink(p, i, d),
+                profile.getId(), id, info,
+                HttpStatus.CREATED);
+        return response;
     }
-
-    @GetMapping("groups")
-    @Transactional
-    public ResponseEntity<Object> groupsForUser() {
-
-    }
-
 }
