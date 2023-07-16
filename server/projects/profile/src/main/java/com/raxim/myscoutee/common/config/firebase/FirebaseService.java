@@ -56,6 +56,7 @@ public class FirebaseService {
 
             List<Profile> profiles = groups.stream().map(group -> {
                 Profile profile = new Profile();
+                profile.setFirstName(group.getName());
                 profile.setGroup(group.getId());
 
                 String role = config.getAdminUser().equals(username) ? "A" : "U";
