@@ -1,13 +1,11 @@
 package com.raxim.myscoutee.profile.service;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.raxim.myscoutee.profile.data.document.mongo.Form;
-import com.raxim.myscoutee.profile.data.document.mongo.FormItem;
 import com.raxim.myscoutee.profile.data.document.mongo.Setting;
 import com.raxim.myscoutee.profile.data.dto.rest.SettingDTO;
 import com.raxim.myscoutee.profile.repository.mongo.FormRepository;
@@ -53,28 +51,5 @@ public class SettingsService {
             dbSetting = Optional.of(settingsSaved);
         }
         return Optional.of(new SettingDTO(setting));
-    }
-
-    @SuppressWarnings("unchecked")
-    public Optional<String> getValue(UUID profileId, String pKey, String valueName) {
-        Optional<Setting> dbSetting = settingRepository.findSettingByProfileAndKey(profileId, pKey);
-        if (dbSetting.isPresent()) {
-            Setting setting = dbSetting.get();
-
-            Optional<FormItem> optFormItem = setting.getItems().stream()
-                    .filter(item -> item.getName().equals(valueName))
-                    .findFirst();
-
-            if (optFormItem.isPresent()) {
-                FormItem formItem = optFormItem.get();
-
-                // based on formItem type - at the moment only option is supported
-                Integer key = ((ArrayList<Integer>) formItem.getData()).get(0);
-                String step = setting.getItems().get(0).getOptions().get(key).getValue();
-                return Optional.of(step);
-            }
-        }
-
-        return Optional.empty();
     }
 }

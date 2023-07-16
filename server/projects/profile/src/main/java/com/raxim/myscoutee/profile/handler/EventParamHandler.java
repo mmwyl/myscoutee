@@ -8,8 +8,10 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import com.raxim.myscoutee.common.util.CommonUtil;
+import com.raxim.myscoutee.common.util.SettingUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
+import com.raxim.myscoutee.profile.data.dto.rest.SettingDTO;
 import com.raxim.myscoutee.profile.service.SettingsService;
 import com.raxim.myscoutee.profile.util.AppConstants;
 
@@ -25,8 +27,8 @@ public class EventParamHandler implements IParamHandler {
 
     @Override
     public PageParam handle(Profile profile, PageParam pageParam) {
-        Optional<String> optViewType = this.settingsService.getValue(profile.getId(), "/activity/events",
-                pageParam.getType());
+        Optional<SettingDTO> settingDTO = this.settingsService.getSetting(profile.getId(), "/activity/events");
+        Optional<String> optViewType = SettingUtil.getValue(settingDTO, pageParam.getType());
         String viewType = optViewType.isPresent() ? optViewType.get() : AppConstants.DAY; // day is the default grouping
 
         LocalDate from = LocalDate.now();

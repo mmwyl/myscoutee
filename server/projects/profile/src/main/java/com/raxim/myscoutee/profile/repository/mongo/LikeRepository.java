@@ -12,7 +12,6 @@ import com.raxim.myscoutee.profile.data.document.mongo.Badge;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.dto.rest.LikeDTO;
-import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 
 @RepositoryRestResource(collectionResourceRel = "likes", path = "likes")
 public interface LikeRepository extends MongoRepository<Like, UUID> {
@@ -22,15 +21,6 @@ public interface LikeRepository extends MongoRepository<Like, UUID> {
 
     @Aggregation(pipeline = "findBadges")
     List<Badge> getBadges(UUID profileId, String date);
-
-    @Aggregation(pipeline = "findDoubleById")
-    List<ProfileDTO> findDoubleById(
-            @Param("currUser") UUID currUser,
-            @Param("selectedUser") UUID selectedUser,
-            @Param("limit") int limit,
-            @Param("step") int step,
-            @Param("status") String[] status,
-            @Param("offset") Object[] offset);
 
     @Aggregation(pipeline = "findLikeGroupsByBatch")
     List<LikeGroup> findLikeGroupsByBatch(long lastIdx, long batchSize);

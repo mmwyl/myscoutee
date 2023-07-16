@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.JsonUtil;
+import com.raxim.myscoutee.common.util.SettingUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Car;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
@@ -22,6 +23,11 @@ import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.SettingDTO;
+import com.raxim.myscoutee.profile.exception.FriendsOnlyException;
+import com.raxim.myscoutee.profile.exception.InvisibleException;
+import com.raxim.myscoutee.profile.exception.NoActiveProfileException;
+import com.raxim.myscoutee.profile.exception.NotProfileFoundException;
 import com.raxim.myscoutee.profile.repository.mongo.CarEventHandler;
 import com.raxim.myscoutee.profile.repository.mongo.CarRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
@@ -72,21 +78,56 @@ public class ProfileService {
     }
 
     public List<ProfileDTO> getProfiles(PageParam pageParam, Profile profile, String pKey, double direction,
-            int score) {
+            int score)
+            throws NoActiveProfileException, FriendsOnlyException, InvisibleException, NotProfileFoundException {
 
-        Optional<String> optMet = this.settingsService.getValue(profile.getId(), pKey, "met");
+        if (profile.getPosition() == null) {
+            throw new NoActiveProfileException();
+        }
+
+        if ("F".equals(profile.getStatus())) {
+            throw new FriendsOnlyException();
+        }
+
+        if ("I".equals(profile.getStatus())) {
+            throw new InvisibleException();
+        }
+
+        // gender,met,direction as filter criteria
+        //based on pKey it can be different, maybe create ParamParserForDouble etc.
+        Optional<SettingDTO> optSetting = this.settingsService.getSetting(profile.getId(), pKey);
+
+        Optional<String> optMet = SettingUtil.getValue(optSetting, "met");
         boolean met = optMet.isPresent() ? Boolean.parseBoolean(optMet.get()) : false;
 
-        String gender = profile.getGender().equals("m") ? "w" : "m";
+        Optional<String> optGender = SettingUtil.getValue(optSetting, "gender");
+
+        Optional<String> optDirection = SettingUtil.getValue(optSetting, "direction");
+        direction = optDirection.isPresent() ? Double.parseDouble(optDirection.get()) : direction;
+
+        String gender = null;
+        UUID selectUuid = pageParam.getSelectedId() != null ? UUID.fromString(pageParam.getSelectedId()) : null;
+        if (selectUuid != null) {
+            Optional<Profile> selected = profileRepository.findById(selectUuid);
+            if (!selected.isPresent()) {
+                throw new NotProfileFoundException();
+            }
+
+            Profile sProfile = selected.get();
+            gender = sProfile.getGender().equals("m") ? "w" : "m";
+        } else {
+            gender = optGender.isPresent() ? optGender.get() : profile.getGender().equals("m") ? "w" : "m";
+        }
 
         // $met variable is a filter for findProfile on the list screen,
         // can be true or false (events are not even generated, but both liked)
+        // isDouble = true, direction is ignored
         List<ProfileDTO> profileDTOs = profileRepository.findProfile(
                 pageParam,
                 CommonUtil.point(profile.getPosition()),
                 gender,
                 profile.getGroup(),
-                direction, score, met);
+                direction, score, met, selectUuid);
         return profileDTOs;
     }
 

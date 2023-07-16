@@ -28,47 +28,93 @@
                 {
                     "$match": {
                         "$expr": {
-                            "$or": [
+                            "$and": [
                                 {
-                                    "$and": [
-                                        {
-                                            "$eq": [
-                                                "$from.$id",
-                                                "$$p_id"
-                                            ]
-                                        },
-                                        {
-                                            "$eq": [
-                                                "$to.$id",
-                                                "?#{#param.id}"
-                                            ]
-                                        },
-                                        {
-                                            "$eq": [
-                                                "$type",
-                                                "P"
-                                            ]
-                                        }
+                                    "$eq": [
+                                        "$type",
+                                        "P"
                                     ]
                                 },
                                 {
-                                    "$and": [
+                                    "$or": [
                                         {
-                                            "$eq": [
-                                                "$to.$id",
-                                                "$$p_id"
+                                            "$and": [
+                                                {
+                                                    "$ne": [
+                                                        ":#{#selectId}",
+                                                        null
+                                                    ]
+                                                },
+                                                {
+                                                    "$and": [
+                                                        {
+                                                            "$or": [
+                                                                {
+                                                                    "$eq": [
+                                                                        "$from.$id",
+                                                                        "$$p_id"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "$eq": [
+                                                                        "$to.$id",
+                                                                        "$$p_id"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "$ne": [
+                                                                "$from.$id",
+                                                                "?#{#param.id}"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "$ne": [
+                                                                "$to.$id",
+                                                                "?#{#param.id}"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "$eq": [
+                                                                "$createdBy.$id",
+                                                                "?#{#param.id}"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             ]
                                         },
                                         {
-                                            "$eq": [
-                                                "$from.$id",
-                                                "?#{#param.id}"
+                                            "$and": [
+                                                {
+                                                    "$eq": [
+                                                        "$from.$id",
+                                                        "$$p_id"
+                                                    ]
+                                                },
+                                                {
+                                                    "$eq": [
+                                                        "$to.$id",
+                                                        "?#{#param.id}"
+                                                    ]
+                                                }
                                             ]
                                         },
                                         {
-                                            "$eq": [
-                                                "$type",
-                                                "P"
+                                            "$and": [
+                                                {
+                                                    "$eq": [
+                                                        "$to.$id",
+                                                        "$$p_id"
+                                                    ]
+                                                },
+                                                {
+                                                    "$eq": [
+                                                        "$from.$id",
+                                                        "?#{#param.id}"
+                                                    ]
+                                                }
                                             ]
                                         }
                                     ]
@@ -373,9 +419,19 @@
             "$expr": {
                 "$and": [
                     {
-                        "$eq": [
-                            "$likes.direction",
-                            ":#{#direction}"
+                        "$or": [
+                            {
+                                "$ne": [
+                                    ":#{#selectedId}",
+                                    true
+                                ]
+                            },
+                            {
+                                "$eq": [
+                                    "$likes.direction",
+                                    ":#{#direction}"
+                                ]
+                            }
                         ]
                     },
                     {

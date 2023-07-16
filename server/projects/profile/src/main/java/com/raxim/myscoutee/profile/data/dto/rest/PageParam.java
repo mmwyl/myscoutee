@@ -7,6 +7,9 @@ public class PageParam implements Cloneable {
     private String type;
     private int direction;
 
+    // basket
+    private String selectedId;
+
     private int limit = 20;
     private int step = 5;
 
@@ -85,6 +88,14 @@ public class PageParam implements Cloneable {
 
     public void setGroupKey(String groupKey) {
         this.groupKey = groupKey;
+    }
+
+    public String getSelectedId() {
+        return selectedId;
+    }
+
+    public void setSelectedId(String selectedId) {
+        this.selectedId = selectedId;
     }
 
     @Override
