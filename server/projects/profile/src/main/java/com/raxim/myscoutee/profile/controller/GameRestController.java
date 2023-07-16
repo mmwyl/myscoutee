@@ -137,9 +137,9 @@ public class GameRestController {
 
     @GetMapping(value = { "/rate_none/{id}/schools", "/rate_give/{id}/schools",
             "/rate_give/{id}/schools", "/rate_give/{id}/schools", "/rate_give/{id}/schools",
-            "rate_receive/{id}/schools", "/rate_double/{id}/rated/{id}/schools",
-            "/rate_double/{id}/none/{id}/schools",
-            "/rate_both/{id}/schools", "/rate_met/{id}/schools" })
+            "rate_receive/{id}/schools",
+            "/rate_double/{id}/schools", "/rate_double/{id}/schools",
+            "/rate_both/{id}/schools" })
     public ResponseEntity<PageDTO<SchoolDTO>> getSchools(
             @PathVariable String id, Authentication auth,
             @RequestParam(name = "step", required = false) Integer step,
