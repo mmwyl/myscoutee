@@ -203,4 +203,5 @@ New TODO:
     in dating group the group is visible, but in business school will be shown
     invisible does mean, can't even rate or see new members, just wait for the admin to be invited
 44) school/car refactor (car join first optional event - check whether it's working)
-45) EventGeneratorPromotionService implementation
+45) badge check (not sure what is doing)
+46) EventGeneratorPromotionService implementation
