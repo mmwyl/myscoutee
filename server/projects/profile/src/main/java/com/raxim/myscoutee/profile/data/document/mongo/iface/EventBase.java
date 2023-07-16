@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raxim.myscoutee.profile.data.document.mongo.Amount;
@@ -39,7 +37,6 @@ public abstract class EventBase {
     @JsonIgnore
     private UUID updatedBy; // can be system uuid also, not only a valid profile
 
-    //car, accomodation etc.
     @JsonProperty(value = "type")
     private String type;
 

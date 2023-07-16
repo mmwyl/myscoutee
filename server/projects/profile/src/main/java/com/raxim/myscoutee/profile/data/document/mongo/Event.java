@@ -36,6 +36,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     private UUID parentId;
 
     // type = event (E) vs template??? (T) vs Item (I = item)
+    // urlRef -> //car, accomodation etc.
 
     // urlRef is the template
 
