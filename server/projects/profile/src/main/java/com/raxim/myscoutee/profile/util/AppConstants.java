@@ -43,4 +43,11 @@ public class AppConstants {
 
         public static final UUID UUID_SYSTEM = UUID.fromString("58d6abac-fd83-40a0-b339-14f7f009cd29");
 
+        public static final String ERR_EVENT_FULL = "err.event_full";
+        public static final String ERR_NOT_SELECTED_PROFILE = "err.not_selected_profile";
+        public static final String ERR_ILLEGAL_ACCESS = "err.event_illegal_access";
+        public static final String ERR_INVISIBLE_PROFILE = "err.invisible_profile";
+        public static final String ERR_NO_PROFILE = "err.no_profile";
+        public static final String ERR_FRIENDS_ONLY = "err.friends_only";
+
 }

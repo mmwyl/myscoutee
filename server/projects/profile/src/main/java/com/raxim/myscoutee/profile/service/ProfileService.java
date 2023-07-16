@@ -24,10 +24,7 @@ import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.SettingDTO;
-import com.raxim.myscoutee.profile.exception.FriendsOnlyException;
-import com.raxim.myscoutee.profile.exception.InvisibleException;
-import com.raxim.myscoutee.profile.exception.NoActiveProfileException;
-import com.raxim.myscoutee.profile.exception.NotProfileFoundException;
+import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.repository.mongo.CarEventHandler;
 import com.raxim.myscoutee.profile.repository.mongo.CarRepository;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
@@ -35,6 +32,7 @@ import com.raxim.myscoutee.profile.repository.mongo.ProfileEventHandler;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.SchoolRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
+import com.raxim.myscoutee.profile.util.AppConstants;
 import com.raxim.myscoutee.profile.util.ProfileUtil;
 
 //val reqGroupId = UUID.fromString(groupId)
@@ -79,22 +77,22 @@ public class ProfileService {
 
     public List<ProfileDTO> getProfiles(PageParam pageParam, Profile profile, String pKey, double direction,
             int score)
-            throws NoActiveProfileException, FriendsOnlyException, InvisibleException, NotProfileFoundException {
+            throws MessageException {
 
         if (profile.getPosition() == null) {
-            throw new NoActiveProfileException();
+            throw new MessageException(AppConstants.ERR_NO_PROFILE);
         }
 
         if ("F".equals(profile.getStatus())) {
-            throw new FriendsOnlyException();
+            throw new MessageException(AppConstants.ERR_FRIENDS_ONLY);
         }
 
         if ("I".equals(profile.getStatus())) {
-            throw new InvisibleException();
+            throw new MessageException(AppConstants.ERR_INVISIBLE_PROFILE);
         }
 
         // gender,met,direction as filter criteria
-        //based on pKey it can be different, maybe create ParamParserForDouble etc.
+        // based on pKey it can be different, maybe create ParamParserForDouble etc.
         Optional<SettingDTO> optSetting = this.settingsService.getSetting(profile.getId(), pKey);
 
         Optional<String> optMet = SettingUtil.getValue(optSetting, "met");
@@ -110,7 +108,7 @@ public class ProfileService {
         if (selectUuid != null) {
             Optional<Profile> selected = profileRepository.findById(selectUuid);
             if (!selected.isPresent()) {
-                throw new NotProfileFoundException();
+                throw new MessageException(AppConstants.ERR_NO_PROFILE);
             }
 
             Profile sProfile = selected.get();

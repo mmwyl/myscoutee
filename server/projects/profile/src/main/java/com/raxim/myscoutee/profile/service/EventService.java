@@ -25,7 +25,6 @@ import com.raxim.myscoutee.profile.data.dto.rest.CodeDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
-import com.raxim.myscoutee.profile.exception.IllegalAccessException;
 import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
@@ -322,7 +321,7 @@ public class EventService {
                     .findFirst();
 
             if (!optAdmin.isPresent()) {
-                throw new IllegalAccessException();
+                throw new MessageException(AppConstants.ERR_ILLEGAL_ACCESS);
             }
 
             List<UUID> profileUUids = pProfileUuids.stream()

@@ -19,10 +19,7 @@ import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
-import com.raxim.myscoutee.profile.exception.FriendsOnlyException;
-import com.raxim.myscoutee.profile.exception.InvisibleException;
-import com.raxim.myscoutee.profile.exception.NoActiveProfileException;
-import com.raxim.myscoutee.profile.exception.NotProfileFoundException;
+import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.handler.LikeParamHandler;
 import com.raxim.myscoutee.profile.handler.ParamHandlers;
 import com.raxim.myscoutee.profile.service.ProfileService;
@@ -52,7 +49,7 @@ public class GameRestController {
                     .getProfiles(pageParam, profile, "/games/rate_none", 0.0, profile.getScore());
             List<Object> lOffset = CommonUtil.offset(profileDTOs, pageParam.getOffset());
             return ResponseEntity.ok(new PageDTO<>(profileDTOs, lOffset));
-        } catch (NoActiveProfileException | FriendsOnlyException | InvisibleException | NotProfileFoundException e) {
+        } catch (MessageException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getErrorDTO());
         }
@@ -71,7 +68,7 @@ public class GameRestController {
                     .getProfiles(pageParam, profile, "/games/rate_give", 1.0, 0);
             List<Object> lOffset = CommonUtil.offset(profileDTOs, pageParam.getOffset());
             return ResponseEntity.ok(new PageDTO<>(profileDTOs, lOffset));
-        } catch (NoActiveProfileException | FriendsOnlyException | InvisibleException | NotProfileFoundException e) {
+        } catch (MessageException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getErrorDTO());
         }
@@ -90,7 +87,7 @@ public class GameRestController {
                     .getProfiles(pageParam, profile, "/games/rate_receive", 2.0, 0);
             List<Object> lOffset = CommonUtil.offset(profileDTOs, pageParam.getOffset());
             return ResponseEntity.ok(new PageDTO<>(profileDTOs, lOffset));
-        } catch (NoActiveProfileException | FriendsOnlyException | InvisibleException | NotProfileFoundException e) {
+        } catch (MessageException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getErrorDTO());
         }
@@ -109,7 +106,7 @@ public class GameRestController {
                     .getProfiles(pageParam, profile, "/games/rate_both", 1.5, 0);
             List<Object> lOffset = CommonUtil.offset(profileDTOs, pageParam.getOffset());
             return ResponseEntity.ok(new PageDTO<>(profileDTOs, lOffset));
-        } catch (NoActiveProfileException | FriendsOnlyException | InvisibleException | NotProfileFoundException e) {
+        } catch (MessageException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getErrorDTO());
         }
@@ -129,7 +126,7 @@ public class GameRestController {
                     .getProfiles(pageParam, profile, "/games/rate_double", 1.0, 0);
             List<Object> lOffset = CommonUtil.offset(profileDTOs, pageParam.getOffset());
             return ResponseEntity.ok(new PageDTO<>(profileDTOs, lOffset));
-        } catch (NoActiveProfileException | FriendsOnlyException | InvisibleException | NotProfileFoundException e) {
+        } catch (MessageException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getErrorDTO());
         }

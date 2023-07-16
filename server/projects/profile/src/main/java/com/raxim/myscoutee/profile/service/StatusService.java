@@ -11,10 +11,10 @@ import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
-import com.raxim.myscoutee.profile.exception.IllegalAccessException;
 import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 @Service
 public class StatusService {
@@ -57,7 +57,7 @@ public class StatusService {
 
             if ((byUuid != null && !optAdmin.isPresent())
                     || !optCurrentMember.isPresent()) {
-                throw new IllegalAccessException();
+                throw new MessageException(AppConstants.ERR_ILLEGAL_ACCESS);
             }
 
             if (optCurrentMember.isPresent()) {
