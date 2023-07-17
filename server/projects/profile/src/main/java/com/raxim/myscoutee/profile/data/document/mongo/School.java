@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Document(collection = "schools")
-public class School {
+public class School implements Cloneable {
     @Id
     @JsonProperty(value = "key")
     private UUID id;
@@ -105,5 +105,11 @@ public class School {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public Object clone()
+            throws CloneNotSupportedException {
+        return super.clone();
     }
 }

@@ -1,14 +1,14 @@
 package com.raxim.myscoutee.profile.data.dto.rest;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.raxim.myscoutee.profile.data.document.mongo.School;
 
-import java.util.List;
-
 @JsonRootName("school")
-public class SchoolDTO {
+public class SchoolDTO extends PageItemDTO {
     @JsonProperty(value = "school")
     private School school;
 
@@ -17,6 +17,9 @@ public class SchoolDTO {
 
     @JsonIgnore
     private List<Object> offset;
+
+    public SchoolDTO() {
+    }
 
     public SchoolDTO(School school) {
         this.school = school;

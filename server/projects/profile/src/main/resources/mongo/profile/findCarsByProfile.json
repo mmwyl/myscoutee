@@ -1,0 +1,69 @@
+[
+    {
+        "$match": {
+            "_id": "?#{#param.id}"
+        }
+    },
+    {
+        "$lookup": {
+            "from": "cars",
+            "localField": "cars.$id",
+            "foreignField": "_id",
+            "as": "cars"
+        }
+    },
+    {
+        "$unwind": "$cars"
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$and": [
+                    {
+                        "$eq": [
+                            "$cars.status",
+                            "A"
+                        ]
+                    },
+                    {
+                        "$gt": [
+                            {
+                                "$ifNull": [
+                                    "$data.createdDate",
+                                    "ISODate()"
+                                ]
+                            },
+                            {
+                                "$toDate": "?#{#param.offset[0]}"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "$sort": {
+            "data.createdDate": -1
+        }
+    },
+    {
+        "$limit": "?#{#param.limit}"
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": {
+                "$mergeObjects": [
+                    {
+                        "car": "$cars"
+                    },
+                    {
+                        "offset": [
+                            "$cars.createdDate"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

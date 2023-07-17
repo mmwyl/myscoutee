@@ -1,55 +1,113 @@
 [
-        {
-            "$match": {
-                "_id": "?0"
-            }
-        },
-        {
-            "$lookup": {
-                "from": "schools",
-                "localField": "schools.$id",
-                "foreignField": "_id",
-                "as": "schools"
-            }
-        },
-        {
-            "$unwind": "$schools"
-        },
-        {
-            "$group": {
-                "_id": "$schools._id",
-                "data": { "$first": "$schools" }
-            }
-        },
-        {
-            "$match": {
-                "$expr": {
-                    "$and": [
-                        { "$eq": [ "$data.status", "A" ] },
-                        { "$gte": [ "$data.type", ":#{#offset[0]}" ] },
-                        { "$gt": [ "$data.range.start", { "$toDate": ":#{#offset[1]}" } ] },
-                        { "$gt": [ { "$ifNull": [ "$data.createdDate", "ISODate()" ] }, { "$toDate": ":#{#offset[2]}" } ] }
-                    ]
-                }
-            }
-        },
-        {
-            "$sort": {
-                "data.type": 1,
-                "data.range.start": 1,
-                "data.createdDate": 1
-            }
-        },
-        { "$limit": "?1" },
-        {
-            "$replaceRoot": {
-                "newRoot": {
-                    "$mergeObjects": [
-                        { "school": "$data" },
-                        { "groupKey": "$data.type", "offset": ["$data.type", "$data.range.start", "$data.createdDate"] }
-                    ]
-                }
+    {
+        "$match": {
+            "_id": ":#{#profileId}"
+        }
+    },
+    {
+        "$lookup": {
+            "from": "schools",
+            "localField": "schools.$id",
+            "foreignField": "_id",
+            "as": "school"
+        }
+    },
+    {
+        "$unwind": "$school"
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$and": [
+                    {
+                        "$eq": [
+                            "$school.status",
+                            "A"
+                        ]
+                    },
+                    {
+                        "$or": [
+                            {
+                                "$gt": [
+                                    "$school.type",
+                                    "?#{#param.offset[0]}"
+                                ]
+                            },
+                            {
+                                "$and": [
+                                    {
+                                        "$eq": [
+                                            "$school.type",
+                                            "?#{#param.offset[0]}"
+                                        ]
+                                    },
+                                    {
+                                        "$or": [
+                                            {
+                                                "$gt": [
+                                                    "$school.range.start",
+                                                    {
+                                                        "$toDate": "?#{#param.offset[1]}"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "$and": [
+                                                    {
+                                                        "$eq": [
+                                                            "$school.range.start",
+                                                            {
+                                                                "$toDate": "?#{#param.offset[1]}"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "$lt": [
+                                                            "$school.createdDate",
+                                                            {
+                                                                "$toDate": "?#{#param.offset[2]}"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
         }
-    ]
-    
+    },
+    {
+        "$sort": {
+            "data.type": 1,
+            "data.range.start": 1,
+            "data.createdDate": -1
+        }
+    },
+    {
+        "$limit": "?#{#param.limit}"
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": {
+                "$mergeObjects": [
+                    {
+                        "school": "$school"
+                    },
+                    {
+                        "groupKey": "$school.type",
+                        "offset": [
+                            "$school.type",
+                            "$school.range.start",
+                            "$school.createdDate"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

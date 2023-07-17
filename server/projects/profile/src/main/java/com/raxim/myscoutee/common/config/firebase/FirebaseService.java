@@ -1,5 +1,6 @@
 package com.raxim.myscoutee.common.config.firebase;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -76,6 +77,10 @@ public class FirebaseService {
 
             user = this.userRepository.save(userToSave);
         }
+
+        //last active date needs to be saved on every call
+        user.getProfile().setLastActive(LocalDateTime.now());
+        this.profileRepository.save(user.getProfile());
 
         if (xLink != null) {
             Link link = this.linkRepository.findByKey(UUID.fromString(xLink));

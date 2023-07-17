@@ -170,7 +170,7 @@ public class Profile implements Cloneable {
     private int score;
 
     @JsonIgnore
-    private LocalDateTime lastLogin;
+    private LocalDateTime lastActive;
 
     public Profile() {
     }
@@ -184,7 +184,7 @@ public class Profile implements Cloneable {
         try {
             Profile clonedProfile = (Profile) super.clone();
             clonedProfile.createdDate = LocalDateTime.now();
-            clonedProfile.lastLogin = LocalDateTime.now();
+            clonedProfile.lastActive = LocalDateTime.now();
             return clonedProfile;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException("Cloning not supported for Profile");
@@ -376,12 +376,12 @@ public class Profile implements Cloneable {
         this.score = score;
     }
 
-    public LocalDateTime getLastLogin() {
-        return lastLogin;
+    public LocalDateTime getLastActive() {
+        return lastActive;
     }
 
-    public void setLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
+    public void setLastActive(LocalDateTime lastLogin) {
+        this.lastActive = lastLogin;
     }
 
     public String getRole() {

@@ -1,6 +1,5 @@
 package com.raxim.myscoutee.profile.controller;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
@@ -22,17 +20,21 @@ import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
 import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.handler.LikeParamHandler;
 import com.raxim.myscoutee.profile.handler.ParamHandlers;
+import com.raxim.myscoutee.profile.handler.SchoolParamHandler;
 import com.raxim.myscoutee.profile.service.ProfileService;
+import com.raxim.myscoutee.profile.service.SchoolService;
 
 @RepositoryRestController
 @RequestMapping("games")
 public class GameRestController {
 
     private final ProfileService profileService;
+    private final SchoolService schoolService;
     private final ParamHandlers paramHandlers;
 
-    public GameRestController(ProfileService profileService, ParamHandlers paramHandlers) {
+    public GameRestController(ProfileService profileService, SchoolService schoolService, ParamHandlers paramHandlers) {
         this.profileService = profileService;
+        this.schoolService = schoolService;
         this.paramHandlers = paramHandlers;
     }
 
@@ -132,40 +134,22 @@ public class GameRestController {
         }
     }
 
-    // TODO: school fix - discreet group - isBusiness/isSchool event - discreet level
+    // TODO: school fix - discreet group - isBusiness/isSchool event - discreet
+    // level
     @GetMapping(value = { "/rate_none/{id}/schools", "/rate_give/{id}/schools",
-            "/rate_give/{id}/schools", "/rate_give/{id}/schools", "/rate_give/{id}/schools",
-            "rate_receive/{id}/schools",
-            "/rate_double/{id}/schools", "/rate_double/{id}/schools",
+            "rate_receive/{id}/schools", "/rate_double/{id}/schools",
             "/rate_both/{id}/schools" })
-    public ResponseEntity<PageDTO<SchoolDTO>> getSchools(
-            @PathVariable String id, Authentication auth,
-            @RequestParam(name = "step", required = false) Integer step,
-            @RequestParam(name = "offset", required = false) String[] offset) {
-        Object[] tOffset;
-        if (offset != null && offset.length == 3) {
-            tOffset = new Object[] {
-                    CommonUtil.decode(offset[0]),
-                    CommonUtil.decode(offset[1]),
-                    CommonUtil.decode(offset[2])
-            };
-        } else {
-            tOffset = new Object[] { "a", "1900-01-01", "1900-01-01" };
-        }
+    public ResponseEntity<PageDTO<SchoolDTO>> getSchools(@PathVariable String id, PageParam pageParam,
+            Authentication auth) {
+        FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
+        Profile profile = firebasePrincipal.getUser().getProfile();
 
-        List<SchoolDTO> schools = this.profileService
-                .getSchools(UUID.fromString(id), step, tOffset);
+        pageParam = paramHandlers.handle(profile, pageParam, SchoolParamHandler.TYPE);
 
-        // http://dolszewski.com/spring/how-to-bind-requestparam-to-object/
-        List<Object> lOffset;
-        if (!schools.isEmpty()) {
-            lOffset = schools.get(schools.size() - 1).getOffset();
-        } else {
-            lOffset = Arrays.asList(tOffset);
-        }
+        List<SchoolDTO> schoolDTOs = schoolService.getSchools(UUID.fromString(id), pageParam);
+        List<Object> lOffset = CommonUtil.offset(schoolDTOs, pageParam.getOffset());
 
-        PageDTO<SchoolDTO> pageDTO = new PageDTO<>(schools, lOffset);
-        return ResponseEntity.ok().body(pageDTO);
+        return ResponseEntity.ok(new PageDTO<>(schoolDTOs, lOffset));
     }
 
 }

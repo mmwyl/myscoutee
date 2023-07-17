@@ -198,12 +198,14 @@ New TODO:
 42) /recommend has been removed (can't recommend an event, will be confusing, data privacy)
 
 ---------------------------------------------------------------------------------------------------
-43) if a group is discreet, event is should be discreet also 
+43) Last login date
+44) if a group is discreet, event is should be discreet also 
     (discreet level is member does not see invisible/visible/invisible_school/visible_school)
     in dating group the group is visible, but in business school will be shown
     invisible does mean, can't even rate or see new members, just wait for the admin to be invited
-44) school/car refactor (car join first optional event - check whether it's working)
-45) badge check (not sure what is doing) - it seems a stats after lastLogin for each group - can be StatRepository instead of BadgeRepository
-46) findMemberByEvent (should be rate bar also) while saving on rate -> Member.score will be calculated 
+    when query User first time, it has got group info also, hence the school tab will disappear
+45) school/car refactor (car join first optional event - check whether it's working)
+46) badge check (not sure what is doing) - it seems a stats after lastLogin for each group - can be StatRepository instead of BadgeRepository
+47) findMemberByEvent (should be rate bar also) while saving on rate -> Member.score will be calculated 
     -> hence the orderby is based on Member.createdDate (join first) or Member.score (score should be calculated even Member, where the creator hasn't been rated yet)
-47) EventGeneratorPromotionService implementation
+48) EventGeneratorPromotionService implementation

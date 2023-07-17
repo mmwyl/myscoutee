@@ -1,10 +1,7 @@
 package com.raxim.myscoutee.profile.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
@@ -25,47 +22,41 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
+import com.raxim.myscoutee.common.util.ControllerUtil;
+import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.School;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
-import com.raxim.myscoutee.profile.repository.mongo.SchoolRepository;
-import com.raxim.myscoutee.profile.service.ProfileService;
+import com.raxim.myscoutee.profile.handler.ParamHandlers;
+import com.raxim.myscoutee.profile.handler.SchoolParamHandler;
+import com.raxim.myscoutee.profile.service.SchoolService;
 
 @RepositoryRestController
 @RequestMapping("user")
 public class UserSchoolRestController {
-    private final ProfileService profileService;
-    private final SchoolRepository schoolRepository;
+    private final SchoolService schoolService;
+    private final ParamHandlers paramHandlers;
 
-    public UserSchoolRestController(ProfileService profileService, SchoolRepository schoolRepository) {
-        this.profileService = profileService;
-        this.schoolRepository = schoolRepository;
+    public UserSchoolRestController(SchoolService schoolService, ParamHandlers paramHandlers) {
+        this.schoolService = schoolService;
+        this.paramHandlers = paramHandlers;
     }
 
-    // TODO: school fix - discreet group - isBusiness/isSchool event - discreet level
+    // TODO: school fix - discreet group - isBusiness/isSchool event - discreet
+    // level
     @GetMapping("/schools")
-    public ResponseEntity<PageDTO<SchoolDTO>> getSchools(
-            Authentication auth,
-            @RequestParam(value = "step", required = false) Integer step,
-            @RequestParam(value = "offset", required = false) String[] offset) {
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        UUID profileId = principal.getUser().getProfile().getId();
+    public ResponseEntity<PageDTO<SchoolDTO>> getSchools(@PathVariable String id, PageParam pageParam,
+            Authentication auth) {
+        FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
+        Profile profile = firebasePrincipal.getUser().getProfile();
 
-        Object[] tOffset = (offset != null && offset.length == 3)
-                ? new Object[] { CommonUtil.decode(offset[0]), CommonUtil.decode(offset[1]),
-                        CommonUtil.decode(offset[2]) }
-                : new Object[] { "a", "1900-01-01", "1900-01-01" };
+        pageParam = paramHandlers.handle(profile, pageParam, SchoolParamHandler.TYPE);
 
-        if (profileId == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            List<SchoolDTO> schools = profileService.getSchools(profileId, step, tOffset);
+        List<SchoolDTO> schoolDTOs = schoolService.getSchools(profile.getId(), pageParam);
+        List<Object> lOffset = CommonUtil.offset(schoolDTOs, pageParam.getOffset());
 
-            List<Object> lOffset = schools.isEmpty() ? Arrays.asList(tOffset)
-                    : schools.get(schools.size() - 1).getOffset();
-
-            return ResponseEntity.ok(new PageDTO<>(schools, lOffset));
-        }
+        return ResponseEntity.ok(new PageDTO<>(schoolDTOs, lOffset));
     }
 
     @PostMapping("/schools")
@@ -73,15 +64,10 @@ public class UserSchoolRestController {
     public ResponseEntity<List<SchoolDTO>> saveSchool(
             Authentication auth,
             @RequestBody List<School> schools) {
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        UUID profileId = principal.getUser().getProfile().getId();
+        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
 
-        if (profileId == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            List<SchoolDTO> schoolsDto = profileService.saveSchools(profileId, schools);
-            return ResponseEntity.status(HttpStatus.CREATED).body(schoolsDto);
-        }
+        return ControllerUtil.handleList((i, s) -> schoolService.saveSchools(i, s),
+                profile.getId(), schools, HttpStatus.CREATED);
     }
 
     @PatchMapping("/schools/{id}")
@@ -90,39 +76,24 @@ public class UserSchoolRestController {
             Authentication auth,
             @PathVariable String id,
             @RequestBody List<School> schools) {
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        UUID profileId = principal.getUser().getProfile().getId();
+        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
 
-        if (profileId == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            List<SchoolDTO> schoolsDto = profileService.saveSchools(profileId, schools);
-            return ResponseEntity.ok(schoolsDto);
-        }
+        return ControllerUtil.handleList((i, s) -> schoolService.saveSchools(i, s),
+                profile.getId(), schools, HttpStatus.OK);
     }
 
     @DeleteMapping("/schools/{id}")
     public ResponseEntity<?> deleteSchool(
             Authentication auth,
             @PathVariable String id) {
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        UUID profileId = principal.getUser().getProfile().getId();
+        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
 
-        if (profileId == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            //TODO: school fix why we need new method findById is fine for schoolRepository
-            Optional<School> school = profileService
-                    .getSchoolByProfile(profileId, UUID.fromString(id));
-            if (school.isPresent()) {
-                School schoolT = school.get();
-                schoolT.setStatus("D");
-                schoolRepository.save(schoolT);
-                return ResponseEntity.noContent().build();
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        }
+        School school = new School();
+        school.setStatus("D");
+        List<School> schools = List.of(school);
+
+        return ControllerUtil.handleList((i, s) -> schoolService.saveSchools(i, s),
+                profile.getId(), schools, HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/schools/parse")

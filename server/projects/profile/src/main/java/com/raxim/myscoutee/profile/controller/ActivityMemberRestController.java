@@ -1,6 +1,5 @@
 package com.raxim.myscoutee.profile.controller;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
@@ -28,8 +26,9 @@ import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.SchoolDTO;
 import com.raxim.myscoutee.profile.handler.MemberParamHandler;
 import com.raxim.myscoutee.profile.handler.ParamHandlers;
+import com.raxim.myscoutee.profile.handler.SchoolParamHandler;
 import com.raxim.myscoutee.profile.service.EventService;
-import com.raxim.myscoutee.profile.service.ProfileService;
+import com.raxim.myscoutee.profile.service.SchoolService;
 import com.raxim.myscoutee.profile.service.StatusService;
 
 enum MemberAction {
@@ -55,20 +54,20 @@ enum MemberAction {
 @RepositoryRestController
 @RequestMapping("activity")
 public class ActivityMemberRestController {
-        private final ProfileService profileService;
         private final StatusService statusService;
         private final ParamHandlers paramHandlers;
         private final EventService eventService;
+        private final SchoolService schoolService;
 
         public ActivityMemberRestController(
-                        ProfileService profileService,
                         StatusService statusService,
                         ParamHandlers paramHandlers,
-                        EventService eventService) {
-                this.profileService = profileService;
+                        EventService eventService,
+                        SchoolService schoolService) {
                 this.statusService = statusService;
                 this.paramHandlers = paramHandlers;
                 this.eventService = eventService;
+                this.schoolService = schoolService;
         }
 
         @PostMapping({ "events/{id}/{type}", "invitations/{id}/{type}",
@@ -147,22 +146,20 @@ public class ActivityMemberRestController {
                                 id, code, HttpStatus.OK);
         }
 
-        // TODO: school fix - discreet event - isBusiness/isSchool event - discreet level
+        // TODO: school fix - discreet event - isBusiness/isSchool event - discreet
+        // level
         @GetMapping(value = { "events/{eventId}/members/{id}/schools" })
-        public ResponseEntity<PageDTO<SchoolDTO>> getSchools(@PathVariable String id, Authentication auth,
-                        @RequestParam("step") Integer step,
-                        @RequestParam("offset") String[] offset) {
-                String[] tOffset = (offset != null && offset.length == 3)
-                                ? new String[] { CommonUtil.decode(offset[0]), CommonUtil.decode(offset[1]),
-                                                CommonUtil.decode(offset[2]) }
-                                : new String[] { "a", "1900-01-01", "1900-01-01" };
+        public ResponseEntity<PageDTO<SchoolDTO>> getSchools(@PathVariable String id, PageParam pageParam,
+                        Authentication auth) {
+                FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
+                Profile profile = firebasePrincipal.getUser().getProfile();
 
-                List<SchoolDTO> schools = profileService.getSchools(UUID.fromString(id), step, tOffset);
+                pageParam = paramHandlers.handle(profile, pageParam, SchoolParamHandler.TYPE);
 
-                List<Object> lOffset = schools.isEmpty() ? Arrays.asList(tOffset)
-                                : schools.get(schools.size() - 1).getOffset();
+                List<SchoolDTO> schoolDTOs = schoolService.getSchools(UUID.fromString(id), pageParam);
+                List<Object> lOffset = CommonUtil.offset(schoolDTOs, pageParam.getOffset());
 
-                return ResponseEntity.ok(new PageDTO<>(schools, lOffset));
+                return ResponseEntity.ok(new PageDTO<>(schoolDTOs, lOffset));
         }
 
 }

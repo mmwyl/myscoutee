@@ -1,8 +1,6 @@
 package com.raxim.myscoutee.profile.controller;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.rest.webmvc.RepositoryRestController;
@@ -17,47 +15,42 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
+import com.raxim.myscoutee.common.util.ControllerUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Car;
+import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.CarDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
-import com.raxim.myscoutee.profile.repository.mongo.CarRepository;
-import com.raxim.myscoutee.profile.service.ProfileService;
+import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
+import com.raxim.myscoutee.profile.handler.CarParamHandler;
+import com.raxim.myscoutee.profile.handler.ParamHandlers;
+import com.raxim.myscoutee.profile.service.CarService;
 
 @RepositoryRestController
 @RequestMapping("user")
 public class UserCarRestController {
-    private final ProfileService profileService;
-    private final CarRepository carRepository;
+    private final CarService carService;
+    private final ParamHandlers paramHandlers;
 
-    public UserCarRestController(ProfileService profileService, CarRepository carRepository) {
-        this.profileService = profileService;
-        this.carRepository = carRepository;
+    public UserCarRestController(CarService carService, ParamHandlers paramHandlers) {
+        this.carService = carService;
+        this.paramHandlers = paramHandlers;
     }
 
     @GetMapping("/cars")
     public ResponseEntity<PageDTO<CarDTO>> getCars(
-            Authentication auth,
-            @RequestParam(value = "step", required = false) Integer step,
-            @RequestParam(value = "offset", required = false) String[] offset) {
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        UUID profileId = principal.getUser().getProfile().getId();
+            PageParam pageParam,
+            Authentication auth) {
+        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
 
-        Object[] tOffset = (offset != null && offset.length == 1) ? new Object[] { CommonUtil.decode(offset[0]) }
-                : new Object[] { "1900-01-01" };
+        pageParam = paramHandlers.handle(profile, pageParam, CarParamHandler.TYPE);
 
-        if (profileId == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            List<CarDTO> cars = profileService.getCars(profileId, step, tOffset);
+        List<CarDTO> carDTOs = this.carService.getCars(pageParam);
+        List<Object> lOffset = CommonUtil.offset(carDTOs, pageParam.getOffset());
 
-            List<Object> lOffset = cars.isEmpty() ? Arrays.asList(tOffset) : cars.get(cars.size() - 1).getOffset();
-
-            return ResponseEntity.ok(new PageDTO<>(cars, lOffset));
-        }
+        return ResponseEntity.ok(new PageDTO<>(carDTOs, lOffset));
     }
 
     @PostMapping("/cars")
@@ -65,15 +58,10 @@ public class UserCarRestController {
     public ResponseEntity<CarDTO> addCar(
             Authentication auth,
             @RequestBody Car car) {
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        UUID profileId = principal.getUser().getProfile().getId();
+        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
 
-        if (profileId == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            CarDTO carDto = profileService.addCar(profileId, null, car);
-            return ResponseEntity.status(HttpStatus.CREATED).body(carDto);
-        }
+        return ControllerUtil.handle((i, c) -> carService.saveCar(i, c),
+                profile.getId(), car, HttpStatus.CREATED);
     }
 
     @PatchMapping("/cars/{id}")
@@ -82,36 +70,23 @@ public class UserCarRestController {
             Authentication auth,
             @PathVariable String id,
             @RequestBody Car car) {
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        UUID profileId = principal.getUser().getProfile().getId();
+        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
 
-        if (profileId == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            CarDTO carDto = profileService.addCar(profileId, UUID.fromString(id), car);
-            return ResponseEntity.ok(carDto);
-        }
+        return ControllerUtil.handle((i, c) -> carService.saveCar(i, c),
+                profile.getId(), car, HttpStatus.OK);
     }
 
     @DeleteMapping("cars/{id}")
-    public ResponseEntity<?> deleteCar(
+    public ResponseEntity<CarDTO> deleteCar(
             Authentication auth,
             @PathVariable String id) {
-        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
-        UUID profileId = principal.getUser().getProfile().getId();
+        Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
 
-        if (profileId == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            Optional<Car> car = profileService.getCarByProfile(profileId, UUID.fromString(id));
-            if (car.isPresent()) {
-                Car carT = car.get();
-                carT.setStatus("D");
-                carRepository.save(carT);
-                return ResponseEntity.noContent().build();
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        }
+        Car car = new Car(UUID.fromString(id));
+        car.setStatus("D");
+
+        return ControllerUtil.handle((i, c) -> carService.saveCar(i, c),
+                profile.getId(), car, HttpStatus.NO_CONTENT);
+
     }
 }

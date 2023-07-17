@@ -67,7 +67,7 @@ public class UserRestController {
 
         // user logged in to different profile
         if (profile != null && !profile.getId().equals(user.getProfile().getId())) {
-            profile.setLastLogin(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS));
+            profile.setLastActive(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS));
             profileRepository.save(profile);
         }
 
@@ -76,7 +76,7 @@ public class UserRestController {
         User userSaved = userRepository.save(userToSave);
 
         List<Badge> likes = likeRepository.getBadges(
-                profile.getId(), profile.getLastLogin().format(DateTimeFormatter.ISO_DATE_TIME));
+                profile.getId(), profile.getLastActive().format(DateTimeFormatter.ISO_DATE_TIME));
 
         return ResponseEntity.ok(new UserDTO(userSaved, likes));
     }
@@ -88,11 +88,11 @@ public class UserRestController {
         Profile profile = user.getProfile();
         UUID profileId = profile.getId();
 
-        profile.setLastLogin(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS));
+        profile.setLastActive(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS));
         profileRepository.save(profile);
 
         List<Badge> likes = likeRepository.getBadges(
-                profileId, profile.getLastLogin().format(DateTimeFormatter.ISO_DATE_TIME));
+                profileId, profile.getLastActive().format(DateTimeFormatter.ISO_DATE_TIME));
 
         return ResponseEntity.ok(new UserDTO(user, likes));
     }

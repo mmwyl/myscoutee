@@ -16,20 +16,17 @@ import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 
 public interface GroupRepository extends MongoRepository<Group, UUID> {
 
-    @Query("{system: true}")
-    List<Group> findSystemGroups();
+        @Query("{system: true}")
+        List<Group> findSystemGroups();
 
-    @Query("{type: ?0, system: true}")
-    Group findSystemGroupByType(String type);
+        @Aggregation(pipeline = "findAllGroups")
+        List<GroupDTO> findAllGroups(PageParam pageParam,
+                        @Param("loc") Point loc,
+                        @Param("access") String access);
 
-    @Aggregation(pipeline = "findAllGroups")
-    List<GroupDTO> findAllGroups(PageParam pageParam,
-            @Param("loc") Point loc,
-            @Param("access") String access);
-
-    @Aggregation(pipeline = "findProfilesByGroup")
-    List<ProfileDTO> findProfilesByGroup(
-            @Param("groupId") UUID groupId,
-            @Param("param") PageParam pageParam);
+        @Aggregation(pipeline = "findProfilesByGroup")
+        List<ProfileDTO> findProfilesByGroup(
+                        @Param("groupId") UUID groupId,
+                        @Param("param") PageParam pageParam);
 
 }
