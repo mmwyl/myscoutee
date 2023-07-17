@@ -1,0 +1,174 @@
+[
+    {
+        "$match": {
+            "_id": "?1"
+        }
+    },
+    {
+        "$lookup": {
+            "from": "users",
+            "localField": "profiles.$id",
+            "foreignField": "_id",
+            "as": "profiles"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$profiles"
+        }
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": "$profiles"
+        }
+    },
+    {
+        "$match": {
+            "status": "A"
+        }
+    },
+    {
+        "$lookup": {
+            "from": "events",
+            "let": {
+                "p_id": "$_id"
+            },
+            "pipeline": [
+                {
+                    "$match": {
+                        "status": {
+                            "$in": [
+                                "A",
+                                "P"
+                            ]
+                        }
+                    },
+                    "$match": {
+                        "$expr": {
+                            "$eq": [
+                                {
+                                    "$size": {
+                                        "$filter": {
+                                            "input": "$members",
+                                            "as": "member",
+                                            "cond": {
+                                                "$or": [
+                                                    {
+                                                        "$and": [
+                                                            {
+                                                                "$eq": [
+                                                                    "$$member.profile.$id",
+                                                                    "$$p_id"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "$in": [
+                                                                    "$$member.status",
+                                                                    [
+                                                                        "I"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                1
+                            ]
+                        }
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": null,
+                        "count": {
+                            "$count": {}
+                        }
+                    }
+                }
+            ],
+            "as": "invited"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$invited"
+        }
+    },
+    {
+        "$lookup": {
+            "from": "likes",
+            "let": {
+                "p_id": "$_id"
+            },
+            "pipeline": [
+                {
+                    "$match": {
+                        "to.$id": "$$p_id"
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": null,
+                        "count": {
+                            "$count": {}
+                        }
+                    }
+                }
+            ],
+            "as": "liked"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$liked"
+        }
+    },
+    {
+        "$lookup": {
+            "from": "notifications",
+            "let": {
+                "p_id": "$_id"
+            },
+            "pipeline": [
+                {
+                    "$match": {
+                        "$expr": {
+                            "$in": [
+                                "$$p_id",
+                                "$toUuids"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": null,
+                        "count": {
+                            "$count": {}
+                        }
+                    }
+                }
+            ],
+            "as": "received"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$received"
+        }
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": {
+                "name": "$name",
+                "invited": "$invited.count",
+                "liked": "$liked.count",
+                "received": "$received.count"
+            }
+        }
+    }
+]

@@ -13,6 +13,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Topic;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
+import com.raxim.myscoutee.profile.data.dto.rest.StatDTO;
 
 @RepositoryRestResource(collectionResourceRel = "users", path = "users")
 public interface UserRepository extends MongoRepository<User, UUID>, UserExtRepository {
@@ -33,4 +34,7 @@ public interface UserRepository extends MongoRepository<User, UUID>, UserExtRepo
         List<Topic> findDeviceWithProfileStatusAll(
                         @Param("lastTime") String lastTime,
                         @Param("status") String[] status);
+
+        @Aggregation(pipeline = "findStats")
+        List<StatDTO> findStats(UUID userUuid);
 }

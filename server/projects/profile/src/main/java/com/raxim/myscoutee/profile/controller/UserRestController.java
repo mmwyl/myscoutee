@@ -1,10 +1,8 @@
 package com.raxim.myscoutee.profile.controller;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
@@ -20,33 +18,37 @@ import org.springframework.web.bind.annotation.RequestPart;
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.config.properties.ConfigProperties;
 import com.raxim.myscoutee.common.util.ControllerUtil;
-import com.raxim.myscoutee.profile.data.document.mongo.Badge;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Setting;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.SettingDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.StatDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.UserDTO;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 import com.raxim.myscoutee.profile.service.SettingsService;
+import com.raxim.myscoutee.profile.service.UserService;
 
 @RepositoryRestController
 @RequestMapping("user")
 public class UserRestController {
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final LikeRepository likeRepository;
     private final SettingsService settingsService;
     private final ConfigProperties config;
 
     public UserRestController(ProfileRepository profileRepository,
             UserRepository userRepository,
+            UserService userService,
             LikeRepository likeRepository,
             SettingsService settingsService,
             ConfigProperties config) {
         this.profileRepository = profileRepository;
+        this.userService = userService;
         this.userRepository = userRepository;
         this.likeRepository = likeRepository;
         this.settingsService = settingsService;
@@ -75,10 +77,7 @@ public class UserRestController {
         userToSave.setProfile(profile);
         User userSaved = userRepository.save(userToSave);
 
-        List<Badge> likes = likeRepository.getBadges(
-                profile.getId(), profile.getLastActive().format(DateTimeFormatter.ISO_DATE_TIME));
-
-        return ResponseEntity.ok(new UserDTO(userSaved, likes));
+        return ResponseEntity.ok(new UserDTO(userSaved));
     }
 
     @GetMapping()
@@ -86,15 +85,20 @@ public class UserRestController {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         User user = principal.getUser();
         Profile profile = user.getProfile();
-        UUID profileId = profile.getId();
 
         profile.setLastActive(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS));
         profileRepository.save(profile);
 
-        List<Badge> likes = likeRepository.getBadges(
-                profileId, profile.getLastActive().format(DateTimeFormatter.ISO_DATE_TIME));
+        return ResponseEntity.ok(new UserDTO(user));
+    }
 
-        return ResponseEntity.ok(new UserDTO(user, likes));
+    @GetMapping("/stats")
+    public ResponseEntity<List<StatDTO>> getStats(Authentication auth) {
+        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
+        User user = principal.getUser();
+
+        return ControllerUtil.handleList((u) -> userService.getStats(u),
+                user.getId(), HttpStatus.OK);
     }
 
     @GetMapping("/settings")

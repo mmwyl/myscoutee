@@ -13,7 +13,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
-import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
+import com.raxim.myscoutee.profile.data.dto.rest.StatDTO;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 
@@ -23,14 +23,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
     private final ProfileService profileService;
-    private final LikeRepository likeRepository;
 
     public UserService(UserRepository userRepository, ProfileRepository profileRepository,
-            ProfileService profileService, LikeRepository likeRepository) {
+            ProfileService profileService) {
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
         this.profileService = profileService;
-        this.likeRepository = likeRepository;
     }
 
     public List<GroupDTO> getGroupsByUser(UUID userId, PageParam pageParam) {
@@ -146,5 +144,9 @@ public class UserService {
         }
 
         return Optional.empty();
+    }
+
+    public List<StatDTO> getStats(UUID userUuid) {
+        return this.userRepository.findStats(userUuid);
     }
 }
