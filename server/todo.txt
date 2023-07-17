@@ -199,7 +199,7 @@ New TODO:
 
 ---------------------------------------------------------------------------------------------------
 43) Last login date
-44) if a group is discreet, event is should be discreet also 
+44) if a group is discreet (Privacy), event is should be discreet also 
     (discreet level is member does not see invisible/visible/invisible_school/visible_school)
     in dating group the group is visible, but in business school will be shown
     invisible does mean, can't even rate or see new members, just wait for the admin to be invited

@@ -67,6 +67,10 @@ public class Group implements Cloneable {
     @JsonProperty(value = "status")
     private String status = "P";
 
+    //isDescreet / discreet level (school is visible for others???)
+    @JsonProperty(value = "privacy")
+    private Privacy privacy;
+
     public UUID getId() {
         return id;
     }
@@ -175,5 +179,13 @@ public class Group implements Cloneable {
 
     public void setUpdatedBy(UUID updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public Privacy getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(Privacy discreet) {
+        this.privacy = discreet;
     }
 }

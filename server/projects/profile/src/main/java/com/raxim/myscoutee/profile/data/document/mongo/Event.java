@@ -82,11 +82,6 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     @JsonProperty(value = "autoInvite")
     private Boolean autoInvite;
 
-    // members with User role do not see each other
-    // it does mean separate chat window
-    @JsonProperty(value = "discreet")
-    private Boolean discreet;
-
     @JsonProperty(value = "multislot")
     private Boolean multislot;
 
@@ -111,6 +106,9 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
 
     @JsonProperty(value = "rule")
     private Rule rule = new Rule();
+
+    @JsonProperty(value = "privacy")
+    private Privacy privacy;
 
     // qr code generation
     @JsonProperty(value = "ticket")
@@ -555,14 +553,6 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
         this.numOfEvents = numOfEvents;
     }
 
-    public Boolean getDiscreet() {
-        return discreet;
-    }
-
-    public void setDiscreet(Boolean discreet) {
-        this.discreet = discreet;
-    }
-
     public Integer getRate() {
         return rate;
     }
@@ -585,6 +575,14 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
 
     public void setSlotCnt(int slotIdx) {
         this.slotCnt = slotIdx;
+    }
+
+    public Privacy getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(Privacy discreet) {
+        this.privacy = discreet;
     }
 
     @Override
