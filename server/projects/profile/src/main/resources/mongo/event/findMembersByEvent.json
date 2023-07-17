@@ -32,57 +32,6 @@
         }
     },
     {
-        "$match": {
-            "$expr": {
-                "$and": [
-                    {
-                        "$in": [
-                            "$members.status",
-                            ":#{#status}"
-                        ]
-                    },
-                    {
-                        "$or": [
-                            {
-                                "$gt": [
-                                    "$members.status",
-                                    "?#{#param.offset[0]}"
-                                ]
-                            },
-                            {
-                                "$and": [
-                                    {
-                                        "$eq": [
-                                            "$members.status",
-                                            "?#{#param.offset[0]}"
-                                        ]
-                                    },
-                                    {
-                                        "$gt": [
-                                            "$members.createdDate",
-                                            {
-                                                "$toDate": "?#{#param.offset[1]}"
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "$sort": {
-            "members.status": 1,
-            "members.createdDate": 1
-        }
-    },
-    {
-        "$limit": "?#{#param.limit}"
-    },
-    {
         "$lookup": {
             "from": "likes",
             "let": {
@@ -120,6 +69,112 @@
         }
     },
     {
+        "$addFields": {
+            "score": {
+                "$switch": {
+                    "branches": [
+                        {
+                            "case": {
+                                "$ne": [
+                                    "$likes",
+                                    null
+                                ]
+                            },
+                            "then": "$likes.rate"
+                        },
+                        {
+                            "case": {
+                                "$ne": [
+                                    {
+                                        "$ifNull": [
+                                            "$members.score",
+                                            0
+                                        ]
+                                    },
+                                    0
+                                ]
+                            },
+                            "then": "$members.score"
+                        }
+                    ],
+                    "default": 0
+                }
+            }
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$and": [
+                    {
+                        "$in": [
+                            "$members.status",
+                            ":#{#status}"
+                        ]
+                    },
+                    {
+                        "$or": [
+                            {
+                                "$gt": [
+                                    "$members.status",
+                                    "?#{#param.offset[0]}"
+                                ]
+                            },
+                            {
+                                "$and": [
+                                    {
+                                        "$eq": [
+                                            "$members.status",
+                                            "?#{#param.offset[0]}"
+                                        ]
+                                    },
+                                    {
+                                        "$or": [
+                                            {
+                                                "$lt": [
+                                                    "$score",
+                                                    "?#{#param.offset[1]}"
+                                                ]
+                                            },
+                                            {
+                                                "$and": [
+                                                    {
+                                                        "$eq": [
+                                                            "$score",
+                                                            "?#{#param.offset[1]}"
+                                                        ]
+                                                    },
+                                                    {
+                                                        "$gt": [
+                                                            "$members.createdDate",
+                                                            {
+                                                                "$toDate": "?#{#param.offset[2]}"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "$sort": {
+            "members.status": 1,
+            "score": -1,
+            "members.createdDate": 1
+        }
+    },
+    {
+        "$limit": "?#{#param.limit}"
+    },
+    {
         "$replaceRoot": {
             "newRoot": {
                 "$mergeObjects": [
@@ -153,6 +208,7 @@
                         },
                         "offset": [
                             "$members.status",
+                            "$score",
                             "$members.createdDate"
                         ]
                     }

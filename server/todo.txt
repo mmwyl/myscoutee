@@ -205,7 +205,7 @@ New TODO:
     invisible does mean, can't even rate or see new members, just wait for the admin to be invited
     when query User first time, it has got group info also, hence the school tab will disappear
 45) school/car refactor (car join first optional event - check whether it's working)
-46) stats 
+46) stats (liked, received, invited)
 47) findMemberByEvent (should be rate bar also) while saving on rate -> Member.score will be calculated 
     -> hence the orderby is based on Member.createdDate (join first) or Member.score (score should be calculated even Member, where the creator hasn't been rated yet)
 48) EventGeneratorPromotionService implementation

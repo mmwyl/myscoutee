@@ -24,18 +24,20 @@ public class MemberParamHandler implements IParamHandler {
     @Override
     public PageParam handle(Profile profile, PageParam pageParam) {
         String status = "A";
+        Integer score = Integer.MAX_VALUE;
         LocalDate createdDateFrom = DATE_MIN;
 
-        if (pageParam.getOffset() != null && pageParam.getOffset().length == 2) {
+        if (pageParam.getOffset() != null && pageParam.getOffset().length == 3) {
             status = CommonUtil.decode((String) pageParam.getOffset()[0]);
-            createdDateFrom = LocalDate.parse(CommonUtil.decode((String) pageParam.getOffset()[1]),
+            score = Integer.valueOf(CommonUtil.decode((String) pageParam.getOffset()[1]));
+            createdDateFrom = LocalDate.parse(CommonUtil.decode((String) pageParam.getOffset()[2]),
                     DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         }
 
         String createdDateF = createdDateFrom.atStartOfDay(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
-        Object[] tOffset = { status, createdDateF };
+        Object[] tOffset = { status, score, createdDateF };
         pageParam.setOffset(tOffset);
         pageParam.setId(profile.getId());
 
