@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.ControllerUtil;
+import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.CodeDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
@@ -88,15 +89,22 @@ public class ActivityMemberRestController {
         @PostMapping({ "events/{eventId}/members/{memberId}/{type}",
                         "events/{eventId}/items/{id}/members/{memberId}/{type}" })
         public ResponseEntity<?> manageStatusForEvent(@PathVariable String eventId, @PathVariable String itemId,
-                        @PathVariable String memberId, @PathVariable String type, Authentication auth) {
+                        @PathVariable String memberId, @PathVariable String type, Authentication auth,
+                        @RequestBody Member member) {
                 FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
                 Profile profile = firebasePrincipal.getUser().getProfile();
 
-                String actionType = MemberAction.valueOf(type).getType();
+                if (member != null) {
+                        return ControllerUtil.handle((i, m, s, p) -> eventService.score(i, m, s, p),
+                                        eventId, memberId, member.getScore(), profile.getId(),
+                                        HttpStatus.OK);
+                } else {
+                        String actionType = MemberAction.valueOf(type).getType();
 
-                return ControllerUtil.handle((i, m, s, p) -> statusService.change(i, m, s, p),
-                                eventId, memberId, actionType, profile.getId(),
-                                HttpStatus.OK);
+                        return ControllerUtil.handle((i, m, s, p) -> statusService.change(i, m, s, p),
+                                        eventId, memberId, actionType, profile.getId(),
+                                        HttpStatus.OK);
+                }
         }
 
         @GetMapping(value = { "events/{id}/members", "invitations/{id}/members",

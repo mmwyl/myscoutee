@@ -53,6 +53,29 @@ public class EventService {
                 new String[] { "A", "I", "J", "W" });
     }
 
+    public Optional<MemberDTO> score(String id, String pProfileUid, Integer score, UUID byUuid) {
+        Optional<Event> eventRes = id != null ? this.eventRepository.findById(UUID.fromString(id))
+                : Optional.empty();
+
+        UUID profileUid = UUID.fromString(pProfileUid);
+
+        if (eventRes.isPresent()) {
+            Event event = eventRes.get();
+
+            Optional<Member> optCurrentMember = event.getMembers().stream()
+                    .filter(member -> profileUid.equals(member.getProfile().getId())).findFirst();
+            if (optCurrentMember.isPresent()) {
+                Member member = optCurrentMember.get();
+                member.setScore(score);
+                event.getMembers().add(member);
+                this.eventRepository.save(event);
+
+                return Optional.of(new MemberDTO(member));
+            }
+        }
+        return Optional.empty();
+    }
+
     public List<EventDTO> getTemplates(PageParam pageParam) {
         return eventRepository.findTemplates(pageParam, new String[] { "A", "P", "C" });
     }
