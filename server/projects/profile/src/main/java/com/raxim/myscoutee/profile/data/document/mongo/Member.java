@@ -1,7 +1,6 @@
 package com.raxim.myscoutee.profile.data.document.mongo;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -56,9 +55,6 @@ public class Member implements Cloneable {
 
     @JsonProperty(value = "score")
     private Double score;
-
-    // extra scores by Match penalties, reward
-    private List<Score> scores;
 
     public Member(Profile profile) {
         this(profile, "A", "U");
@@ -160,14 +156,6 @@ public class Member implements Cloneable {
 
     public void setScore(Double score) {
         this.score = score;
-    }
-
-    public List<Score> getScores() {
-        return scores;
-    }
-
-    public void setScores(List<Score> scores) {
-        this.scores = scores;
     }
 
     public int getStage() {

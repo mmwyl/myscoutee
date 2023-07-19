@@ -17,12 +17,14 @@ import org.springframework.stereotype.Service;
 import com.mongodb.client.model.geojson.Point;
 import com.raxim.myscoutee.profile.converter.Converters;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
+import com.raxim.myscoutee.profile.data.document.mongo.Match;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Token;
 import com.raxim.myscoutee.profile.data.dto.rest.CloneDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.CodeDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.MatchDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.exception.MessageException;
@@ -51,6 +53,33 @@ public class EventService {
     public List<MemberDTO> getMembersByEvent(PageParam pageParam, String eventId) {
         return eventRepository.findMembersByEvent(pageParam, UUID.fromString(eventId),
                 new String[] { "A", "I", "J", "W" });
+    }
+
+    public List<Match> getLeaderBoard(String id) {
+        Optional<Event> eventRes = id != null ? this.eventRepository.findById(UUID.fromString(id))
+                : Optional.empty();
+        if (eventRes.isPresent()) {
+            Event event = eventRes.get();
+            // event.getMatches().stream()
+            return new ArrayList<>(event.getMatches());
+        }
+        return List.of();
+    }
+
+    public Optional<MatchDTO> saveMatch(String id, Match pMatch) {
+        Optional<Event> eventRes = id != null ? this.eventRepository.findById(UUID.fromString(id))
+                : Optional.empty();
+        if (eventRes.isPresent()) {
+            Event event = eventRes.get();
+            if (event.getMatches().contains(pMatch)) {
+                event.getMatches().remove(pMatch);
+            }
+            event.getMatches().add(pMatch);
+        }
+
+        //calculate member score on both, and save to score
+
+        return Optional.empty();
     }
 
     public Optional<MemberDTO> score(String id, String pProfileUid, Double score, UUID byUuid) {

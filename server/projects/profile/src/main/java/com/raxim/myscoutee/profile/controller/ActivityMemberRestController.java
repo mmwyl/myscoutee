@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.ControllerUtil;
+import com.raxim.myscoutee.profile.data.document.mongo.Match;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.CodeDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.MatchDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
@@ -39,7 +41,7 @@ enum MemberAction {
         accept("A"),
         kick("K"),
         reject("R");
-        //prfer removed, because the members are assigned baed on order
+        // prfer removed, because the members are assigned baed on order
 
         private final String type;
 
@@ -83,6 +85,20 @@ public class ActivityMemberRestController {
 
                 return ControllerUtil.handle((i, s, p) -> statusService.change(i, s, p),
                                 id, profile.getId().toString(), actionType,
+                                HttpStatus.OK);
+        }
+
+        // LeaderBoard object
+        @GetMapping({ "events/{eventId}/leaderboard" })
+        public ResponseEntity<List<Match>> getLeaderBoard(@PathVariable String eventId) {
+
+                return null;
+        }
+
+        @PostMapping({ "events/{eventId}/matches" })
+        public ResponseEntity<MatchDTO> saveMatch(@PathVariable String eventId, @RequestBody Match match) {
+                return ControllerUtil.handle((i, s) -> eventService.saveMatch(i, s),
+                                eventId, match,
                                 HttpStatus.OK);
         }
 

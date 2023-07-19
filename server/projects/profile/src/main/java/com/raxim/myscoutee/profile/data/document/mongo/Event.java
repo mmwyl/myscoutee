@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -136,7 +137,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     private List<Feedback> feedbacks;
 
     // it is used to calculate absolute score of the members
-    private List<Match> matches;
+    private Set<Match> matches;
 
     @GeoSpatialIndexed(name = "position", type = GeoSpatialIndexType.GEO_2DSPHERE)
     @JsonDeserialize(using = GeoJsonPointDeserializer.class)
@@ -763,11 +764,11 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
         this.rate = rate;
     }
 
-    public List<Match> getMatches() {
+    public Set<Match> getMatches() {
         return matches;
     }
 
-    public void setMatches(List<Match> matches) {
+    public void setMatches(Set<Match> matches) {
         this.matches = matches;
     }
 
