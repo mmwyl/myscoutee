@@ -39,7 +39,7 @@ enum MemberAction {
         accept("A"),
         kick("K"),
         reject("R"),
-        prefer("PR");
+        prefer("PR"); //opt for
 
         private final String type;
 

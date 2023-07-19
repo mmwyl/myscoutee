@@ -267,10 +267,12 @@ New TODO:
     1) priority (based on rate)
        eventGrace/MemberGrace/rate/from/balanced
        from/mutual won't be visible when access is F or A (non private) - it does mean that it's an acquitance event
-       findCandidates query is handling that if from is null and mutual is false - the difference between private (P) and A/F is that you are selecting the member of the event, not your acquitance
+       findCandidates query is handling that if from is null and mutual is false - 
+       the difference between private (P) and A/F is that you are selecting the member of the event, not your acquitance
     2) non-priority (join first)
        status "J" is an "A" (autoApprove)
-       i) if autoApprove -> "J" => right away will be added to the sub event with "J", for the main event it will be status "A" and stage set to 1 - the main event for members can be a filter (current stage or all stage)
+       i) if autoApprove -> "J" => right away will be added to the sub event with "J", for the main event it will be status "A" 
+          and stage set to 1 - he main event for members can be a filter (current stage or all stage)
        member has a field variable stage (it shows the maxStage, what the member reached), the stage will be added to the group key before the status if it does exist
        ii) if the min capacity hasn't been reached and it's single slot, then T (time out)
            if it's multislot then merge invite, and cancel, if even with single room min capacity hasn't been reached

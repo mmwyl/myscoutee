@@ -8,11 +8,14 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
+import com.raxim.myscoutee.profile.data.document.mongo.Like;
+import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
+import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.util.AppConstants;
 
@@ -20,12 +23,15 @@ import com.raxim.myscoutee.profile.util.AppConstants;
 public class StatusService {
     private final ProfileRepository profileRepository;
     private final EventRepository eventRepository;
+    private final LikeRepository likeRepository;
 
     public StatusService(
             ProfileRepository profileRepository,
-            EventRepository eventRepository) {
+            EventRepository eventRepository,
+            LikeRepository likeRepository) {
         this.profileRepository = profileRepository;
         this.eventRepository = eventRepository;
+        this.likeRepository = likeRepository;
     }
 
     public Optional<EventDTO> change(String id, String pProfileUid, String status)
@@ -64,6 +70,13 @@ public class StatusService {
                 Member currentMember = optCurrentMember.get();
                 currentMember.setStatus(status);
                 currentMember.setUpdatedDate(LocalDateTime.now());
+
+                if (event.isPriority()) {
+                    LikeGroup likeGroup = this.likeRepository.findLikeGroup(event.getCreatedBy(),
+                            currentMember.getProfile().getId(), event.getId());
+                    Like like = likeGroup.reduce();
+                    currentMember.setScore(like.getRate() * like.getDistance());
+                }
             } else {
                 Set<String> allowedStatuses = Set.of("J", "PR");
                 if (allowedStatuses.contains(status)) {
@@ -77,7 +90,6 @@ public class StatusService {
                         newMember.setCreatedDate(LocalDateTime.now());
                         newMember.setRole("U");
                         newMember.setStatus(status);
-
                         event.getMembers().add(newMember);
                     }
                 }

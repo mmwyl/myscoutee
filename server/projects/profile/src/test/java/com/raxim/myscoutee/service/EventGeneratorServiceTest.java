@@ -39,7 +39,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Schedule;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ScheduleRepository;
-import com.raxim.myscoutee.profile.service.EventGeneratorService;
+import com.raxim.myscoutee.profile.service.EventGeneratorRandomService;
 
 @DirtiesContext
 @ExtendWith({ SpringExtension.class })
@@ -49,7 +49,7 @@ public class EventGeneratorServiceTest extends AbstractAlgoTest {
         private static final Range FLAGS_DEFAULT = new Range(2, 3);
 
         @InjectMocks
-        private EventGeneratorService eventGeneratorService;
+        private EventGeneratorRandomService eventGeneratorService;
 
         @Mock
         private ScheduleRepository scheduleRepository;
@@ -84,7 +84,7 @@ public class EventGeneratorServiceTest extends AbstractAlgoTest {
                 Optional<Schedule> scheduleResp = Optional.of(
                                 new Schedule(0L, 1000L,
                                                 flags));
-                when(scheduleRepository.findByKey(EventGeneratorService.SCHEDULE_RANDOM_GROUP))
+                when(scheduleRepository.findByKey(EventGeneratorRandomService.SCHEDULE_RANDOM_GROUP))
                                 .thenReturn(scheduleResp);
 
                 when(likeRepository.findLikeGroups())

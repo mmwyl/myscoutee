@@ -53,7 +53,7 @@ public class EventService {
                 new String[] { "A", "I", "J", "W" });
     }
 
-    public Optional<MemberDTO> score(String id, String pProfileUid, Integer score, UUID byUuid) {
+    public Optional<MemberDTO> score(String id, String pProfileUid, Double score, UUID byUuid) {
         Optional<Event> eventRes = id != null ? this.eventRepository.findById(UUID.fromString(id))
                 : Optional.empty();
 

@@ -184,4 +184,43 @@ public class Like {
     public String toString() {
         return "Like [id=" + id + ", from=" + from + ", to=" + to + "]";
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        int hashCode1 = from.hashCode() ^ to.hashCode();
+        int hashCode2 = to.hashCode() ^ from.hashCode();
+
+        result = prime * result + (hashCode1 ^ hashCode2);
+        result = prime * result + ((ref == null) ? 0 : ref.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Like other = (Like) obj;
+        if (from == null) {
+            if (other.from != null)
+                return false;
+        } else if (!from.equals(other.from) && !to.equals(other.from))
+            return false;
+        if (to == null) {
+            if (other.to != null)
+                return false;
+        } else if (!to.equals(other.to) && !from.equals(other.to))
+            return false;
+        if (ref == null) {
+            if (other.ref != null)
+                return false;
+        } else if (!ref.equals(other.ref))
+            return false;
+        return true;
+    }
 }

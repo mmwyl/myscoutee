@@ -29,6 +29,7 @@ import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
+import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.service.EventService;
 import com.raxim.myscoutee.profile.service.StatusService;
@@ -49,6 +50,9 @@ public class EventServiceTestInt extends AbstractAlgoTest {
         @Autowired
         private EventRepository eventRepository;
 
+        @Autowired
+        private LikeRepository likeRepository;
+
         private Converters converters = new Converters();
 
         private EventService eventService;
@@ -58,7 +62,7 @@ public class EventServiceTestInt extends AbstractAlgoTest {
         public void init() {
                 eventService = new EventService(eventRepository,
                                 profileRepository, converters);
-                statusService = new StatusService(profileRepository, eventRepository);
+                statusService = new StatusService(profileRepository, eventRepository, likeRepository);
         }
 
         @Test
@@ -147,7 +151,7 @@ public class EventServiceTestInt extends AbstractAlgoTest {
                 // save event
         }
 
-        //Lock/Unlock etc.
+        // Lock/Unlock etc.
         @Test
         public void shouldChangeStatus() {
 

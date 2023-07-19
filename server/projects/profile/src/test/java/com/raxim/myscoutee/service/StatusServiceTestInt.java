@@ -25,6 +25,7 @@ import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
+import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.service.StatusService;
 
@@ -42,6 +43,9 @@ public class StatusServiceTestInt extends AbstractAlgoTest {
 
         @Autowired
         private EventRepository eventRepository;
+
+        @Autowired
+        private LikeRepository likeRepository;
 
         @Test
         public void shouldEventAdminLeave() throws MessageException {
@@ -67,7 +71,7 @@ public class StatusServiceTestInt extends AbstractAlgoTest {
                 assertEquals(AppTestConstants.UUID_PROFILE_EMMA, memberDTOs.get(1).getMember().getProfile().getId());
                 assertEquals("U", memberDTOs.get(1).getMember().getRole());
 
-                StatusService statusService = new StatusService(profileRepository, eventRepository);
+                StatusService statusService = new StatusService(profileRepository, eventRepository, likeRepository);
 
                 statusService.change(
                                 AppTestConstants.UUID_EVENT_32.toString(),

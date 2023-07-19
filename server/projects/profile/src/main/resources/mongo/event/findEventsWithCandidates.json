@@ -1,9 +1,26 @@
 [
     {
+        "$graphLookup": {
+            "from": "events",
+            "startWith": "$parentId",
+            "connectFromField": "parentId",
+            "connectToField": "_id",
+            "as": "parents",
+            "maxDepth": 2,
+            "depthField": "level"
+        }
+    },
+    {
+        "$match": {
+            "parent": null
+        }
+    },
+    {
         "$match": {
             "status": "P",
             "type": "E",
-            "access" : "P"
+            "rule.priority": true,
+            "access": "P"
         }
     },
     {
@@ -13,94 +30,22 @@
                     "input": "$members",
                     "as": "member",
                     "cond": {
-                        "$eq": [
-                            "$$member.status",
-                            "A"
-                        ]
-                    }
-                }
-            },
-            "validUntil": {
-                "$dateSubtract": {
-                    "startDate": {
-                        "$toDate": "ISODate()"
-                    },
-                    "unit": "minute",
-                    "amount": "$rule.eventGrace"
-                }
-            }
-        }
-    },
-    {
-        "$set": {
-            "status": {
-                "$cond": [
-                    {
                         "$and": [
                             {
-                                "$lt": [
-                                    "$range.start",
-                                    "$validUntil"
+                                "$eq": [
+                                    "$$member.status",
+                                    "A"
                                 ]
                             },
                             {
-                                "$lt": [
-                                    {
-                                        "$size": "$currentMembers"
-                                    },
-                                    "$capacity.min"
+                                "$eq": [
+                                    "$$member.role",
+                                    "U"
                                 ]
                             }
                         ]
-                    },
-                    "T",
-                    {
-                        "$cond": [
-                            {
-                                "$or": [
-                                    {
-                                        "$and": [
-                                            {
-                                                "$lt": [
-                                                    "$range.start",
-                                                    "$validUntil"
-                                                ]
-                                            },
-                                            {
-                                                "$gte": [
-                                                    {
-                                                        "$size": "$currentMembers"
-                                                    },
-                                                    "$capacity.min"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "$and": [
-                                            {
-                                                "$gte": [
-                                                    "$range.start",
-                                                    "$validUntil"
-                                                ]
-                                            },
-                                            {
-                                                "$eq": [
-                                                    {
-                                                        "$size": "$currentMembers"
-                                                    },
-                                                    "$capacity.max"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            "A",
-                            "P"
-                        ]
                     }
-                ]
+                }
             }
         }
     },
@@ -117,12 +62,6 @@
                     "$match": {
                         "$expr": {
                             "$and": [
-                                {
-                                    "$eq": [
-                                        "$$currentEvent.status",
-                                        "P"
-                                    ]
-                                },
                                 {
                                     "$eq": [
                                         "$status",
@@ -202,6 +141,16 @@
                     }
                 },
                 {
+                    "$match": {
+                        "$expr": {
+                            "$eq": [
+                                "$members.status",
+                                "A"
+                            ]
+                        }
+                    }
+                },
+                {
                     "$group": {
                         "_id": null,
                         "mergedMembers": {
@@ -225,12 +174,6 @@
                                                 "$eq": [
                                                     "$$currentEvent.rule.mutual",
                                                     true
-                                                ]
-                                            },
-                                            {
-                                                "$eq": [
-                                                    "$$currentEvent.status",
-                                                    "P"
                                                 ]
                                             },
                                             {
@@ -316,6 +259,16 @@
                             {
                                 "$unwind": {
                                     "path": "$members"
+                                }
+                            },
+                            {
+                                "$match": {
+                                    "$expr": {
+                                        "$eq": [
+                                            "$members.status",
+                                            "A"
+                                        ]
+                                    }
                                 }
                             },
                             {

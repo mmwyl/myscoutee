@@ -23,4 +23,7 @@ public interface LikeRepository extends MongoRepository<Like, UUID> {
 
     @Aggregation(pipeline = "findLikeGroups")
     List<LikeGroup> findLikeGroups();
+
+    @Aggregation(pipeline = "findLikeGroup")
+    LikeGroup findLikeGroup(@Param("from") UUID from, @Param("to") UUID to, @Param("ref") UUID ref);
 }

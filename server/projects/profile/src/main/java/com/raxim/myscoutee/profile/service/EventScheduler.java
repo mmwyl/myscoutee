@@ -15,11 +15,11 @@ import com.raxim.myscoutee.profile.repository.mongo.UserRepository;
 public class EventScheduler {
 
     private final UserRepository userRepository;
-    private final EventGeneratorService eventGeneratorService;
+    private final EventGeneratorRandomService eventGeneratorService;
 
     public EventScheduler(
             UserRepository userRepository,
-            EventGeneratorService eventGeneratorService) {
+            EventGeneratorRandomService eventGeneratorService) {
         this.userRepository = userRepository;
         this.eventGeneratorService = eventGeneratorService;
     }

@@ -1,12 +1,60 @@
 [
     {
         "$match": {
-            "type": "E",
-            "members": {
-                "$elemMatch": {
-                    "profile.$id": "?#{#param.id}",
-                    "status": "I"
-                }
+            "$expr": {
+                "$and": [
+                    {
+                        "$eq": [
+                            "$type",
+                            "E"
+                        ]
+                    },
+                    {
+                        "$eq": [
+                            "$status",
+                            "P"
+                        ]
+                    },
+                    {
+                        "$or": [
+                            {
+                                "$eq": [
+                                    "$autoInvite",
+                                    true
+                                ]
+                            },
+                            {
+                                "$gt": [
+                                    {
+                                        "$size": {
+                                            "$filter": {
+                                                "input": "$members",
+                                                "as": "member",
+                                                "cond": {
+                                                    "$and": [
+                                                        {
+                                                            "$eq": [
+                                                                "?#{#param.id}",
+                                                                "$profile.$id"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "$eq": [
+                                                                "$$member.status",
+                                                                "I"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    },
+                                    0
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
         }
     },

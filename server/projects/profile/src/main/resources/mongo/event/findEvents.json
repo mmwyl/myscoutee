@@ -1,0 +1,56 @@
+[
+    {
+        "$graphLookup": {
+            "from": "events",
+            "startWith": "$parentId",
+            "connectFromField": "parentId",
+            "connectToField": "_id",
+            "as": "parents",
+            "maxDepth": 2,
+            "depthField": "level"
+        }
+    },
+    {
+        "$match": {
+            "parent": null
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$and": [
+                    {
+                        "$not": {
+                            "$and": [
+                                {
+                                    "$eq": [
+                                        "$rule.priority",
+                                        true
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "$access",
+                                        "P"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "$eq": [
+                            "$status",
+                            "P"
+                        ]
+                    },
+                    {
+                        "$eq": [
+                            "$type",
+                            "E"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

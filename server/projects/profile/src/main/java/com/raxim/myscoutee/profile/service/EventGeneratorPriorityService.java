@@ -1,7 +1,5 @@
 package com.raxim.myscoutee.profile.service;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -75,11 +73,10 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
                     return new Edge(fromNode, toNode, weight);
                 }).collect(Collectors.toSet());
 
-        List<EventWithCandidates> eventWithCandidates = this.eventRepository.findCandidatesForPrivate();
+        List<EventWithCandidates> eventWithCandidates = this.eventRepository.findEventsWithCandidates();
 
-        //if the event is priority, then continue with this code, anyway time out event simply!!!
-
-        List<Event> events = eventWithCandidates.stream().map(event -> {
+        List<Event> eventsToSave = eventWithCandidates.stream().map(event -> {
+            event.getEvent().syncStatus();
 
             if ("T".equals(event.getEvent().getStatus())
                     || "A".equals(event.getEvent().getStatus())) {
@@ -88,23 +85,6 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
             }
 
             Rule rule = event.getEvent().getRule();
-
-            // status "P"
-            // update members who deleted their profiles
-            LocalDateTime validUntil = LocalDateTime.now()
-                    .minus(rule.getMemberGrace(),
-                            ChronoUnit.MINUTES);
-
-            //do we need to timeout members, or just invite new ones???
-            Set<Member> members = event.getEvent().getMembers().stream().map(member -> {
-                if ("I".equals(member.getStatus())
-                        && member.getCreatedDate().isBefore(validUntil)) {
-                    member.setStatus("T");
-                }
-
-                return member;
-            }).collect(Collectors.toSet());
-            event.getEvent().setMembers(members);
 
             Set<Edge> tIgnoredEdges = EventUtil.permutate(event.getEvent().getMembers());
 
@@ -151,7 +131,7 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
             Iterator<BCTree> itBCTree = bcTrees.iterator();
             if (itBCTree.hasNext()) {
                 BCTree bcTree = itBCTree.next();
-                BCTreeIterator itCGroup = (BCTreeIterator)bcTree.iterator();
+                BCTreeIterator itCGroup = (BCTreeIterator) bcTree.iterator();
                 if (itCGroup.hasAnyNext()) {
                     CGroup cGroup = itCGroup.next();
                     Set<Member> newMembers = cGroup.stream()
@@ -164,8 +144,7 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
             return event.getEvent();
         }).toList();
 
-        this.eventRepository.saveAll(events);
-
-        return events;
+        List<Event> savedEvents = this.eventRepository.saveAll(eventsToSave);
+        return savedEvents;
     }
 }
