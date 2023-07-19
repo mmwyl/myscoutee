@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.SequenceRepository;
+import com.raxim.myscoutee.profile.util.AppConstants;
 import com.raxim.myscoutee.profile.util.LikeUtil;
 
 @Service
@@ -58,8 +60,8 @@ public class LikeService {
         // save likes
         List<Like> likesSaved = likeRepository.saveAll(likesWithCnt);
 
-        List<Pair<UUID, Profile>> membersToAdd = likesSaved.stream().filter(like -> like.getRef() != null)
-                .map(like -> Pair.of(like.getRef(), like.getFrom())).toList();
+        List<Pair<UUID, Like>> membersToAdd = likesSaved.stream().filter(like -> like.getRef() != null)
+                .map(like -> Pair.of(like.getRef(), like)).toList();
 
         List<UUID> evenUuids = membersToAdd.stream().map(member -> member.getFirst()).toList();
         Map<UUID, Event> events = this.eventRepository.findAllById(evenUuids).stream()
@@ -67,17 +69,53 @@ public class LikeService {
 
         // if you rate, than you will be added as a member with pending
         List<Event> eventsToSave = membersToAdd.stream().map(member -> {
-            Member newMember = new Member();
-            newMember.setProfile(profile);
-            newMember.setUpdatedDate(LocalDateTime.now());
-            newMember.setCreatedDate(LocalDateTime.now());
-            newMember.setRole("U");
-            newMember.setStatus("P");
-
             Event currEvent = events.get(member.getFirst());
-            currEvent.getMembers().add(newMember);
+
+            Optional<Member> optFrom = currEvent.getMembers().stream()
+                    .filter(cMember -> cMember.getProfile().getId().equals(member.getSecond().getFrom().getId()))
+                    .findFirst();
+
+            Optional<Member> optTo = currEvent.getMembers().stream()
+                    .filter(cMember -> cMember.getProfile().getId().equals(member.getSecond().getTo().getId()))
+                    .findFirst();
+
+            if (optFrom.isPresent() && optTo.isPresent()) {
+                Member from = optFrom.get();
+                Member to = optTo.get();
+
+                if (currEvent.isPriority()) {
+                    if (currEvent.getRule() != null) {
+                        if (AppConstants.RANK_RATE.equals(currEvent.getRule().getRankType())) {
+                            LikeGroup likeGroup = this.likeRepository.findLikeGroup(from.getProfile().getId(),
+                                    to.getProfile().getId(), currEvent.getId());
+                            Like like = likeGroup.reduce();
+                            double score = like.getRate() * like.getDistance();
+                            if (!Boolean.TRUE.equals(currEvent.getRule().getMutual())) {
+                                if (from.getProfile().getId().equals(currEvent.getCreatedBy())) {
+                                    to.setScore(score);
+                                } else {
+                                    from.setScore(score);
+                                }
+                            } else {
+                                from.setScore(score);
+                                to.setScore(score);
+                            }
+                        }
+                    }
+                }
+            } else {
+                Member newMember = new Member();
+                newMember.setProfile(profile);
+                newMember.setUpdatedDate(LocalDateTime.now());
+                newMember.setCreatedDate(LocalDateTime.now());
+                newMember.setRole("U");
+                newMember.setStatus("P");
+                currEvent.getMembers().add(newMember);
+            }
+
             return currEvent;
         }).toList();
+
         this.eventRepository.saveAll(eventsToSave);
 
         List<LikeDTO> likesAll = toLikeDTOs(likesSaved);

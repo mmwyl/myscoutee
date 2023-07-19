@@ -70,13 +70,6 @@ public class StatusService {
                 Member currentMember = optCurrentMember.get();
                 currentMember.setStatus(status);
                 currentMember.setUpdatedDate(LocalDateTime.now());
-
-                if (event.isPriority()) {
-                    LikeGroup likeGroup = this.likeRepository.findLikeGroup(event.getCreatedBy(),
-                            currentMember.getProfile().getId(), event.getId());
-                    Like like = likeGroup.reduce();
-                    currentMember.setScore(like.getRate() * like.getDistance());
-                }
             } else {
                 Set<String> allowedStatuses = Set.of("J", "PR");
                 if (allowedStatuses.contains(status)) {
