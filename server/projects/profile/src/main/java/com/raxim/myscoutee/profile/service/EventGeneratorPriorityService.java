@@ -75,7 +75,7 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
 
         List<EventWithCandidates> eventWithCandidates = this.eventRepository.findEventsWithCandidates();
 
-        List<Event> eventsToSave = eventWithCandidates.stream().map(event -> {
+        List<Event> handledEvents = eventWithCandidates.stream().map(event -> {
             event.getEvent().syncStatus();
 
             if ("T".equals(event.getEvent().getStatus())
@@ -143,6 +143,8 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
             }
             return event.getEvent();
         }).toList();
+        
+        List<Event> eventsToSave = handledEvents.stream().flatMap(event -> event.flatten().stream()).toList();
 
         List<Event> savedEvents = this.eventRepository.saveAll(eventsToSave);
         return savedEvents;

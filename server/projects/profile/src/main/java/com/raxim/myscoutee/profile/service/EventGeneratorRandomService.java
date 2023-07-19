@@ -138,7 +138,7 @@ public class EventGeneratorRandomService implements IEventGeneratorService {
             membersByGroup.add(profiles);
         }));
 
-        List<Event> eventsToSave = membersByGroup.stream()
+        List<Event> handledEvents = membersByGroup.stream()
                 .map(members -> {
                     Event event = new Event();
                     event.setId(UUID.randomUUID());
@@ -162,6 +162,8 @@ public class EventGeneratorRandomService implements IEventGeneratorService {
                     return event;
                 })
                 .collect(Collectors.toList());
+
+        List<Event> eventsToSave = handledEvents.stream().flatMap(event -> event.flatten().stream()).toList();
 
         List<Event> savedEvents = this.eventRepository.saveAll(eventsToSave);
 

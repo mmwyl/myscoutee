@@ -45,7 +45,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     // Accepted (A) (by Organizer), Published/Promotion/Pending (P) ?? -> not sure
     // published/promotion is needed, it's only pending,
     // Inactive (I), Template (T), Under Review (U) ??, Reviewed/Recommended (R),
-    // Rejected/Deleted (D),
+    // Rejected/Deleted (D), Finished (F)
     // Cancelled (C)
     // auto publish when general has been added
     // inactive means, just edited locally, before being published
@@ -265,7 +265,22 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
         return Boolean.TRUE.equals(getMultislot());
     }
 
+    public int getMaxStage() {
+        Optional<Event> event = getItems().stream().max(Comparator.comparing(Event::getStage));
+
+        return event.isPresent() ? event.get().getStage() : 0;
+    }
+
+    public boolean isFinished() {
+        return getRange() != null && LocalDateTime.now().isAfter(getRange().getEnd());
+    }
+
     public void syncStatus() {
+        if (isFinished()) {
+            setStatus("F");
+            return;
+        }
+
         if (getMembers() != null) {
 
             List<Member> activeMembers = getMembers().stream()
@@ -277,7 +292,6 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
             }
 
             if ("P".equals(getStatus())) {
-
                 LocalDateTime validUntil = getRule() != null ? getRange().getStart()
                         .minus(getRule().getEventGrace(), ChronoUnit.MINUTES)
                         : getRange().getStart();
@@ -325,7 +339,9 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
                             if (!Boolean.TRUE.equals(getMultislot())) {
                                 setStatus("A");
                             }
-                            assignToSlots(members);
+                            if (getStage() == 0) {
+                                assignToSlots(members);
+                            }
                         }
 
                     }
@@ -335,27 +351,53 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
                         if (!Boolean.TRUE.equals(getMultislot())) {
                             setStatus("A");
                         }
-                        assignToSlots(members);
+                        if (getStage() == 0) {
+                            assignToSlots(members);
+                        }
                     }
                 }
+            }
+        } else if ("A".equals(getStatus())) {
+            if (isNextStageStarted()) {
+                int nextStage = getStage() + 1;
+                setStage(nextStage);
             }
         }
     }
 
-    public boolean validUntilFrom(LocalDateTime localDateTime) {
-        LocalDateTime validUntilFrom = getRule() != null ? localDateTime
-                .plus(getRule().getMemberGrace(), ChronoUnit.MINUTES)
-                : LocalDateTime.MAX;
+    public boolean isNextStageStarted() {
+        int nextStage = getStage() + 1;
+        List<Event> nextStageEvents = getItems().stream()
+                .filter(item -> "A".equals(item.getStatus()) && item.getStage() == nextStage
+                        && !item.validEventUntilFrom())
+                .toList();
+        return !nextStageEvents.isEmpty();
+    }
+
+    public boolean validEventUntilFrom() {
+        LocalDateTime validUntilFrom = "P".equals(getStatus()) && getRule() != null
+                ? getRange().getStart()
+                        .minus(getRule().getEventGrace(), ChronoUnit.MINUTES)
+                : getRange().getStart();
         return LocalDateTime.now().isBefore(validUntilFrom);
     }
 
-    private void assignToSlots(List<Member> members) {
+    public void assignToSlots(List<Member> members) {
         try {
-            if (Boolean.TRUE.equals(getMultislot()) && getStage() == 0) {
+            if (Boolean.TRUE.equals(getMultislot())) {
                 int memberIdx = 0;
                 int counter = getNumOfMembers();
                 for (Event item : getItems()) {
+
                     item.syncStatus();
+
+                    if (!item.validEventUntilFrom()) {
+                        if (item.getCapacity().getMin() > item.getNumOfMembers()) {
+                            item.setStatus("T");
+                        } else {
+                            item.setStatus("A");
+                        }
+                    }
 
                     if (item.getStage() == getStage() && "P".equals(item.getStatus())) {
                         int availableCapacity = item.getCapacity().getMax() - item.getNumOfMembers();
@@ -380,6 +422,20 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
                     }
                 }
             }
+
+            boolean allItemsTimedOut = getItems().stream()
+                    .allMatch(item -> item.getStage() == getStage() && "T".equals(item.getStatus()));
+            if (allItemsTimedOut) {
+                setStatus("T");
+            }
+
+            boolean anyActiveItem = getItems().stream()
+                    .anyMatch(item -> item.getStage() == getStage() && "A".equals(item.getStatus()));
+            boolean anyNotFinished = getItems().stream()
+                    .anyMatch(item -> item.getStage() == getStage() && "P".equals(item.getStatus()));
+            if (!anyNotFinished && anyActiveItem) {
+                setStatus("A");
+            }
         } catch (CloneNotSupportedException e) {
             e.printStackTrace(); // add logger
         }
@@ -388,7 +444,8 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     // eventItem range should be within event
     public void sync() {
 
-        if ("T".equals(getStatus()) || "A".equals(getStatus())) {
+        // timed out/active/finished
+        if ("T".equals(getStatus()) || "A".equals(getStatus()) || "F".equals(getStatus())) {
             return;
         }
 
@@ -467,6 +524,13 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
                 : getRange().getStart();
 
         if (getMembers() != null) {
+
+            List<Member> members = getMembers().stream()
+                    .filter(member -> "A".equals(member.getStatus())
+                            && "U".equals(member.getRole()))
+                    .toList();
+            setNumOfMembers(members.size());
+
             getMembers().stream().map(member -> {
                 if ("L".equals(member.getStatus())
                         && member.getUpdatedDate().isAfter(graceTime)) {
