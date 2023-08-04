@@ -30,3 +30,4 @@ jobs:
         distribution: 'temurin'
     - name: Build with Gradle
       working-directory: ./server/projects/profile
+      run: ./gradlew sonar
