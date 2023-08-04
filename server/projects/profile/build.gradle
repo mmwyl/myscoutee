@@ -38,6 +38,10 @@ dependencies {
 }
 
 tasks.named('jacocoTestReport') {
+	reports {
+		xml.required = true
+		xml.destination file("${buildDir}/reports/jacoco.xml")
+	}
 	dependsOn test
 }
 
@@ -53,6 +57,7 @@ sonar {
 		property 'sonar.projectName', 'myscoutee'
 		property 'sonar.token', 'sqp_f93823b500ff50e1259d61e67f709d22446e3369'
         property 'sonar.host.url', 'http://localhost:9000'
+		property 'sonar.coverage.jacoco.xmlReportPaths', "${project.buildDir}/reports/jacoco.xml"
     }
 }
 
