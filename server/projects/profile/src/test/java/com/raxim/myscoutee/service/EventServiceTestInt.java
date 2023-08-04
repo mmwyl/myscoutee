@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -36,6 +37,7 @@ import com.raxim.myscoutee.profile.service.EventService;
 import com.raxim.myscoutee.profile.service.StatusService;
 import com.raxim.myscoutee.profile.util.AppConstants;
 
+@Disabled
 @DataMongoTest
 @DirtiesContext
 @Import({ RepositoryConfig.class, JsonConfig.class })

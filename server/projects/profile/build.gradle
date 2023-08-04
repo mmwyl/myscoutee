@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.0'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'jacoco'
+	id "org.sonarqube" version "4.2.1.3168"
 }
 
 group = 'com.raxim'
@@ -35,6 +37,25 @@ dependencies {
 	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.7.0'
 }
 
+tasks.named('jacocoTestReport') {
+	dependsOn test
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
+
+	finalizedBy jacocoTestReport
+}
+
+sonar {
+    properties {
+		property 'sonar.projectKey', 'fssrepository_myscoutee_AYnBBjoHSeqh8PdnQJtM'
+		property 'sonar.projectName', 'myscoutee'
+		property 'sonar.token', 'sqp_f93823b500ff50e1259d61e67f709d22446e3369'
+        property 'sonar.host.url', 'http://localhost:9000'
+    }
+}
+
+tasks.named('sonar').configure {
+    dependsOn test
 }
