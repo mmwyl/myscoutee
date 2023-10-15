@@ -26,54 +26,55 @@ import com.raxim.myscoutee.profile.data.document.mongo.EventWithCandidates;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
-import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
-import com.raxim.myscoutee.profile.service.EventGeneratorPriorityService;
+import com.raxim.myscoutee.profile.service.EventGeneratorByPriorityService;
+import com.raxim.myscoutee.profile.service.LikeService;
 
 @Disabled
 @DataMongoTest
 @DirtiesContext
 @Import({ RepositoryConfig.class, JsonConfig.class })
 @TestPropertySource(properties = { "de.flapdoodle.mongodb.embedded.version=6.0.6",
-        "logging.level.org.springframework.data.mongodb=DEBUG" })
+                "logging.level.org.springframework.data.mongodb=DEBUG" })
 @TestData({ "mongo/profiles.json", "mongo/priority/events.json", "mongo/likes.json" })
 @TestExecutionListeners(value = MongoDataLoaderTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class EventGeneratorPriorityServiceTestInt extends AbstractAlgoTest {
 
-    private static final UUID UUID_PROFILE_OLIVER = UUID.fromString("534ccc6b-2547-4bf0-ad91-dca739943ea4");
-    private static final UUID UUID_PROFILE_SOPHIA = UUID.fromString("39402632-a452-57be-2518-53cc117b1abc");
+        private static final UUID UUID_PROFILE_OLIVER = UUID.fromString("534ccc6b-2547-4bf0-ad91-dca739943ea4");
+        private static final UUID UUID_PROFILE_SOPHIA = UUID.fromString("39402632-a452-57be-2518-53cc117b1abc");
 
-    @Autowired
-    private LikeRepository likeRepository;
+        @Autowired
+        private LikeService likeService;
 
-    @Autowired
-    private EventRepository eventRepository;
+        @Autowired
+        private EventRepository eventRepository;
 
-    @Test
-    public void shouldGeneratePriorityEvent() {
-        EventGeneratorPriorityService eventGeneratorPriorityService = new EventGeneratorPriorityService(likeRepository,
-                eventRepository);
+        @Test
+        public void shouldGeneratePriorityEvent() {
+                EventGeneratorByPriorityService eventGeneratorPriorityService = new EventGeneratorByPriorityService(
+                                likeService,
+                                eventRepository);
 
-        List<EventWithCandidates> eventWithCandidates = this.eventRepository.findEventsWithCandidates();
-        assertTrue(eventWithCandidates.size() > 0);
-        assertEquals("T", eventWithCandidates.get(0).getEvent().getStatus());
-        assertEquals(1, eventWithCandidates.get(2).getEvent().getMembers().size());
+                List<EventWithCandidates> eventWithCandidates = this.eventRepository.findEventsWithCandidates();
+                assertTrue(eventWithCandidates.size() > 0);
+                assertEquals("T", eventWithCandidates.get(0).getEvent().getStatus());
+                assertEquals(1, eventWithCandidates.get(2).getEvent().getMembers().size());
 
-        Event event = this.eventRepository.findById(eventWithCandidates.get(0).getEvent().getId()).get();
-        assertEquals("P", event.getStatus());
+                Event event = this.eventRepository.findById(eventWithCandidates.get(0).getEvent().getId()).get();
+                assertEquals("P", event.getStatus());
 
-        eventGeneratorPriorityService.generate();
+                eventGeneratorPriorityService.generate();
 
-        event = this.eventRepository.findById(eventWithCandidates.get(0).getEvent().getId()).get();
-        assertEquals("T", event.getStatus());
+                event = this.eventRepository.findById(eventWithCandidates.get(0).getEvent().getId()).get();
+                assertEquals("T", event.getStatus());
 
-        event = this.eventRepository.findById(eventWithCandidates.get(2).getEvent().getId()).get();
-        assertEquals("P", event.getStatus());
+                event = this.eventRepository.findById(eventWithCandidates.get(2).getEvent().getId()).get();
+                assertEquals("P", event.getStatus());
 
-        assertEquals(2, event.getMembers().size());
+                assertEquals(2, event.getMembers().size());
 
-        Set<Member> members = Set.of(new Member(new Profile(UUID_PROFILE_OLIVER), "I", "U"),
-                new Member(new Profile(UUID_PROFILE_SOPHIA), "A", "A"));
-        boolean allProfilesMatched = matchAll(event.getMembers(), members);
-        assertTrue(allProfilesMatched);
-    }
+                Set<Member> members = Set.of(new Member(new Profile(UUID_PROFILE_OLIVER), "I", "U"),
+                                new Member(new Profile(UUID_PROFILE_SOPHIA), "A", "A"));
+                boolean allProfilesMatched = matchAll(event.getMembers(), members);
+                assertTrue(allProfilesMatched);
+        }
 }

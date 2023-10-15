@@ -1,9 +1,7 @@
 package com.raxim.myscoutee.profile.service;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,61 +15,31 @@ import com.raxim.myscoutee.algo.dto.Node;
 import com.raxim.myscoutee.algo.dto.Range;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.EventWithCandidates;
-import com.raxim.myscoutee.profile.data.document.mongo.Like;
-import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Rule;
+import com.raxim.myscoutee.profile.data.dto.FilteredEdges;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
-import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.service.iface.IEventGeneratorService;
 import com.raxim.myscoutee.profile.util.AppConstants;
 import com.raxim.myscoutee.profile.util.EventUtil;
 
-public class EventGeneratorPriorityService implements IEventGeneratorService {
-    private final LikeRepository likeRepository;
+/*
+ * who has already met, invited by priority
+ */
+public class EventGeneratorByPriorityService implements IEventGeneratorService {
+    private final LikeService likeService;
     private final EventRepository eventRepository;
 
-    public EventGeneratorPriorityService(
-            LikeRepository likeRepository,
+    public EventGeneratorByPriorityService(
+            LikeService likeService,
             EventRepository eventRepository) {
-        this.likeRepository = likeRepository;
+        this.likeService = likeService;
         this.eventRepository = eventRepository;
     }
 
     public List<Event> generate() {
-        List<LikeGroup> likeGroups = likeRepository.findLikeGroups();
-
-        // merge likes
-        List<Like> likesBoth = likeGroups.stream().map(group -> {
-            return group.reduce();
-        }).filter(like -> like != null).toList();
-
-        // nodes
-        Map<String, Profile> nodes = new HashMap<>();
-        likesBoth.forEach(likeBoth -> {
-            nodes.put(likeBoth.getFrom().getId().toString(), likeBoth.getFrom());
-            nodes.put(likeBoth.getTo().getId().toString(), likeBoth.getTo());
-        });
-
-        // edges
-        List<Edge> edges = likesBoth.stream().map(likeBoth -> {
-            Node fromNode = new Node(likeBoth.getFrom().getId().toString(), likeBoth.getFrom().getGender());
-            Node toNode = new Node(likeBoth.getTo().getId().toString(), likeBoth.getTo().getGender());
-            double weight = (double) likeBoth.getRate();
-            return new Edge(fromNode, toNode, weight);
-        }).toList();
-
-        // ignoring edges, where the profile is not with status 'A' or F
-        Set<Edge> ignoredEdgesByStatus = likesBoth.stream()
-                .filter(ignoredLike -> !Profile.ACTIVE.contains(ignoredLike.getFrom().getStatus())
-                        || !Profile.ACTIVE.contains(ignoredLike.getTo().getStatus()))
-                .map(likeBoth -> {
-                    Node fromNode = new Node(likeBoth.getFrom().getId().toString(), likeBoth.getFrom().getGender());
-                    Node toNode = new Node(likeBoth.getTo().getId().toString(), likeBoth.getTo().getGender());
-                    double weight = (double) (likeBoth.getRate() * likeBoth.getDistance());
-                    return new Edge(fromNode, toNode, weight);
-                }).collect(Collectors.toSet());
+        FilteredEdges filteredEdges = likeService.getEdges(Set.of("A", "F"));
 
         List<EventWithCandidates> eventWithCandidates = this.eventRepository.findEventsWithCandidates();
 
@@ -86,18 +54,19 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
 
             Rule rule = event.getEvent().getRule();
 
-            Set<Edge> tIgnoredEdges = EventUtil.permutate(event.getEvent().getMembers());
+            Set<Edge> sIgnoredEdges = EventUtil.permutate(event.getEvent().getMembers());
 
-            List<Edge> tIgnoredEdgesByRate = edges.stream()
+            Set<Edge> sIgnoredEdgesByRate = filteredEdges.getEdges().stream()
                     .filter(edge -> rule.getRate() != null &&
                             edge.getWeight() >= rule.getRate())
-                    .toList();
-            tIgnoredEdges.addAll(tIgnoredEdgesByRate);
-            List<Set<Edge>> ignoredEdges = List.of(tIgnoredEdges, ignoredEdgesByStatus);
+                    .collect(Collectors.toSet());
+
+            List<Set<Edge>> ignoredEdges = List.of(sIgnoredEdges, sIgnoredEdgesByRate);
+            ignoredEdges.addAll(filteredEdges.getIgnoredEdges());
 
             Set<Edge> possibleEdges = EventUtil.permutate(event.getCandidates());
 
-            List<Edge> validEdges = edges.stream()
+            List<Edge> validEdges = filteredEdges.getEdges().stream()
                     .filter(edge -> possibleEdges.contains(edge))
                     .toList();
 
@@ -108,7 +77,7 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
                     .filter(member -> "A".equals(member.getStatus())
                             || "I".equals(member.getStatus()))
                     .map(member -> {
-                        Profile profile = nodes.get(member.getProfile().getId().toString());
+                        Profile profile = filteredEdges.getNodes().get(member.getProfile().getId().toString());
                         return new Node(profile.getId().toString(), profile.getGender());
                     })
                     .collect(Collectors.toSet());
@@ -124,7 +93,7 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
             }
 
             List<BCTree> bcTrees = dGraph.stream().map(cGraph -> {
-                CTree cTree = new CTree(cGraph, types, ignoredEdges);
+                CTree cTree = new CTree(cGraph, types, filteredEdges.getIgnoredEdges());
                 return new BCTree(cTree, range, activeNodes);
             }).toList();
 
@@ -135,7 +104,7 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
                 if (itCGroup.hasAnyNext()) {
                     CGroup cGroup = itCGroup.next();
                     Set<Member> newMembers = cGroup.stream()
-                            .map(node -> new Member(nodes.get(node.getId()), "I", "U"))
+                            .map(node -> new Member(filteredEdges.getNodes().get(node.getId()), "I", "U"))
                             .collect(Collectors.toSet());
                     // send notification invited
                     event.getEvent().getMembers().addAll(newMembers);
@@ -143,7 +112,7 @@ public class EventGeneratorPriorityService implements IEventGeneratorService {
             }
             return event.getEvent();
         }).toList();
-        
+
         List<Event> eventsToSave = handledEvents.stream().flatMap(event -> event.flatten().stream()).toList();
 
         List<Event> savedEvents = this.eventRepository.saveAll(eventsToSave);

@@ -30,6 +30,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
 import com.raxim.myscoutee.profile.data.document.mongo.Schedule;
+import com.raxim.myscoutee.profile.data.dto.FilteredEdges;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ScheduleRepository;
@@ -37,21 +38,24 @@ import com.raxim.myscoutee.profile.service.iface.IEventGeneratorService;
 import com.raxim.myscoutee.profile.util.AppConstants;
 import com.raxim.myscoutee.profile.util.EventUtil;
 
+/*
+ * the members did not met witheach other before
+ */
 @Service
 public class EventGeneratorRandomService implements IEventGeneratorService {
 
     public static final String SCHEDULE_RANDOM_GROUP = "RANDOM_GROUP";
 
     private final ScheduleRepository scheduleRepository;
-    private final LikeRepository likeRepository;
+    private final LikeService likeService;
     private final EventRepository eventRepository;
     private final ObjectMapper objectMapper;
 
     public EventGeneratorRandomService(ScheduleRepository scheduleRepository,
-            LikeRepository likeRepository, EventRepository eventRepository,
+            LikeService likeService, EventRepository eventRepository,
             ObjectMapper objectMapper) {
         this.scheduleRepository = scheduleRepository;
-        this.likeRepository = likeRepository;
+        this.likeService = likeService;
         this.eventRepository = eventRepository;
         this.objectMapper = objectMapper;
     }
@@ -66,74 +70,21 @@ public class EventGeneratorRandomService implements IEventGeneratorService {
         Range flags = schedule.map(sch -> JsonUtil.jsonToObject(sch.getFlags(), Range.class, objectMapper))
                 .orElse(new Range(6, 12));
 
-        // batched version of query does exist -> just to simplify for the time being
-        List<LikeGroup> likeGroups = likeRepository.findLikeGroups();
-
-        List<Event> events = eventRepository.findAll();
-
-        List<Set<Edge>> ignoredEdgesByMet = events.stream().map(event -> {
-            Set<Member> members = event.getMembers()
-                    .stream()
-                    .filter(member -> Member.MET.contains(member.getStatus()))
-                    .collect(Collectors.toSet());
-
-            return EventUtil.permutate(members);
-        }).toList();
-
-        // merge likes
-        List<Like> likesBoth = likeGroups.stream().map(group -> {
-            return group.reduce();
-        }).filter(like -> like != null).toList();
-
-        // nodes
-        Map<String, Profile> nodes = new HashMap<>();
-        likesBoth.forEach(likeBoth -> {
-            nodes.put(likeBoth.getFrom().getId().toString(), likeBoth.getFrom());
-            nodes.put(likeBoth.getTo().getId().toString(), likeBoth.getTo());
-        });
-
-        System.out.println("Num of nodes " + nodes.keySet().size());
-
-        // ignoring edges, where the profile is not with status 'A'
-        Set<Edge> ignoredEdgesByStatus = likesBoth.stream()
-                .filter(ignoredLike -> !"A".equals(ignoredLike.getFrom().getStatus())
-                        || !"A".equals(ignoredLike.getTo().getStatus()))
-                .map(likeBoth -> {
-                    Node fromNode = new Node(likeBoth.getFrom().getId().toString(), likeBoth.getFrom().getGender());
-                    Node toNode = new Node(likeBoth.getTo().getId().toString(), likeBoth.getTo().getGender());
-                    double weight = (double) (likeBoth.getRate() * likeBoth.getDistance());
-                    return new Edge(fromNode, toNode, weight);
-                }).collect(Collectors.toSet());
-
-        List<Set<Edge>> ignoredEdges = new ArrayList<>();
-        ignoredEdges.addAll(ignoredEdgesByMet);
-        ignoredEdges.add(ignoredEdgesByStatus);
-
-        System.out.println("ignored edges -----" + ignoredEdges);
-
-        // edges
-        List<Edge> edges = likesBoth.stream().map(likeBoth -> {
-            Node fromNode = new Node(likeBoth.getFrom().getId().toString(), likeBoth.getFrom().getGender());
-            Node toNode = new Node(likeBoth.getTo().getId().toString(), likeBoth.getTo().getGender());
-            double weight = (double) (likeBoth.getRate() * likeBoth.getDistance());
-            return new Edge(fromNode, toNode, weight);
-        }).toList();
-
-        System.out.println("Num of edges " + edges.size());
+        FilteredEdges filteredEdges = likeService.getEdges(Set.of("A"));
 
         DGraph dGraph = new DGraph();
-        dGraph.addAll(edges);
+        dGraph.addAll(filteredEdges.getEdges());
 
         Range range = new Range(flags.getMin(), flags.getMax());
         List<BCTree> bcTrees = dGraph.stream().map(cGraph -> {
-            CTree cTree = new CTree(cGraph, List.of(AppConstants.MAN, AppConstants.WOMAN), ignoredEdges);
+            CTree cTree = new CTree(cGraph, List.of(AppConstants.MAN, AppConstants.WOMAN), filteredEdges.getIgnoredEdges());
             return new BCTree(cTree, range);
         }).toList();
 
         List<List<Member>> membersByGroup = new ArrayList<>();
         bcTrees.forEach(bcTree -> bcTree.forEach(cGroup -> {
             List<Member> profiles = cGroup.stream()
-                    .map(node -> new Member(nodes.get(node.getId()), "A", "U"))
+                    .map(node -> new Member(filteredEdges.getNodes().get(node.getId()), "A", "U"))
                     .toList();
             membersByGroup.add(profiles);
         }));

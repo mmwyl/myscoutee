@@ -1,7 +1,9 @@
 package com.raxim.myscoutee.profile.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,18 +15,22 @@ import java.util.stream.Stream;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
+import com.raxim.myscoutee.algo.dto.Edge;
+import com.raxim.myscoutee.algo.dto.Node;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
 import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Sequence;
+import com.raxim.myscoutee.profile.data.dto.FilteredEdges;
 import com.raxim.myscoutee.profile.data.dto.rest.LikeDTO;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.SequenceRepository;
 import com.raxim.myscoutee.profile.util.AppConstants;
+import com.raxim.myscoutee.profile.util.EventUtil;
 import com.raxim.myscoutee.profile.util.LikeUtil;
 
 @Service
@@ -43,6 +49,62 @@ public class LikeService {
         this.likeRepository = likeRepository;
         this.eventRepository = eventRepository;
         this.sequenceRepository = sequenceRepository;
+    }
+
+    public FilteredEdges getEdges(Set<String> ignoredStatuses) {
+        List<LikeGroup> likeGroups = likeRepository.findLikeGroups();
+
+        // merge likes
+        List<Like> likesBoth = likeGroups.stream().map(group -> {
+            return group.reduce();
+        }).filter(like -> like != null).toList();
+
+        // nodes
+        Map<String, Profile> nodes = new HashMap<>();
+        likesBoth.forEach(likeBoth -> {
+            nodes.put(likeBoth.getFrom().getId().toString(), likeBoth.getFrom());
+            nodes.put(likeBoth.getTo().getId().toString(), likeBoth.getTo());
+        });
+
+        // edges
+        List<Edge> edges = likesBoth.stream().map(likeBoth -> {
+            Node fromNode = new Node(likeBoth.getFrom().getId().toString(), likeBoth.getFrom().getGender());
+            Node toNode = new Node(likeBoth.getTo().getId().toString(), likeBoth.getTo().getGender());
+            double weight = (double) likeBoth.getRate();
+            return new Edge(fromNode, toNode, weight);
+        }).toList();
+
+        // ignoring edges, where the profile is not with status 'A' or F
+        Set<Edge> ignoredEdgesByStatus = likesBoth.stream()
+                .filter(ignoredLike -> !ignoredStatuses.contains(ignoredLike.getFrom().getStatus())
+                        || !ignoredStatuses.contains(ignoredLike.getTo().getStatus()))
+                .map(likeBoth -> {
+                    Node fromNode = new Node(likeBoth.getFrom().getId().toString(), likeBoth.getFrom().getGender());
+                    Node toNode = new Node(likeBoth.getTo().getId().toString(), likeBoth.getTo().getGender());
+                    double weight = (double) (likeBoth.getRate() * likeBoth.getDistance());
+                    return new Edge(fromNode, toNode, weight);
+                }).collect(Collectors.toSet());
+
+        List<Set<Edge>> ignoredEdges;
+
+        if (ignoredStatuses.contains("F")) {
+            ignoredEdges = new ArrayList<>();
+        } else {
+            List<Event> events = eventRepository.findAll();
+
+            ignoredEdges = events.stream().map(event -> {
+                Set<Member> members = event.getMembers()
+                        .stream()
+                        .filter(member -> Member.MET.contains(member.getStatus()))
+                        .collect(Collectors.toSet());
+
+                return EventUtil.permutate(members);
+            }).toList();
+        }
+
+        ignoredEdges.add(ignoredEdgesByStatus);
+
+        return new FilteredEdges(nodes, edges, ignoredEdges);
     }
 
     public List<LikeDTO> saveLikes(Profile profile, List<LikeDTO> pfLikes) {
