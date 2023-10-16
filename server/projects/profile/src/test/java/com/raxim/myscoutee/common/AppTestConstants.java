@@ -21,6 +21,7 @@ public class AppTestConstants {
     public final static UUID UUID_PROFILE_EVELYIN = UUID.fromString("428c6c68-23b9-07c7-71e7-720b001abdb7");
 
     public static final UUID UUID_EVENT_32 = UUID.fromString("15ad960f-b104-45ee-8510-ebf6ac78d3d8");
+    public static final UUID UUID_EVENT_32_P = UUID.fromString("c20b958a-1daa-442c-9187-92de2c5b7806");
     public static final UUID UUID_EVENT_1 = UUID.fromString("1d03cf6d-a6bb-4ca0-92fa-251502bac825");
     public static final UUID UUID_EVENT_111 = UUID.fromString("b5aa652d-b55b-4861-b45b-0b3d58d16808");
     public static final UUID UUID_EVENT_ITEM_32 = UUID.fromString("541a9f25-7594-41e6-9707-0055be0a48f1");

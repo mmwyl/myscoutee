@@ -35,7 +35,7 @@
                                                         {
                                                             "$eq": [
                                                                 "?#{#param.id}",
-                                                                "$profile.$id"
+                                                                "$$member.profile.$id"
                                                             ]
                                                         },
                                                         {

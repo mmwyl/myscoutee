@@ -321,7 +321,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
                             });
                 }
 
-                Double rateMin = getRule() != null ? getRule().getRate() : 0d;
+                Double rateMin = getRule() != null ? getRule().getRate() != null ? getRule().getRate() : 0d : 0d;
 
                 List<Member> members = getMembers().stream()
                         .filter(member -> "A".equals(member.getStatus())
@@ -614,7 +614,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
         if (lDiff > 0) {
             getMembers().stream()
                     .filter(member -> fromStatus.equals(member.getStatus()))
-                    .sorted((m1, m2) -> m1.getUpdatedDate().compareTo(m2.getUpdatedDate()))
+                    .sorted((m1, m2) -> m2.getUpdatedDate().compareTo(m1.getUpdatedDate()))
                     .limit(lDiff).map(member -> {
                         member.setStatus(toStatus);
                         return member;

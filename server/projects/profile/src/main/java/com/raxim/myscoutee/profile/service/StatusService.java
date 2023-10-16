@@ -68,6 +68,8 @@ public class StatusService {
                 Member currentMember = optCurrentMember.get();
                 currentMember.setStatus(status);
                 currentMember.setUpdatedDate(LocalDateTime.now());
+                event.getMembers().remove(currentMember);
+                event.getMembers().add(currentMember);
             } else {
                 Set<String> allowedStatuses = Set.of("J", "PR");
                 if (allowedStatuses.contains(status)) {

@@ -6,10 +6,10 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -25,6 +25,7 @@ import com.raxim.myscoutee.common.config.RepositoryConfig;
 import com.raxim.myscoutee.common.repository.MongoDataLoaderTestExecutionListener;
 import com.raxim.myscoutee.common.repository.TestData;
 import com.raxim.myscoutee.profile.converter.Converters;
+import com.raxim.myscoutee.profile.converter.EventConverter;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.MemberDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
@@ -37,7 +38,6 @@ import com.raxim.myscoutee.profile.service.EventService;
 import com.raxim.myscoutee.profile.service.StatusService;
 import com.raxim.myscoutee.profile.util.AppConstants;
 
-@Disabled
 @DataMongoTest
 @DirtiesContext
 @Import({ RepositoryConfig.class, JsonConfig.class })
@@ -59,7 +59,7 @@ public class EventServiceTestInt extends AbstractAlgoTest {
         @Autowired
         private ScoreMatrixRepository scoreMatrixRepository;
 
-        private Converters converters = new Converters();
+        private Converters converters = new Converters(List.of(new EventConverter()));
 
         private EventService eventService;
         private StatusService statusService;
@@ -74,20 +74,20 @@ public class EventServiceTestInt extends AbstractAlgoTest {
         @Test
         public void shouldEventAdminInviteAndAcceptFirst() throws MessageException, CloneNotSupportedException {
                 String[] memberStatuses = new String[] { "A", "I", "J", "W" };
-                String status = "A";
-                double score = Double.MAX_VALUE;
+                String memberStatusOffset = "A";
+                double scoreOffset = Double.MAX_VALUE;
                 LocalDate createdDate = LocalDate.of(1901, 1, 1);
-                String createdDateF = createdDate.atStartOfDay(ZoneId.systemDefault())
+                String createdDateFOffset = createdDate.atStartOfDay(ZoneId.systemDefault())
                                 .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
-                Object[] tOffset = new Object[] { status, score, createdDateF };
+                Object[] tOffset = new Object[] { memberStatusOffset, scoreOffset, createdDateFOffset };
 
                 PageParam pageParam = new PageParam();
                 pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
                 pageParam.setOffset(tOffset);
 
                 List<MemberDTO> memberDTOs = this.eventRepository.findMembersByEvent(pageParam,
-                                AppTestConstants.UUID_EVENT_32,
+                                AppTestConstants.UUID_EVENT_32_P,
                                 memberStatuses);
                 assertEquals(4, memberDTOs.size());
 
@@ -97,8 +97,10 @@ public class EventServiceTestInt extends AbstractAlgoTest {
                                 uuid -> uuid.toString())
                                 .toList();
 
-                eventService.invite(AppTestConstants.UUID_EVENT_32.toString(), invitedIds,
+                Optional<EventDTO> optEventDTO = eventService.invite(AppTestConstants.UUID_EVENT_32_P.toString(), invitedIds,
                                 AppTestConstants.UUID_PROFILE_OLIVER);
+
+                assertEquals("P", optEventDTO.get().getItem().getStatus());
 
                 String[] eventStatuses = new String[] { "A", "P", "C" };
                 LocalDate updatedDate = LocalDate.now();
@@ -114,10 +116,10 @@ public class EventServiceTestInt extends AbstractAlgoTest {
 
                 List<EventDTO> invitations = eventService.getInvitations(pageParamInv, eventStatuses);
                 assertEquals(1, invitations.size());
-                assertEquals(AppTestConstants.UUID_EVENT_32, invitations.get(0).getItem().getId());
+                assertEquals(AppTestConstants.UUID_EVENT_32_P, invitations.get(0).getItem().getId());
 
                 memberDTOs = this.eventRepository.findMembersByEvent(pageParam,
-                                AppTestConstants.UUID_EVENT_32,
+                                AppTestConstants.UUID_EVENT_32_P,
                                 memberStatuses);
                 assertEquals(6, memberDTOs.size());
 
@@ -130,13 +132,13 @@ public class EventServiceTestInt extends AbstractAlgoTest {
                 assertEquals(AppTestConstants.UUID_PROFILE_LIAM, memberDTOs.get(5).getMember().getProfile().getId());
                 assertEquals("I", memberDTOs.get(5).getMember().getStatus());
 
-                statusService.change(AppTestConstants.UUID_EVENT_32.toString(),
+                statusService.change(AppTestConstants.UUID_EVENT_32_P.toString(),
                                 AppTestConstants.UUID_PROFILE_LIAM.toString(), "A");
                 // late accept
-                statusService.change(AppTestConstants.UUID_EVENT_32.toString(),
+                statusService.change(AppTestConstants.UUID_EVENT_32_P.toString(),
                                 AppTestConstants.UUID_PROFILE_ETHAN.toString(), "A");
 
-                memberDTOs = this.eventRepository.findMembersByEvent(pageParam, AppTestConstants.UUID_EVENT_32,
+                memberDTOs = this.eventRepository.findMembersByEvent(pageParam, AppTestConstants.UUID_EVENT_32_P,
                                 memberStatuses);
                 assertEquals(6, memberDTOs.size());
 
