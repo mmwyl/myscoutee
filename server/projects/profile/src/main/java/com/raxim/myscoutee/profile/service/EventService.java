@@ -312,10 +312,9 @@ public class EventService {
         List<Event> events = new ArrayList<>();
 
         try {
-            if (dbEvents.isEmpty()) {
-                Event lEvent;
+            Event lEvent = (Event) pEvent.clone();
 
-                lEvent = (Event) pEvent.clone();
+            if (dbEvents.isEmpty()) {
 
                 lEvent.setId(UUID.randomUUID());
                 lEvent.setGroup(profile.getGroup());
@@ -323,28 +322,9 @@ public class EventService {
                 lEvent.setCreatedBy(profile.getId());
                 lEvent.setStatus(pEvent.getStatus());
 
-                events.add(lEvent);
-
-                dbEvents.add(lEvent);
-                if (parentId != null) {
-                    UUID tParentUuid = UUID.fromString(parentId);
-                    lEvent.setParentId(tParentUuid);
-
-                    List<Event> dbParents = this.eventRepository.findParents(tParentUuid, 2);
-                    dbEvents.addAll(dbParents);
-
-                    if (dbParents.size() > 1) {
-                        Event dbParent = dbEvents.get(1);
-                        dbParent.getItems().add(lEvent);
-                        dbParent.sync();
-                        events.add(dbParent);
-                    }
-                }
-
             } else {
                 Event dbEvent = dbEvents.get(0);
 
-                Event lEvent = (Event) pEvent.clone();
                 lEvent.setId(dbEvent.getId());
                 lEvent.setGroup(dbEvent.getGroup());
                 lEvent.setCreatedDate(dbEvent.getCreatedDate());
@@ -355,8 +335,6 @@ public class EventService {
                 lEvent.shift();
                 lEvent.sync();
 
-                events.add(lEvent);
-
                 if (dbEvents.size() > 1) {
                     Event dbParent = dbEvents.get(1);
 
@@ -365,7 +343,7 @@ public class EventService {
                     List<Event> items = dbParent.getItems().stream()
                             .filter(item -> !item.getId().equals(dbEvent.getId())
                                     && (item.getId().equals(dbEvent.getRef())
-                                            || item.getRef().equals(dbEvent.getRef())))
+                                            || (item.getRef() != null && item.getRef().equals(dbEvent.getRef()))))
                             .map(item -> {
                                 Event tEvent;
                                 try {
@@ -377,22 +355,35 @@ public class EventService {
                                 }
                                 return null;
                             }).filter(item -> item != null).toList();
-                    dbParent.getItems().addAll(items);
-                    events.addAll(dbParent.getItems());
+
+                    if (!items.isEmpty()) {
+                        dbParent.getItems().addAll(items);
+                        events.addAll(dbParent.getItems());
+                        dbParent.sync();
+                        events.add(dbParent);
+                    }
+                }
+            }
+
+            if (parentId != null) {
+                UUID tParentUuid = UUID.fromString(parentId);
+                lEvent.setParentId(tParentUuid);
+
+                List<Event> dbParents = this.eventRepository.findParents(tParentUuid, 2);
+
+                if (dbParents.size() > 0) {
+                    Event dbParent = dbParents.get(0);
+                    dbParent.getItems().add(lEvent);
                     dbParent.sync();
                     events.add(dbParent);
                 }
             }
+
+            events.add(lEvent);
+
         } catch (CloneNotSupportedException e) {
             e.printStackTrace(); // logger is needed
             throw new MessageException(AppConstants.ERR_SAVE);
-        }
-
-        for (int i = 2; i < dbEvents.size(); i++) {
-            Event dbParent = dbEvents.get(i);
-            dbParent.getItems().add(dbEvents.get(i - 1));
-            dbParent.sync();
-            events.add(dbParent);
         }
 
         List<Event> savedEvents = this.eventRepository.saveAll(events);

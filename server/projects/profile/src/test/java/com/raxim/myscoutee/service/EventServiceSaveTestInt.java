@@ -24,7 +24,8 @@ import com.raxim.myscoutee.profile.converter.Converters;
 import com.raxim.myscoutee.profile.converter.EventConverter;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.data.dto.rest.CloneDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
+import com.raxim.myscoutee.profile.exception.MessageException;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ScoreMatrixRepository;
@@ -37,7 +38,7 @@ import com.raxim.myscoutee.profile.service.EventService;
                 "logging.level.org.springframework.data.mongodb=DEBUG" })
 @TestData({ "mongo/profiles.json", "mongo/clone/events.json" })
 @TestExecutionListeners(value = MongoDataLoaderTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
-public class EventServiceCloneTestInt extends AbstractAlgoTest {
+public class EventServiceSaveTestInt extends AbstractAlgoTest {
 
         @Autowired
         private ProfileRepository profileRepository;
@@ -60,16 +61,51 @@ public class EventServiceCloneTestInt extends AbstractAlgoTest {
         }
 
         @Test
-        public void shouldCloneEvent() throws CloneNotSupportedException {
-                CloneDTO cloneDTO = new CloneDTO(3);
+        public void shouldSaveNewEvent() throws MessageException {
+                Profile profileSophia = this.profileRepository.findById(AppTestConstants.UUID_PROFILE_SOPHIA).get();
 
-                Profile profile = profileRepository.findById(AppTestConstants.UUID_PROFILE_SOPHIA).get();
-                Event event = eventRepository.findById(AppTestConstants.UUID_EVENT_1).get();
+                Event event = this.eventRepository.findById(AppTestConstants.UUID_EVENT_111).get();
+                event.setId(null);
+                event.setName(AppTestConstants.UUID_EVENT_111_FAKE_NAME);
 
-                this.eventService.cloneBy(event.getId().toString(), profile, cloneDTO);
+                EventDTO eventDTO = this.eventService
+                                .save(profileSophia, event, AppTestConstants.UUID_EVENT_11.toString()).get();
 
-                List<Event> events = this.eventRepository.findAll();
-                assertEquals(12, events.size());
+                List<Event> eventItems = eventDTO.getItem().getItems();
 
+                assertEquals(2, eventItems.size());
+
+                Event childEvent1 = eventItems.get(1);
+                assertEquals(AppTestConstants.UUID_EVENT_11.toString(),
+                                childEvent1.getParentId().toString());
+                assertEquals(AppTestConstants.UUID_EVENT_111_FAKE_NAME, childEvent1.getName());
+
+                Event childEvent2 = eventItems.get(0);
+                assertEquals(AppTestConstants.UUID_EVENT_111.toString(),
+                                childEvent2.getId().toString());
+        }
+
+        @Test
+        public void shouldSaveExistingEvent() throws MessageException {
+                Profile profileSophia = this.profileRepository.findById(AppTestConstants.UUID_PROFILE_SOPHIA).get();
+
+                Event event = this.eventRepository.findById(AppTestConstants.UUID_EVENT_111).get();
+
+                EventDTO eventDTO = this.eventService
+                                .save(profileSophia, event, AppTestConstants.UUID_EVENT_1.toString()).get();
+
+                List<Event> eventItems = eventDTO.getItem().getItems();
+
+                assertEquals(2, eventItems.size());
+
+                Event childEvent1 = eventItems.get(1);
+                assertEquals(AppTestConstants.UUID_EVENT_1.toString(),
+                                childEvent1.getParentId().toString());
+                assertEquals(AppTestConstants.UUID_EVENT_111.toString(),
+                                childEvent1.getId().toString());
+
+                Event childEvent2 = eventItems.get(0);
+                assertEquals(AppTestConstants.UUID_EVENT_11.toString(),
+                                childEvent2.getId().toString());
         }
 }

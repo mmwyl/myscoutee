@@ -97,7 +97,8 @@ public class EventServiceTestInt extends AbstractAlgoTest {
                                 uuid -> uuid.toString())
                                 .toList();
 
-                Optional<EventDTO> optEventDTO = eventService.invite(AppTestConstants.UUID_EVENT_32_P.toString(), invitedIds,
+                Optional<EventDTO> optEventDTO = eventService.invite(AppTestConstants.UUID_EVENT_32_P.toString(),
+                                invitedIds,
                                 AppTestConstants.UUID_PROFILE_OLIVER);
 
                 assertEquals("P", optEventDTO.get().getItem().getStatus());
@@ -148,16 +149,6 @@ public class EventServiceTestInt extends AbstractAlgoTest {
                 assertEquals(AppTestConstants.UUID_PROFILE_ETHAN, memberDTOs.get(5).getMember().getProfile().getId());
                 assertEquals("W", memberDTOs.get(5).getMember().getStatus());
 
-        }
-
-        @Test
-        public void shouldClone() {
-                // clone event
-        }
-
-        @Test
-        public void shouldSave() {
-                // save event
         }
 
         // Lock/Unlock etc.
