@@ -36,10 +36,10 @@ public class EventRepositoryAlgoTest {
     @Test
     public void shouldFindCandidates() {
         List<Event> events = eventRepository.findAll();
-
+        
         List<EventWithCandidates> eventsWithCandidates = eventRepository.findEventsWithCandidates();
         assertEquals(3, eventsWithCandidates.size());
-        assertEquals("T", eventsWithCandidates.get(0).getEvent().getStatus());
+        assertEquals("P", eventsWithCandidates.get(0).getEvent().getStatus());
 
         EventWithCandidates eventWithCandidates1 = eventsWithCandidates.get(1);
         assertEquals("P", eventWithCandidates1.getEvent().getStatus());

@@ -93,7 +93,7 @@ public class EventGeneratorByPriorityService implements IEventGeneratorService {
             }
 
             List<BCTree> bcTrees = dGraph.stream().map(cGraph -> {
-                CTree cTree = new CTree(cGraph, types, filteredEdges.getIgnoredEdges());
+                CTree cTree = new CTree(cGraph, types, ignoredEdges);
                 return new BCTree(cTree, range, activeNodes);
             }).toList();
 
