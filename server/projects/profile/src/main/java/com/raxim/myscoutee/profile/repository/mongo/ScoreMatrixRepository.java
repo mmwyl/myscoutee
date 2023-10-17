@@ -15,4 +15,7 @@ public interface ScoreMatrixRepository extends MongoRepository<ScoreMatrix, UUID
 
     @Query("{name: ?0}")
     List<ScoreMatrix> findByName(String name);
+
+    @Query("{name: { $in: ?0 }}")
+    List<ScoreMatrix> findByNames(List<String> names);
 }

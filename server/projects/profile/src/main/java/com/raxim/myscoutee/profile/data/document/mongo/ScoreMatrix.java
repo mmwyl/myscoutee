@@ -16,6 +16,10 @@ public class ScoreMatrix {
     @JsonProperty(value = "name") // fifa
     private String name;
 
+    public String getName() {
+        return name;
+    }
+
     // (W)Win, (D)Draw, YD (Yellow Card),
     // IR (Indirect Red card - second yellow card), DR (Red card),
     // YDR (yellow card with direct red card)
