@@ -88,6 +88,7 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 assertEquals(0, parentEvent.getStage());
 
                 List<Event> currEvents = parentEvent.getItemsByStage(parentEvent.getStage());
+                assertEquals(2, currEvents.size());
 
                 Event event1 = currEvents.get(0);
                 assertEquals("P", event1.getStatus());
@@ -97,7 +98,7 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 assertEquals("P", event2.getStatus());
                 assertEquals(5, event2.getMembers().size());
 
-                // cancelled
+                // timed out
                 List<Event> eventsToSave = currEvents.stream().map(item -> {
                         RangeLocal lRangeLocal = new RangeLocal(
                                         LocalDateTime.now().plusMinutes(item.getStage() * graceCnt),
@@ -116,6 +117,7 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 assertEquals(0, parentEvent.getStage());
 
                 currEvents = parentEvent.getItemsByStage(parentEvent.getStage());
+                assertEquals(2, currEvents.size());
 
                 event1 = currEvents.get(0);
                 assertEquals("T", event1.getStatus());
@@ -151,6 +153,8 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
 
                 List<Event> prevEvents = parentEvent.getItemsByStage(parentEvent.getStage() - 1);
 
+                assertEquals(2, prevEvents.size());
+
                 event1 = prevEvents.get(0);
                 assertEquals("F", event1.getStatus());
                 assertEquals(6, event1.getMembers().size());
@@ -160,6 +164,7 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 assertEquals(5, event2.getMembers().size());
 
                 List<Event> nextEvents = parentEvent.getItemsByStage(parentEvent.getStage());
+                assertEquals(1, nextEvents.size());
 
                 event1 = nextEvents.get(0);
                 assertEquals("P", event1.getStatus());
