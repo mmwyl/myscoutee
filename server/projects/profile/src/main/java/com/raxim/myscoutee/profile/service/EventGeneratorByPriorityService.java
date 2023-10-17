@@ -1,5 +1,6 @@
 package com.raxim.myscoutee.profile.service;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -64,7 +65,9 @@ public class EventGeneratorByPriorityService implements IEventGeneratorService {
                             edge.getWeight() >= rule.getRate())
                     .collect(Collectors.toSet());
 
-            List<Set<Edge>> ignoredEdges = List.of(sIgnoredEdges, sIgnoredEdgesByRate);
+            List<Set<Edge>> ignoredEdges = new ArrayList<>();
+            ignoredEdges.add(sIgnoredEdges);
+            ignoredEdges.add(sIgnoredEdgesByRate);
             ignoredEdges.addAll(filteredEdges.getIgnoredEdges());
 
             Set<Edge> possibleEdges = EventUtil.permutate(event.getCandidates());

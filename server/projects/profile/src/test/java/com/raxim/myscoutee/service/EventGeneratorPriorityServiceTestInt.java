@@ -3,6 +3,7 @@ package com.raxim.myscoutee.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -24,6 +25,7 @@ import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.EventWithCandidates;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
+import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
@@ -65,11 +67,16 @@ public class EventGeneratorPriorityServiceTestInt extends AbstractAlgoTest {
 
                 List<EventWithCandidates> eventWithCandidates = this.eventRepository.findEventsWithCandidates();
                 assertTrue(eventWithCandidates.size() > 0);
-                assertEquals("T", eventWithCandidates.get(0).getEvent().getStatus());
+                assertEquals("P", eventWithCandidates.get(0).getEvent().getStatus());
                 assertEquals(1, eventWithCandidates.get(2).getEvent().getMembers().size());
 
                 Event event = this.eventRepository.findById(eventWithCandidates.get(0).getEvent().getId()).get();
                 assertEquals("P", event.getStatus());
+
+                //manipulate startdate enddate of event
+                RangeLocal rangeLocal = new RangeLocal(LocalDateTime.now().minusMinutes(20), LocalDateTime.now().plusHours(2));
+                event.setRange(rangeLocal);
+                this.eventRepository.save(event);
 
                 eventGeneratorPriorityService.generate();
 

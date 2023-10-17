@@ -843,8 +843,10 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     public void timeOut() {
         setStatus("T");
 
-        for (Event item : getItems()) {
-            item.timeOut();
+        if (getItems() != null) {
+            for (Event item : getItems()) {
+                item.timeOut();
+            }
         }
     }
 
