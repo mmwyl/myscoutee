@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,10 +94,31 @@ public class MongoRepositoryFactoryBean<T extends Repository<S, ID>, S, ID exten
 			String repositoryName = getObjectType().getSimpleName().replaceFirst("Repository", "").toLowerCase();
 			ClassPathResource classPathResource = new ClassPathResource("/mongo/" + repositoryName);
 			if (classPathResource.exists()) {
-				URI dir = classPathResource.getURI();
+				System.out.println(repositoryName + " is being loaded!");
+
+				URI uri = classPathResource.getURI();
+
+				Path path;
+				if (uri.getScheme().equals("jar")) {
+					FileSystem fileSystem;
+					try {
+						fileSystem = FileSystems.getFileSystem(uri);
+					} catch (Exception e) {
+						System.out.println("Creating file system!");
+						fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
+					}
+
+					String subPath = uri.toString()
+							.replaceAll("!", "")
+							.split("jar/")[1];
+					path = fileSystem.getPath(subPath);
+				} else {
+					path = Paths.get(uri);
+				}
+
 				ObjectMapper objectMapper = new ObjectMapper();
 
-				try (Stream<Path> stream = Files.list(Paths.get(dir))) {
+				try (Stream<Path> stream = Files.list(path)) {
 					stream
 							.filter(file -> !Files.isDirectory(file))
 							.forEach(file -> {
@@ -119,6 +143,7 @@ public class MongoRepositoryFactoryBean<T extends Repository<S, ID>, S, ID exten
 								}
 							});
 				}
+				System.out.println(repositoryName + " has been loaded!");
 			} else {
 				System.out.println(repositoryName + " hasn't any file to load!");
 			}

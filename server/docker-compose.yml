@@ -15,15 +15,18 @@ services:
   #     - ./data/certbot/conf:/etc/letsencrypt
   #     - ./data/certbot/www:/var/www/certbot
   nginx:
+    #build:
+    #   context: docker/images/nginx
     container_name: nginx
     hostname: nginx
     image: ${NGINX_IMAGE}
-    environment:
-      WAIT_FOR: profilemanagement:8080
+    #environment:
+    #  WAIT_FOR: profilemanagement:8080
     ports:
       - 80:80
       - 443:443
       - 27017-27019:27017-27019
+      - 5005:5005
     volumes:
       - ./docker/conf/nginx/conf/http:/etc/nginx/conf.d/
       - ./docker/conf/nginx/conf/stream:/etc/nginx/stream_conf.d/
@@ -58,8 +61,8 @@ services:
       #- /etc/localtime:/etc/localtime:ro
     networks:
       - myscoutee
-    ports:
-      - 27017-27019:27017-27019
+    #ports:
+    #  - 27017-27019:27017-27019
   profilemanagement:
     image: ${MYSCOUTEE_IMAGE}
     build:
@@ -71,6 +74,9 @@ services:
       MONGODB_USERNAME: "guest"
       MONGODB_PASSWORD: "guest"
       ADMIN_USER: "myscoutee@gmail.com"
+      JAVA_TOOL_OPTIONS: >
+              -Xdebug
+              -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     volumes:
       - ./data/profile/img:/tmp/img
       #- /etc/timezone:/etc/timezone:ro

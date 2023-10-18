@@ -78,7 +78,7 @@ public class FirebaseService {
             user = this.userRepository.save(userToSave);
         }
 
-        //last active date needs to be saved on every call
+        // last active date needs to be saved on every call
         user.getProfile().setLastActive(LocalDateTime.now());
         this.profileRepository.save(user.getProfile());
 
@@ -114,7 +114,9 @@ public class FirebaseService {
             }
         }
 
-        String role = user.getProfile() != null ? user.getProfile().getRole() : null;
+        String role = (user.getProfile() != null
+                && user.getProfile().getRole() != null) ? user.getProfile().getRole()
+                        : "U";
 
         return new FirebasePrincipal(user, role);
     }
