@@ -22,6 +22,9 @@ shift + fn + f5 (refresh page without cache)
 ng serve --ssl (dummy https)
 
 update angular:
+
+npm i
+
 1) npm install -g n
 2) n lts
 3) n latest
