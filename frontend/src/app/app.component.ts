@@ -196,7 +196,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
               }
             }
           } else if (routeConfig.loadChildren) {
-            this.links = routeConfig['_loadedConfig'].routes
+            this.links = routeConfig['_loadedRoutes']
               .filter(
                 (route) => route.redirectTo === undefined && !route.data.dialog
               )
