@@ -4,6 +4,9 @@ now:
 3) add chat menu at the top (chat icon) -> if you accept invitation, then it goes to event tab
 4) expose the url of random event generation
 5) replace the notification icon with calendar icon
+6) age range filter on games non_rate screen
+
+cron job for random generator + chat (event) leave (disable friends only for the time being)
 
 future:
 

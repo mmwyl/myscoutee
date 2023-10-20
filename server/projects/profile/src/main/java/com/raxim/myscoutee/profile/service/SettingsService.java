@@ -24,11 +24,11 @@ public class SettingsService {
     public Optional<SettingDTO> getSetting(UUID profileId, String key) {
         Optional<Setting> setting = settingRepository.findSettingByProfileAndKey(profileId, key);
 
-        if (setting == null) {
-            Optional<Form> form = formRepository.findFormByKey(key);
-            if (form.isPresent()) {
-                Form sForm = form.get();
+        Optional<Form> form = formRepository.findFormByKey(key);
+        if (form.isPresent()) {
+            Form sForm = form.get();
 
+            if (!setting.isPresent()) {
                 Setting settingToSave = new Setting();
                 settingToSave.setId(UUID.randomUUID());
                 settingToSave.setKey(key);
@@ -36,6 +36,8 @@ public class SettingsService {
                 settingToSave.setItems(sForm.getItems());
                 Setting savedSetting = settingRepository.save(settingToSave);
                 return Optional.of(new SettingDTO(savedSetting));
+            } else {
+                return Optional.of(new SettingDTO(setting.get()));
             }
         }
         return Optional.empty();

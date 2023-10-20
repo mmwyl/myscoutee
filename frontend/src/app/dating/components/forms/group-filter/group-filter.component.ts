@@ -61,7 +61,7 @@ export class GroupFilterComponent implements OnInit {
       next: (result) => {
         let formGroup = new FormGroup({});
 
-        this.setting = result;
+        this.setting = result["setting"];
         this.setting.items.map((item) => {
           switch (item.type) {
             case 'os':
