@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanLoad, Route, Router, UrlSegment, UrlTree } from '@angular/router';
+import { Route, Router, UrlSegment, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { NavigationService } from './navigation.service';
 import { HttpService } from './services/http.service';
@@ -7,7 +7,7 @@ import { HttpService } from './services/http.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuardService implements CanLoad {
+export class AuthGuardService  {
   constructor(
     public navService: NavigationService,
     public httpService: HttpService,
