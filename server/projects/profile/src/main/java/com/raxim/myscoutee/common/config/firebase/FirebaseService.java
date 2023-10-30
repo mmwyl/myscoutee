@@ -56,7 +56,7 @@ public class FirebaseService {
             List<Group> groups = this.groupRepository.findSystemGroups();
 
             List<Profile> profiles = groups.stream().map(group -> {
-                Profile profile = new Profile();
+                Profile profile = new Profile(UUID.randomUUID());
                 profile.setFirstName(group.getName());
                 profile.setGroup(group.getId());
 

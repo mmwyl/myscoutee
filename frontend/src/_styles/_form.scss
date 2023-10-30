@@ -1,5 +1,5 @@
 form[default] {
-  
+
   div[button-row] {
     display: grid;
     margin: 10px;
@@ -18,18 +18,25 @@ form[default] {
     display: flex;
     flex-direction: column;
   }
+
   mat-slide-toggle {
-    background: whitesmoke;
+    .mdc-form-field {
+      background: whitesmoke !important;
+    }
+
+    .mdc-switch {
+      margin-left: auto;
+    }
+
+    .mdc-label {
+      margin: 10px;
+    }
   }
+
   mat-radio-button {
     margin: 10px;
   }
-  .mat-slide-toggle-bar {
-    margin-left: auto;
-  }
-  .mat-slide-toggle-label {
-    margin: 10px;
-  }
+
   fieldset {
     position: relative;
 
