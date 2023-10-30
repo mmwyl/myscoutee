@@ -1,7 +1,7 @@
 import { HttpParams } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA } from '@angular/material/legacy-dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { HttpService } from 'src/app/services/http.service';
 
@@ -46,7 +46,7 @@ export class GroupFilterComponent implements OnInit {
   }
 
   onData(key, evt): void {
-    this.formGroup.controls[key].setValue(evt.value);
+    this.formGroup.controls[key].setValue(evt.target.value);
   }
 
   ngOnInit(): void {

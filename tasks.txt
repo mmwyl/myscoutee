@@ -13,3 +13,10 @@ future:
 1) game kepernyo
     a) double_rate az 5. icon (filter on new, matched, met)
     b) add filter to 4. icon (filter on met or new)
+
+bugs:
+-----
+
+1) changing image, is not saved
+2) on profile clicking on image, should show all the 3 images (1th one third of the panel => first ikmage, second third => second image)
+3) update image next tim is forbidden

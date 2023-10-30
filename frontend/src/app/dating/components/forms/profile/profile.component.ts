@@ -7,10 +7,10 @@ import {
 } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import {
-  MatLegacyDialog as MatDialog,
-  MatLegacyDialogRef as MatDialogRef,
-  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA
-} from '@angular/material/legacy-dialog';
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA
+} from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { HttpService } from 'src/app/services/http.service';
 import { DataService } from 'src/app/services/data.service';
@@ -104,7 +104,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onHeight(evt): void {
-    this.data.height = evt.value;
+    this.data.height = evt.target.value;
   }
 
   numSequence(n: number): Array<number> {

@@ -34,9 +34,9 @@
           <mat-slider
             min="0"
             max="9"
-            [formControlName]="'rate'"
-            (input)="onRate($event)"
-          ></mat-slider>
+          >
+          <input [formControlName]="'rate'" (input)="onRate($event)" matSliderThumb>
+        </mat-slider>
         </fieldset>
         <fieldset>
           <legend>Description (min. 10, max. 160)</legend>

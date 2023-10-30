@@ -20,9 +20,9 @@
       <mat-slider
         min="0"
         [max]="item.options.length - 1"
-        [formControlName]="item.name"
-        (input)="onData(item.name, $event)"
-      ></mat-slider>
+      >
+      <input [formControlName]="item.name" (input)="onData(item.name, $event)" matSliderThumb>
+    </mat-slider>
     </fieldset>
   </form>
 </div>

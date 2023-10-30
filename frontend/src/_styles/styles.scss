@@ -473,8 +473,10 @@ mat-card[default] {
   font-weight: bold;
 }
 
-.mat-tab-link {
-  opacity: 0.8 !important;
+.mat-mdc-tab-link {
+  .mdc-tab-indicator {
+    display: none;
+  }
 
   .mat-icon.mat-warn {
     color: red;

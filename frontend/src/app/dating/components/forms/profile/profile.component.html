@@ -82,9 +82,9 @@
           <mat-slider
             min="40"
             max="250"
-            [formControlName]="'height'"
-            (input)="onHeight($event)"
-          ></mat-slider>
+          >
+          <input [formControlName]="'height'" (input)="onHeight($event)" matSliderThumb>
+        </mat-slider>
         </fieldset>
         <mat-form-field>
           <mat-label>Physique</mat-label>

@@ -1,4 +1,4 @@
-<nav *ngIf="links && !itemLinks" mat-tab-nav-bar mat-align-tabs="center">
+<nav *ngIf="links && !itemLinks" mat-tab-nav-bar mat-align-tabs="center" [tabPanel]="tabPanel">
   <a
     mat-tab-link
     *ngFor="let link of links"
@@ -22,7 +22,7 @@
     </mat-icon>
   </a>
 </nav>
-<nav *ngIf="links && itemLinks" mat-tab-nav-bar mat-align-tabs="center">
+<nav *ngIf="links && itemLinks" mat-tab-nav-bar mat-align-tabs="center" [tabPanel]="tabPanel">
   <button mat-icon-button class="mat-item" (click)="back()">
     <mat-icon>arrow_backward</mat-icon>
   </button>
@@ -56,6 +56,7 @@
     </mat-icon>
   </a>
 </nav>
+<mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 <div
   [ngStyle]="{
     position: 'relative',
@@ -67,7 +68,7 @@
 >
   <router-outlet #outlet="outlet"></router-outlet>
 </div>
-<nav *ngIf="links && subLinks" mat-tab-nav-bar mat-align-tabs="center" class="mat-tab-footer">
+<nav *ngIf="links && subLinks" mat-tab-nav-bar mat-align-tabs="center" class="mat-tab-footer" [tabPanel]="tabPanel">
   <a
     mat-tab-link
     *ngFor="let link of subLinks"
