@@ -970,8 +970,9 @@ const eventTypes: Option[] = [
 
 const statuses: Option[] = [
   { value: 'I', viewValue: 'Invisible' },
-  { value: 'F', viewValue: 'Friends Only' },
-  { value: 'A', viewValue: 'All' },
+  //{ value: 'F', viewValue: 'Friends Only' },
+  //{ value: 'A', viewValue: 'All' },
+  { value: 'A', viewValue: 'Active' },
 ];
 
 const groupTypes: Option[] = [
