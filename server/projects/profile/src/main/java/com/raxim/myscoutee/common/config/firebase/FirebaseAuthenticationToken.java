@@ -38,8 +38,9 @@ public class FirebaseAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public void setAuthenticated(boolean isAuthenticated) {
-        throw new IllegalArgumentException(
-                "Cannot set this token to trusted - use constructor which takes a GrantedAuthority list instead");
+        super.setAuthenticated(isAuthenticated);
+        /*throw new IllegalArgumentException(
+                "Cannot set this token to trusted - use constructor which takes a GrantedAuthority list instead");*/
     }
 
     @Override

@@ -44,7 +44,7 @@ public class WebSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.addFilterBefore(tokenAuthorizationFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/messages").permitAll()
+                        .requestMatchers("/messages", "/admin/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .csrf(csrf -> csrf.disable());
