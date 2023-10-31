@@ -34,7 +34,7 @@
           class="img_content"
           (click)="content()"
         />
-        <div *ngIf="data.imgs && data.imgs.size > 0 && visible" class="slide_bar">
+        <div *ngIf="data.imgs && data.imgs.length > 0 && visible" class="slide_bar">
           <div
             class="slide"
             *ngFor="let img of data.imgs; let idx = index"

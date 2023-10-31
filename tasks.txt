@@ -4,8 +4,7 @@ now:
 bugs:
 -----
 
-1) on profile clicking on image, should show all the 3 images (1th one third of the panel => first ikmage, second third => second image)
-2) at new profile the form is not loading
+1) at new profile the form is not loading
 
 Tests:
 1) register 2 profiles (man/woman)
