@@ -87,6 +87,7 @@
     height: auto;
     width: auto;
     line-height: 24px;
+    padding: 0 !important;
     background-color: lavender;
   }
 
@@ -97,6 +98,7 @@
     height: auto;
     width: auto;
     line-height: 24px;
+    padding: 0 !important;
     background-color: lavender;
   }
 
@@ -109,6 +111,7 @@
     height: 24px;
     width: 24px;
     line-height: 24px;
+    padding: 0 !important;
     background-color: lavender;
   }
 
@@ -121,6 +124,7 @@
     height: 24px;
     width: 24px;
     line-height: 24px;
+    padding: 0 !important;
     background-color: lavender;
   }
 
@@ -131,12 +135,13 @@
     height: auto;
     width: auto;
     line-height: 24px;
+    padding: 0 !important;
     background-color: lavender;
 
     .btn_label {
       position: absolute;
       margin: auto;
-      top: 6.5px;
+      top: 0;
       bottom: 0;
       left: 0;
       right: 0;

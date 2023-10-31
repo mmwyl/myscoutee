@@ -5,7 +5,6 @@ bugs:
 -----
 
 1) like is not working
-2) panel button is too big (angular material style)
 
 Tests:
 1) register 2 profiles (man/woman)
