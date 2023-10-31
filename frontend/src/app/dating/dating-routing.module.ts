@@ -31,7 +31,7 @@ const routes: Routes = [
         component: MsList,
         data: {
           reuse: true,
-          icon: 'chat',
+          //icon: 'chat',
           actions: [
             /*{
               component: EventFormComponent,
@@ -56,30 +56,13 @@ const routes: Routes = [
           animation: 'One'
         },
       },
-      {
+      /*{
         path: 'events',
         component: MsList,
         data: {
           reuse: true,
           icon: 'event',
           actions: [
-            /*{
-              component: EventFormComponent,
-              type: 'add',
-              icon: 'add',
-            },
-            {
-              component: QrcodeComponent,
-              type: 'verify',
-            },
-            {
-              component: QrcodeComponent,
-              type: 'code',
-            },
-            {
-              component: EventFormComponent,
-              type: 'edit',
-            },*/
           ],
           multiple: true,
           event: true, //temporary
@@ -172,7 +155,7 @@ const routes: Routes = [
             },
           },
         ],
-      },
+      },*/
       /*{
         path: 'invitations',
         component: MsList,

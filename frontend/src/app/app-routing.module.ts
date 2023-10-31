@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuardService as AuthGuard } from './auth-guard.service';
 import { LoginComponent } from './login/login.component';
-import { MsMenu } from 'src/lib';
 
 // https://github.com/Mokkapps/angular-manual-lazy-load-demo/blob/master/src/app/lazy-loader.service.ts
 // firebase notification lazy load
@@ -24,7 +23,7 @@ const routes: Routes = [
   // business also can attach event organizer's event as a group event -
   // can set random - (groups has been rated together as in the case of dating)
   // jobs, group invite, idea sharing
-  {
+  /*{
     path: 'business',
     loadChildren: () =>
       import('./business/business.module').then((m) => m.BusinessModule),
@@ -35,7 +34,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./job/job.module').then((m) => m.JobModule),
     canLoad: [AuthGuard],
-  },
+  },*/
 ];
 
 @NgModule({
