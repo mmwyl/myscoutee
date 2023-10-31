@@ -41,7 +41,7 @@ public class ImagesRestController {
     @PostMapping(value = { "", "/{name}" })
     public ResponseEntity<ImageDTO> upload(
             @PathVariable(required = false) String name,
-            @RequestParam("orig") MultipartFile orig,
+            @RequestParam(value= "orig", required = false) MultipartFile orig,
             @RequestParam("edited") MultipartFile edited) {
         String fileName = name != null ? name : UUID.randomUUID().toString();
         try {

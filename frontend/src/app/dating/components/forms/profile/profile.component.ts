@@ -116,7 +116,7 @@ export class ProfileComponent implements OnInit {
   }
 
   openDialog(idx) {
-    const dialogRef = this.dialog.open(EditorComponent, {
+    var dialogRef = this.dialog.open(EditorComponent, {
       maxWidth: '100vw',
       maxHeight: '100vh',
       height: '100%',
@@ -149,6 +149,8 @@ export class ProfileComponent implements OnInit {
             Date.now()
         );
       }
+
+      dialogRef = null;
     });
   }
 

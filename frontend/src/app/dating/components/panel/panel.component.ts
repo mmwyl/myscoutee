@@ -128,7 +128,7 @@ export class PanelComponent implements OnInit, OnDestroy {
   }
 
   openDialog(idx) {
-    const dialogRef = this.dialog.open(this.actions[idx].component, {
+    var dialogRef = this.dialog.open(this.actions[idx].component, {
       maxWidth: '100vw',
       maxHeight: '100vh',
       height: '100%',
@@ -157,6 +157,8 @@ export class PanelComponent implements OnInit, OnDestroy {
           }
           break;
       }
+
+      dialogRef = null;
     });
   }
 
