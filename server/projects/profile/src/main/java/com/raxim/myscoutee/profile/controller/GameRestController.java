@@ -1,5 +1,6 @@
 package com.raxim.myscoutee.profile.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.util.CommonUtil;
+import com.raxim.myscoutee.common.util.FileUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
@@ -23,6 +25,8 @@ import com.raxim.myscoutee.profile.handler.ParamHandlers;
 import com.raxim.myscoutee.profile.handler.SchoolParamHandler;
 import com.raxim.myscoutee.profile.service.ProfileService;
 import com.raxim.myscoutee.profile.service.SchoolService;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("games")

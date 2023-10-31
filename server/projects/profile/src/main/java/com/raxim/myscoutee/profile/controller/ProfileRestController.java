@@ -1,5 +1,6 @@
 package com.raxim.myscoutee.profile.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,11 +16,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
+import com.raxim.myscoutee.common.util.FileUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.LikeDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
 import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 import com.raxim.myscoutee.profile.service.LikeService;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RepositoryRestController("profiles")
 public class ProfileRestController {

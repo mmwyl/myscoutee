@@ -4,7 +4,8 @@ now:
 bugs:
 -----
 
-1) at new profile the form is not loading
+1) like is not working
+2) panel button is too big (angular material style)
 
 Tests:
 1) register 2 profiles (man/woman)

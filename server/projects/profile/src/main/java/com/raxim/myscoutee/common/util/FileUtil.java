@@ -32,6 +32,23 @@ public class FileUtil {
         buffStream.close();
     }
 
+    public static void load(String name, HttpServletResponse response) throws IOException {
+        String[] pName = name.split("_orig");
+        String sub = (name.contains("_orig")) ? "_orig" : "";
+
+        Pair<String, String> pathInfo = FileUtil.tempToPath(pName[0], false);
+        String separator = pathInfo.getFirst();
+        String tmpDir = pathInfo.getSecond();
+        File file = new File(tmpDir + separator + "_" + pName[0] + sub);
+
+        if (!file.exists()) {
+            Pair<String, String> fullDirInfo = FileUtil.uuidToPath(pName[0], false);
+            String fullDir = fullDirInfo.getSecond();
+            file = new File(fullDir + separator + "_" + pName[0] + sub);
+        }
+        FileUtil.copyFileToHttp(response, file);
+    }
+
     public static void copyFileToHttp(HttpServletResponse response, File file) throws IOException {
         if (!file.exists()) {
             return;

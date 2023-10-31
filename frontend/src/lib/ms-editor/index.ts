@@ -4,6 +4,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   Renderer2,
@@ -34,9 +35,6 @@ export class MsEditor implements OnInit, OnChanges {
     private _renderer: Renderer2,
     private navService: EventBusService
   ) {
-    if (this.data !== undefined) {
-      this.data.src = this.data.src + '?' + Date.now();
-    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -51,15 +49,19 @@ export class MsEditor implements OnInit, OnChanges {
 
   // init
   ngOnInit(): void {
-    this.notify();
+    //this.notify();
     /*QRCode.toCanvas(this.canvasRef.nativeElement, 'sample text', function (error) {
             if (error) console.error(error)
             console.log('success!');
         });*/
 
+    if (this.data !== undefined) {
+      this.data.src = this.data.src + '?' + Date.now();
+    }
+
     let transform = new Transform();
     if (this.data.value !== undefined) {
-      transform = new Transform(this.data.value.matrix);
+      transform = new Transform(this.data.value.mtx);
     }
 
     this.magnifier = new Magnifier(
@@ -83,16 +85,16 @@ export class MsEditor implements OnInit, OnChanges {
       this.itemRef.nativeElement,
       'transform',
       'translate(' +
-        mtx.pos.x +
-        'px,' +
-        mtx.pos.y +
-        'px) scale(' +
-        mtx.scale +
-        ',' +
-        mtx.scale +
-        ') rotate(' +
-        mtx.angle +
-        'deg)'
+      mtx.pos.x +
+      'px,' +
+      mtx.pos.y +
+      'px) scale(' +
+      mtx.scale +
+      ',' +
+      mtx.scale +
+      ') rotate(' +
+      mtx.angle +
+      'deg)'
     );
     this.changed.emit({ mtx });
   }

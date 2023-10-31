@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 //@BasePathAwareController
 @RestController
-@RequestMapping("/")
+@RequestMapping("")
 public class BaseOverrideRestController {
     @RequestMapping(path = {
             "schools", "schools/{id}", "cars", "cars/{id}", "items", "items/{id}",
@@ -31,38 +31,25 @@ public class BaseOverrideRestController {
 
     @GetMapping(path = {
             "profiles/{id}/images/{name}",
+            "profiles/{profileId}/cars/{id}/images/{name}",
+            "profiles/{profileId}/cars/images/{name}",
             "user/profile/images/{name}",
             "user/cars/{id}/images/{name}",
             "user/cars/images/{name}",
             "user/groups/images/{name}",
             "user/groups/{id}/images/{name}",
             "user/groups/{id}/profiles/{pId}/images/{name}",
-            "profiles/{profileId}/cars/{id}/images/{name}",
-            "profiles/{profileId}/cars/images/{name}",
-            "games/{type}/{id}/images/{name}",
             "activity/events/{eventId}/members/{id}/images/{name}",
             "activity/events/{eventId}/items/{itemId}/members/{id}/images/{name}",
             "activity/invitations/{eventId}/members/{id}/images/{name}",
             "promotions/{promoId}/events/{eventId}/members/{id}/images/{name}",
             "promotions/{promoId}/members/{id}/images/{name}",
             "ideas/people/{id}/images/{name}",
+            "games/{type}/{id}/images/{name}",
             "games/rate_double/{selected}/{type}/{id}/images/{name}"
     })
     public void download(@PathVariable String name, HttpServletResponse response) throws IOException {
-        String[] pName = name.split("_orig");
-        String sub = (pName.length > 1) ? "_orig" : "";
-
-        Pair<String, String> pathInfo = FileUtil.tempToPath(pName[0], false);
-        String separator = pathInfo.getFirst();
-        String tmpDir = pathInfo.getSecond();
-        File file = new File(tmpDir + separator + "_" + pName[0] + sub);
-
-        if (!file.exists()) {
-            Pair<String, String> fullDirInfo = FileUtil.uuidToPath(pName[0], false);
-            String fullDir = fullDirInfo.getSecond();
-            file = new File(fullDir + separator + "_" + pName[0] + sub);
-        }
-        FileUtil.copyFileToHttp(response, file);
+        FileUtil.load(name, response);
     }
 
     @GetMapping(path = {

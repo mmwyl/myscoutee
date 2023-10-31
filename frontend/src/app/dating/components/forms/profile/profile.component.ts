@@ -73,6 +73,8 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.data.images = this.data.images ? this.data.images : [];
+
     this.formGroup = this.fb.group({
       data: this.fb.group({
         firstName: [this.data.firstName, Validators.required],
@@ -83,13 +85,13 @@ export class ProfileComponent implements OnInit {
         hasChild: [this.data.hasChild],
         height: [this.data.height],
         physique: [this.data.physique],
-        languages: [[...this.data.languages != null ? this.data.languages : []]],
+        languages: [[...this.data.languages ? this.data.languages : []]],
         religion: [this.data.religion],
         profession: [this.data.profession],
         status: [this.data.status !== undefined ? this.data.status : 'I'],
       }),
       images: [
-        [...this.data.images ? this.data.images : [,,]],
+        [...this.data.images],
         [Validators.required, Validators.minLength(3)],
       ],
       voice: [this.data.voice],
@@ -100,7 +102,9 @@ export class ProfileComponent implements OnInit {
         location.origin + '/backend' + this.url + '/images/' + image['name']
     );
 
-    this.voiceUrl = location.origin + '/backend' + this.url + '/voice/' + this.data.voice;
+    if (this.data.voice) {
+      this.voiceUrl = location.origin + '/backend' + this.url + '/voice/' + this.data.voice;
+    }
   }
 
   onHeight(evt): void {

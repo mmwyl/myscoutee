@@ -38,7 +38,8 @@ disableUserSelect {
   -ms-user-select: none;
   user-select: none;
   outline: none;
-  -webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  /* mobile webkit */
 }
 
 /*.preload * {
@@ -53,6 +54,7 @@ html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
@@ -147,6 +149,7 @@ body {
       width: 5vmax;
     }
   }
+
   & div[mat-button]:focus {
     box-shadow: 0 0px 12px 0 rgba(0, 0, 0, 0.14), 0 0px 10px rgba(0, 0, 0, 0.5);
     background: darkgrey;
@@ -183,9 +186,11 @@ mat-slider[mat-range] {
     pointer-events: all;
     transform: scale(0.7) !important;
   }
+
   & .mat-slider-thumb-label {
     transform: rotate(45deg) !important;
     border-radius: 50% 50% 0;
+
     & .mat-slider-thumb-label-text {
       opacity: 1 !important;
     }
@@ -215,6 +220,7 @@ div[mat-button] {
       fill: transparent;
       stroke-width: 2;
     }
+
     & .buff {
       stroke: red;
       stroke-dashoffset: calc(62.83 - (62.83 * var(--buff)) / var(--limit));
@@ -275,6 +281,7 @@ mat-icon[mat-group] {
     border-color: whitesmoke;
     overflow: hidden !important;
   }
+
   &.mat-form {
     overflow: auto !important;
   }
@@ -293,15 +300,14 @@ mat-icon[mat-group] {
 }
 
 .mat-mdc-progress-bar[mode='determine'] {
-  --mdc-linear-progress-active-indicator-color: greenyellow !important;
+  .mat-primary {
+    --mdc-linear-progress-active-indicator-color: greenyellow !important;
+  }
 }
 
-.mat-progress-bar.mat-accent {
-  .mat-progress-bar-fill::after {
-    background-color: black !important;
-  }
-  .mat-progress-bar-buffer {
-    background-color: darkgray !important;
+.mat-mdc-progress-bar {
+  .mat-accent {
+    --mdc-linear-progress-active-indicator-color: black !important;    
   }
 }
 
@@ -309,6 +315,7 @@ mat-card[default] {
   //height: 30vh;
   margin-top: 2vh;
   margin-bottom: 2vh;
+  min-height: 4vh;
 
   img {
     margin-top: 0 !important;
@@ -581,8 +588,7 @@ mat-card[default] {
   margin: auto;
 }
 
-.mat-expansion-panel {
-}
+.mat-expansion-panel {}
 
 .mat-expansion-panel-header {
   font-weight: bold;
@@ -616,8 +622,10 @@ mat-expansion-panel-header[btn-accordion] {
 
 .mat-chip-with-avatar {
   padding-left: 4px !important;
+
   .mat-chip-avatar {
     margin-right: -10px !important;
+
     img {
       height: 24px;
       width: 24px;
