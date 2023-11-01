@@ -43,6 +43,7 @@ public class EventScheduler {
     }
 
     @Scheduled(cron = "0 0 3 * * MON")
+    //@Scheduled(cron = "*/10 * * * * *")
     public void autoGenerateRooms() {
         try {
             generateRandomEvents();
@@ -123,6 +124,8 @@ public class EventScheduler {
     }
 
     public void generateRandomEvents() throws FirebaseMessagingException {
+        System.out.println("Generate Random Event Start!");
+
         Authentication auth = new FirebaseAuthenticationToken("scheduler", "");
         SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -139,6 +142,8 @@ public class EventScheduler {
         sendRandomEventNotification();
 
         SecurityContextHolder.getContext().setAuthentication(null);
+
+        System.out.println("Generate Random Event End");
     }
 
     public void generateByPriorityEvents() throws FirebaseMessagingException {

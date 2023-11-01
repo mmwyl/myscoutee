@@ -2,9 +2,7 @@ bugs:
 -----
 
 1) like cnt is not saved properly (likegroup)
-
-Tests:
-1) check whether the scheduler is working
+2) re-run random events generator shouldn't create same event
 
 Chat:
 -----

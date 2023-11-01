@@ -97,7 +97,7 @@ public class CTreeIterator implements Iterator<Edge> {
             if (cTree.isDisabledNode(currEdge.getTo()) || cTree.isDisabledNode(currEdge.getFrom())) {
                 hasNext();
             } else if (cTree.isIgnoredEdge(currEdge) && !visited.contains(currEdge.getTo().getId())
-                    && (!cTree.isEmpty() || !nodesOrderedByType.get(type).isEmpty())) {
+                    /*&& (!cTree.isEmpty() || !nodesOrderedByType.get(type).isEmpty())*/) {
                 next();
                 hasNext();
             }

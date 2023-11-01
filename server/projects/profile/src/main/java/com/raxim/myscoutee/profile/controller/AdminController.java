@@ -20,10 +20,6 @@ public class AdminController {
     @GetMapping("random")
     @Transactional
     public void getEvents() {
-        System.out.println("Generate Random Event Start!");
-
         this.eventScheduler.autoGenerateRooms();
-
-        System.out.println("Generate Random Event End");
     }
 }
