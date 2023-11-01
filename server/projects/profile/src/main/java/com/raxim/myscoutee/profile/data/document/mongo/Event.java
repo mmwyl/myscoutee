@@ -128,7 +128,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
 
     @DBRef
     @JsonIgnore
-    private List<Event> items;
+    private List<Event> items = new ArrayList<>();
 
     // a Feedback-nel van event.id, es nem kell ide, lekerdezeseket checkkolni,
     // kell-e ez az optimalizacio

@@ -49,13 +49,18 @@ export class GroupFilterComponent implements OnInit {
     this.key = actionUrl.substring(actionUrl.indexOf('/'));
   }
 
+  isNumber(str) {
+    return !isNaN(parseInt(str)) && isFinite(str);
+  }
+
   onData(key, evt, idx?): void {
+    var value = this.isNumber(evt.target.value) ? parseInt(evt.target.value) : evt.target.value;
     if (idx != undefined) {
       var valueArray = this.formGroup.controls[key].getRawValue();
-      valueArray[idx] = evt.target.value;
-      this.formGroup.controls[key].setValue(evt.target.value);
+      valueArray[idx] = value;
+      this.formGroup.controls[key].setValue(valueArray);
     } else {
-      this.formGroup.controls[key].setValue(evt.target.value);
+      this.formGroup.controls[key].setValue(value);
     }
   }
 
@@ -112,7 +117,7 @@ export class GroupFilterComponent implements OnInit {
 
       this.httpService.save(this.url, this.setting, params).subscribe({
         next: (result) => {
-          this.dialogRef.close(result['items']);
+          this.dialogRef.close(result['setting']['items']);
         },
         error: (error) => {
           this.progress.mode = 'determine';

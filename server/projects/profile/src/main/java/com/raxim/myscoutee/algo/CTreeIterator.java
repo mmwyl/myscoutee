@@ -51,7 +51,7 @@ public class CTreeIterator implements Iterator<Edge> {
                 node = cNode.getNode();
             } while (!cTree.isEmpty() && cTree.isDisabledNode(node));
 
-            if (cTree.isEmpty()) {
+            if (node == null && cTree.isEmpty()) {
                 return false;
             }
 
@@ -104,8 +104,8 @@ public class CTreeIterator implements Iterator<Edge> {
         }
 
         return (currEdge != null
-                && !visited.contains(currEdge.getTo().getId()))
-                && (!cTree.isEmpty() || !nodesOrderedByType.get(type).isEmpty());
+                && (!visited.isEmpty() && !visited.contains(currEdge.getTo().getId())));
+        // && (!cTree.isEmpty() || !nodesOrderedByType.get(type).isEmpty());
     }
 
     @Override

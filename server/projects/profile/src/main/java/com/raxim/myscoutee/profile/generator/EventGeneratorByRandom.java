@@ -52,7 +52,7 @@ public class EventGeneratorByRandom extends GeneratorBase<Event> {
                 .map(members -> {
                     Event event = new Event();
                     event.setId(UUID.randomUUID());
-                    event.setType("P");
+                    event.setType("E");
                     event.setCategory("na");
 
                     event.setName("Generated Event!");

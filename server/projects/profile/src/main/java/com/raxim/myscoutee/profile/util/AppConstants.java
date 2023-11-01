@@ -22,9 +22,9 @@ public class AppConstants {
         public static final String WOMAN = "w";
         public static final String MAN = "m";
 
-        public static final String MONTH = "m";
-        public static final String WEEK = "w";
-        public static final String DAY = "d";
+        public static final String MONTH = "3";
+        public static final String WEEK = "2";
+        public static final String DAY = "1";
 
         public static final String GROUP_NAME = "group";
 

@@ -38,6 +38,7 @@ public abstract class EventBase {
     @JsonIgnore
     private UUID updatedBy; // can be system uuid also, not only a valid profile
 
+    //type: E (Event), T (Template), P (Promotion)
     @JsonProperty(value = "type")
     private String type;
 

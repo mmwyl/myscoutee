@@ -69,8 +69,8 @@ const routes: Routes = [
           animation: 'One',
           group: 'date',
         },
-      },
-      {
+      },*/
+      /*{
         path: 'events/:id',
         data: {
           icon: 'insert_invitation',

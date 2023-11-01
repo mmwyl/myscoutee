@@ -14,15 +14,15 @@
         ],
         "options": [
           {
-            "value": "d",
+            "value": "1",
             "viewValue": "Day"
           },
           {
-            "value": "w",
+            "value": "2",
             "viewValue": "Week"
           },
           {
-            "value": "m",
+            "value": "3",
             "viewValue": "Month"
           }
         ]

@@ -35,6 +35,6 @@ spring:
       password: ${MONGODB_PASSWORD:guest}
       database: ${MONGODB_DATABASE:myscoutee_db}
 
-#logging:
-#  level:
-#    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG

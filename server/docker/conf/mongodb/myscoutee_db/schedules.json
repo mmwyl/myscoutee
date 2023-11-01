@@ -1,0 +1,10 @@
+[
+    {
+        "_id": { "$binary": "BUb7Lb2n21yLRZ8KwBMqnQ==", "$type": "03" },
+        "key": "RANDOM_GROUP",
+        "flags": {
+            "min": 6,
+            "max": 12 
+        }
+    }
+]
