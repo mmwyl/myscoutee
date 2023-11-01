@@ -1,7 +1,7 @@
 bugs:
 -----
 
-1) like cnt is not saved properly (likegroup)
+1) CTreeTest.shouldGetMaxFlowWithIgnoredEdge is failing
 
 Chat:
 -----

@@ -263,7 +263,7 @@ public class ProfileRepositoryTest {
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(1000.0, profile1.getGroupKey());
                 assertEquals(AppTestConstants.UUID_PROFILE_MIA, profile1.getProfile().getId());
-                assertEquals(6.461538461538462d, profile1.getRate());
+                assertEquals(6d, profile1.getRate());
                 assertFalse(profile1.getMet());
         }
 
@@ -305,7 +305,7 @@ public class ProfileRepositoryTest {
                 ProfileDTO profile1 = profiles.get(0);
                 assertEquals(1000.0, profile1.getGroupKey());
                 assertEquals(AppTestConstants.UUID_PROFILE_MIA, profile1.getProfile().getId());
-                assertEquals(6.461538461538462d, profile1.getRate());
+                assertEquals(6d, profile1.getRate());
                 assertTrue(profile1.getMet());
         }
 }

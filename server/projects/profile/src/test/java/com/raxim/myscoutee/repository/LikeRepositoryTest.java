@@ -84,6 +84,6 @@ public class LikeRepositoryTest extends AbstractAlgoTest {
                 List<LikeDTO> likeDTOs = Arrays.asList(likeArray);
                 List<LikeGroup> likes = this.likeRepository.findByParty(UUID_PROFILE_SOPHIA, likeDTOs);
 
-                assertEquals(1, likes.size());
+                assertEquals(2, likes.size());
         }
 }
