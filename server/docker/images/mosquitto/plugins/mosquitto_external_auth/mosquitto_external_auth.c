@@ -70,6 +70,11 @@ static int external_auth_callback(int event, void *event_data, void *userdata)
     struct mosquitto_evt_basic_auth *ed = event_data;
     const char *username = ed->username;
 
+    if(username == NULL) {
+        mosquitto_log_printf(MOSQ_LOG_ERR, "username parameter is missing");
+        return MOSQ_ERR_AUTH;
+    }
+
     UNUSED(event);
     UNUSED(userdata);
 
@@ -121,6 +126,11 @@ static int external_disconnect_callback(int event, void *event_data, void *userd
 {
     struct mosquitto_evt_disconnect *ed = event_data;
     const char *username = ed->client->id;
+
+    if(username == NULL) {
+        mosquitto_log_printf(MOSQ_LOG_ERR, "username parameter is missing");
+        return MOSQ_ERR_AUTH;
+    }
 
     UNUSED(event);
     UNUSED(userdata);
@@ -174,6 +184,11 @@ static int external_acl_callback(int event, void *event_data, void *userdata)
     struct mosquitto_evt_acl_check *ed = event_data;
     const char *username = ed->client->id;
     const char *topic = ed->topic;
+
+    if(username == NULL) {
+        mosquitto_log_printf(MOSQ_LOG_ERR, "username parameter is missing");
+        return MOSQ_ERR_AUTH;
+    }
 
     UNUSED(event);
     UNUSED(userdata);
