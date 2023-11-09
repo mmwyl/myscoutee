@@ -1,0 +1,8 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "files.associations": {
+        "config.h": "c",
+        "mosquitto_internal.h": "c",
+        "time_mosq.h": "c"
+    }
+}

@@ -38,3 +38,6 @@ export declare class FacebookModule {
     static forRoot(): ModuleWithProviders<any>;
 }
 
+debugging mosquitto:
+
+1) settings.json -> "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",

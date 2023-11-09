@@ -1,0 +1,33 @@
+version: "3.3"
+
+networks:
+  mqtt:
+    driver: bridge
+
+services:
+  mqtt:
+    image: ${MOSQUITTO_IMAGE}
+    container_name: mqtt
+    privileged: true
+    #cap_add:
+    #  - ALL
+    #  - SYS_PTRACE
+    #security_opt:
+    #  - seccomp:unconfined
+    #  - apparmor:unconfined
+    ports:
+      - "1883:1883" #default mqtt port
+    volumes:
+      - ./config:/mosquitto/config:rw
+      - ./tmp/data:/mosquitto/data:rw
+      - ./tmp/log:/mosquitto/log:rw
+      - ~/workspace/mosquitto:/mosquitto/src:rw
+    networks:
+      - mqtt
+  mqtt-web:
+    image: ${EMQX_WEB_CLIENT}
+    container_name: mqtt-web
+    ports:
+      - "80:80"
+    networks:
+      - mqtt
