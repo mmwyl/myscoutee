@@ -1,7 +1,3 @@
 {
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "files.associations": {
-        "mosquitto_internal.h": "c",
-        "mosquitto_plugin.h": "c"
-    }
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
