@@ -57,3 +57,7 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+/**/CMakeFiles
+/**/CMakeCache.txt
+/**/cmake_install.cmake
