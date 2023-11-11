@@ -1,16 +1,11 @@
 package com.raxim.myscoutee.profile.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
@@ -28,16 +23,14 @@ public class MQTTRestController {
     }
 
     @PostMapping("acl")
-    public ResponseEntity<Void> acl(Authentication auth, @RequestBody String topics) {
+    public ResponseEntity<Void> acl(Authentication auth, @RequestParam String topic,
+            @RequestParam String action) {
         FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = firebasePrincipal.getUser().getProfile();
-        try {
-            String lTopics = URLDecoder.decode(topics, StandardCharsets.UTF_8.toString());
-            System.out.println("topics for ACL: " + lTopics);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+
+        System.out.println("topic for ACL: " + topic);
+        System.out.println("action for ACL: " + action);
+
         return ResponseEntity.ok().build();
     }
 
