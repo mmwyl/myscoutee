@@ -49,6 +49,9 @@ static char *acl_url = NULL;
 static char *disconnect_url = NULL;
 static char *auth_header = NULL;
 
+static char *allowed_ip = NULL;
+static char *allowed_user = NULL;
+
 char *string_concat(const char *str1, const char *str2, const char *delimiter)
 {
     size_t len = strlen(str1) + strlen(delimiter) + strlen(str2) + 1;
@@ -90,7 +93,15 @@ static int external_auth_callback(int event, void *event_data, void *userdata)
     UNUSED(event);
     UNUSED(userdata);
 
-    mosquitto_log_printf(MOSQ_LOG_DEBUG, "client: %s\n;", username);
+    mosquitto_log_printf(MOSQ_LOG_INFO, "client: %s\n;", username);
+
+    //allow athentication on localhost for 'spring' server
+    const char * ip_address = mosquitto_client_address(ed->client);
+    mosquitto_log_printf(MOSQ_LOG_INFO, "ip_address: %s\n;", ip_address);
+
+	if(!strcmp(ip_address, allowed_ip) && !strcmp(username, allowed_user)){
+		return MOSQ_ERR_SUCCESS;
+	}
 
     CURL *curl = curl_easy_init();
     if (curl)
@@ -148,6 +159,12 @@ static int external_disconnect_callback(int event, void *event_data, void *userd
     UNUSED(userdata);
 
     mosquitto_log_printf(MOSQ_LOG_DEBUG, "client: %s\n;", username);
+
+    //allow disconnect on localhost for 'spring' server
+    const char * ip_address = mosquitto_client_address(ed->client);
+	if(!strcmp(ip_address, allowed_ip) && !strcmp(username, allowed_user)){
+		return MOSQ_ERR_SUCCESS;
+	}
 
     CURL *curl = curl_easy_init();
     if (curl)
@@ -207,6 +224,12 @@ static int external_acl_callback(int event, void *event_data, void *userdata)
     UNUSED(userdata);
 
     mosquitto_log_printf(MOSQ_LOG_DEBUG, "client: %s\n; topic: %s\n;", username, topic);
+
+    //allow subscribe/unsubscribe on localhost for 'spring' server
+    const char * ip_address = mosquitto_client_address(ed->client);
+	if(!strcmp(ip_address, allowed_ip) && !strcmp(username, allowed_user)){
+		return MOSQ_ERR_SUCCESS;
+	}
 
     CURL *curl = curl_easy_init();
     if (curl)
@@ -323,6 +346,16 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
         if (!strcasecmp(opts[i].key, "header_auth"))
         {
             auth_header = opts[i].value;
+        }
+
+        if (!strcasecmp(opts[i].key, "allowed_ip"))
+        {
+            allowed_ip = opts[i].value;
+        }
+
+        if (!strcasecmp(opts[i].key, "allowed_user"))
+        {
+            allowed_user = opts[i].value;
         }
     }
 

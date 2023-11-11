@@ -75,8 +75,6 @@ services:
       - ./data/mosquitto/log:/mosquitto/log:rw
     networks:
       - myscoutee
-    depends_on:
-      - profilemanagement
   profilemanagement:
     image: ${MYSCOUTEE_IMAGE}
     build:
@@ -99,3 +97,4 @@ services:
       - myscoutee
     depends_on:
       - mongodb
+      - mqtt

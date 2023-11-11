@@ -39,6 +39,7 @@ spring:
     url: tcp://mqtt:1883
     username: spring
     default-topic: channels/+
+    timeout: 20000
 
 logging:
   level:
