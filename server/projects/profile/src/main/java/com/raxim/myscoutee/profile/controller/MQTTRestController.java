@@ -22,6 +22,7 @@ public class MQTTRestController {
         return ResponseEntity.ok().build();
     }
 
+    //1-4 subscribe/unsubscribe/publish(write)/receive(read)
     @PostMapping("acl")
     public ResponseEntity<Void> acl(Authentication auth, @RequestParam String topic,
             @RequestParam String action) {
