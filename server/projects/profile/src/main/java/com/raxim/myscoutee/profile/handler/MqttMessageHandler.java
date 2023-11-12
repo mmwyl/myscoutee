@@ -9,9 +9,9 @@ public class MqttMessageHandler implements MessageHandler {
 
     @Override
     public void handleMessage(Message<?> message) throws MessagingException {
-        //sender id should be in the payload of the message (maybe it's the mqtt_id)
+        //the senderId should be added in the payload
         Integer cliendId = (Integer) message.getHeaders().get(MqttHeaders.ID);
-        System.out.println("Received message from clientId: " + cliendId);
+        System.out.println("Received message from mqtt_id: " + cliendId);
         
         String topic = (String) message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC);
         System.out.println("Received message from topic: " + topic);
