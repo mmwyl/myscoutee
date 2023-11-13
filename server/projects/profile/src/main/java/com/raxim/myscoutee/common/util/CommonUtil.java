@@ -186,4 +186,14 @@ public class CommonUtil {
 
         return lastGroup;
     }
+
+    public static String getLastPartOfUrl(String url) {
+        String[] parts = url.split("/");
+
+        if (parts.length > 0) {
+            return parts[parts.length - 1];
+        } else {
+            return "";
+        }
+    }
 }

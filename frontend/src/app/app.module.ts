@@ -27,7 +27,7 @@ import { CommonModule } from '@angular/common';
       // Register the ServiceWorker as soon as the app is stable
       // or after 30 seconds (whichever comes first).
       //registrationStrategy: 'registerWhenStable:30000',
-      registrationStrategy: 'registerImmediately',
+      registrationStrategy: 'registerWhenStable:30000',
     })
   ],
   bootstrap: [AppComponent],

@@ -1,6 +1,8 @@
 package com.raxim.myscoutee.common.util;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,25 @@ public class JsonUtil {
         try {
             String jsonString = objectMapper.writeValueAsString(t);
             return objectMapper.readValue(jsonString, new TypeReference<T>() {
+                @Override
+                public Type getType() {
+                    return new ParameterizedType() {
+                        @Override
+                        public Type[] getActualTypeArguments() {
+                            return new Type[] {};
+                        }
+
+                        @Override
+                        public Type getRawType() {
+                            return t.getClass();
+                        }
+
+                        @Override
+                        public Type getOwnerType() {
+                            return null;
+                        }
+                    };
+                }
             });
         } catch (IOException e) {
             // Handle the exception appropriately

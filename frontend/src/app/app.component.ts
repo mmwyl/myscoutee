@@ -331,6 +331,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     const registration = await navigator.serviceWorker.ready;
 
     firebase.messaging().onMessage((msg) => {
+      console.log("fcm message");
       console.log(msg);
     });
 

@@ -13,12 +13,7 @@
         },
         {
             "$match": {
-                "$expr": {
-                    "$or": [
-                        { "$eq": [ "$info.members.status", "A"] },
-                        { "$eq": [ "$info.members.status", "I"] }
-                    ]
-                }
+                "$expr": { "$eq": [ "$info.members.status", "A"] }
             }
         },
         {

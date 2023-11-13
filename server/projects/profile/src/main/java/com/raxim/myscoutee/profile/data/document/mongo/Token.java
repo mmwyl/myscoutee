@@ -14,7 +14,6 @@ public class Token {
     @JsonIgnore
     private UUID id;
 
-    @JsonIgnore
     @JsonProperty(value = "deviceKey")
     private String deviceKey;
 
@@ -29,6 +28,7 @@ public class Token {
         this.id = id;
     }
 
+    @JsonIgnore
     public String getDeviceKey() {
         return deviceKey;
     }

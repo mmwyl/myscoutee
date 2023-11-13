@@ -24,7 +24,8 @@ docker build -t eclipse-mosquitto:2.0.18-ext_auth .
 
 shift + fn + f5 (refresh page without cache)
 
-ng serve --ssl (dummy https)
+ng serve --ssl (dummy https) -> service-worker only works on http, as ssl certificate error on localhost
+service-worker error kept refreshing the browser -> ctrl + fn + F5 (hard refresh on the browser)
 
 update angular:
 

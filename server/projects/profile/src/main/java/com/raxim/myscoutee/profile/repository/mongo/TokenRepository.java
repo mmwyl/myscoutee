@@ -5,14 +5,9 @@ import java.util.UUID;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.raxim.myscoutee.profile.data.document.mongo.Token;
 
-@RepositoryRestResource(
-    collectionResourceRel = "tokens",
-    path = "tokens"
-)
 public interface TokenRepository extends MongoRepository<Token, UUID>{
 
     @Query("{deviceKey: ?0}")

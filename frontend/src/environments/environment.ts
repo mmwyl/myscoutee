@@ -13,7 +13,7 @@ export const environment = {
     messagingSenderId: '117896229531',
     appId: '1:117896229531:web:4edd7330be29c1e7404c3e',
   },
-  vapid: 'BEqCwlbXuzTypczUuJRV7X8K2rNXDjEXLng95-vE0PeC_Fex5QR9upQMtU03jzG35_qUZQP-f1cBi5U_w-m1cm8',
+  vapid: 'BAH74FJDjkQc4Gs5BuF9RMBZksvtYX1XzKi3FAfqE9S2CSp7dlK8ZpMeURsWgQa_MD8ROjZjqV7UKlJfm1z62L0',
   groupTypes: {
     d: 'dating',
     b: 'business',
