@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.raxim.myscoutee.profile.util.LikeUtil;
 
-@JsonRootName("likeGroups")
+@JsonRootName("like_groups")
 public class LikeGroup {
 
     @JsonProperty(value = "cnt")

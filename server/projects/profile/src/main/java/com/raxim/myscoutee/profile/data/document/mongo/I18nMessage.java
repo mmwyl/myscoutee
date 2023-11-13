@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Document(collection = "messages")
+@Document(collection = "i18n_messages")
 public class I18nMessage {
     @Id
     @JsonIgnore

@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Document(collection = "scheduleSettings")
+@Document(collection = "schedule_settings")
 public class ScheduleSetting {
     @Id
     @JsonProperty(value = "id")

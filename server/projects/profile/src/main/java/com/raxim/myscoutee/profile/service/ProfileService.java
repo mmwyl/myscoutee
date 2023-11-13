@@ -2,8 +2,6 @@ package com.raxim.myscoutee.profile.service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +10,6 @@ import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.threeten.bp.Instant;
 
 import com.raxim.myscoutee.algo.dto.Range;
 import com.raxim.myscoutee.common.util.CommonUtil;
@@ -20,7 +17,6 @@ import com.raxim.myscoutee.common.util.SettingUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
-import com.raxim.myscoutee.profile.data.dto.rest.ISODateRange;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.data.dto.rest.ProfileDTO;
@@ -154,7 +150,10 @@ public class ProfileService {
             } else if ("L".equals(pProfile.getStatus())) {
                 sEvents = changeStatus(profile, events.stream(), "LG");
             }
-            this.eventRepository.saveAll(sEvents);
+
+            if (sEvents != null) {
+                this.eventRepository.saveAll(sEvents);
+            }
 
             Profile profileSaved = profileRepository.save(profile);
             return Optional.of(new ProfileDTO(profileSaved));

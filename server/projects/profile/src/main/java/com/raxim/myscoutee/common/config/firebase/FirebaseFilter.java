@@ -58,7 +58,7 @@ public class FirebaseFilter extends OncePerRequestFilter {
                 FirebaseCredential credential = parseToken(xAuth);
                 String xLink = request.getHeader(AUTH_LINK);
 
-                UserDetails userDetails = firebaseService.loadUserByUsername(credential.getEmail(), xLink);
+                UserDetails userDetails = firebaseService.loadUserByUsername(credential.getEmail(), xLink, request.getRequestURI());
                 Authentication auth = new FirebaseAuthenticationToken(userDetails, credential,
                         userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(auth);

@@ -111,7 +111,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     if (this.navService.locale === undefined) {
-      this.httpService.get('/messages').subscribe({
+      this.httpService.get('/i18n_messages').subscribe({
         next: (value) => {
           const evt = value['msg'];
 

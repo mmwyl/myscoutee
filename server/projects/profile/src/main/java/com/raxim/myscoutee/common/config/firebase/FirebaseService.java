@@ -62,7 +62,7 @@ public class FirebaseService {
         return null;
     }
 
-    public UserDetails loadUserByUsername(String username, String xLink) {
+    public UserDetails loadUserByUsername(String username, String xLink, String currentPage) {
         User user = this.userRepository.findUserByEmail(username);
 
         if (user == null) {
@@ -93,6 +93,7 @@ public class FirebaseService {
 
         // last active date needs to be saved on every call
         user.getProfile().setLastActive(LocalDateTime.now());
+        user.getProfile().setCurrentPage(currentPage);
         this.profileRepository.save(user.getProfile());
 
         handleLink(username, xLink, user);
