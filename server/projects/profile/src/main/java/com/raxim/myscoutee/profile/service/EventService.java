@@ -53,10 +53,6 @@ public class EventService {
         this.scoreMatrixRepository = scoreMatrixRepository;
     }
 
-    public List<Token> getAllActiveTokens(UUID[] refIds) {
-        return eventRepository.findTokensByEvent(refIds);
-    }
-
     public List<MemberDTO> getLeaderboard(String eventId) {
         Optional<Event> optEvent = eventRepository.findById(UUID.fromString(eventId));
         if (optEvent.isPresent()) {

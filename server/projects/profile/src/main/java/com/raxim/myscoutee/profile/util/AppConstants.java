@@ -60,4 +60,7 @@ public class AppConstants {
 
         public static final String SCHEDULE_RANDOM_GROUP = "RANDOM_GROUP";
 
+        public static final String FIREBASE = "firebase";
+        public static final String MQTT = "mqtt";
+
 }

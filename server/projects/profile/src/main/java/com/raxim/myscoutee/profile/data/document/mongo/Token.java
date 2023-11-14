@@ -17,11 +17,15 @@ public class Token {
     @JsonProperty(value = "deviceKey")
     private String deviceKey;
 
+    // mqtt, firebase
+    @JsonIgnore
+    private String type;
+
     @JsonIgnore
     private UUID uuid;
 
-    public UUID getId() {
-        return id;
+    public UUID getUuid() {
+        return uuid;
     }
 
     public void setId(UUID id) {
@@ -37,7 +41,19 @@ public class Token {
         this.deviceKey = deviceKey;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public UUID getId() {
+        return id;
     }
 }

@@ -1,6 +1,7 @@
 package com.raxim.myscoutee.profile.controller;
 
-import org.springframework.data.rest.webmvc.RepositoryRestController;
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Token;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.repository.mongo.TokenRepository;
+import com.raxim.myscoutee.profile.util.AppConstants;
 
 @RestController
 @RequestMapping("tokens")
@@ -36,7 +38,9 @@ public class TokenRestController {
             FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
             User user = principal.getUser();
             Token tokenToSave = JsonUtil.clone(token, objectMapper);
-            tokenToSave.setId(user.getId());
+            tokenToSave.setId(UUID.randomUUID());
+            tokenToSave.setUuid(user.getId());
+            tokenToSave.setType(AppConstants.FIREBASE);
             tokenObj = tokenRepository.save(tokenToSave);
         }
 

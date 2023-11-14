@@ -47,7 +47,7 @@ public class MqttMessageService {
 
         //mqtt false
         //findTokensByEvent is not enough as you need to save the message to the db, and where to send with which type
-        List<Token> tokens = this.eventRepository.findTokensByEvent(new UUID[] { eventId });
+        List<Token> tokens = this.eventRepository.findTokensByEvent(eventId);
 
         if (!tokens.isEmpty()) {
 

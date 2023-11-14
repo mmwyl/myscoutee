@@ -1,0 +1,166 @@
+[
+  {
+    "_id": {
+      "$binary": "ZkmDZtiQWGodH7qAA3APrA==",
+      "$type": "03"
+    },
+    "email": "raxim.uk@gmail.com",
+    "createdDate": {
+      "$date": "2019-01-02T04:17:08.000Z"
+    },
+    "group": {
+      "$binary": "NkaorobBPrNUDApiL0o1tg==",
+      "$type": "03"
+    },
+    "profile": {
+      "$ref": "profiles",
+      "$id": {
+        "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
+        "$type": "03"
+      }
+    },
+    "profiles": [
+      {
+        "$ref": "profiles",
+        "$id": {
+          "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
+          "$type": "03"
+        }
+      },
+      {
+        "$ref": "profiles",
+        "$id": {
+          "$binary": "P2ZOCvchRFu76WVhKcU/Kg==",
+          "$type": "03"
+        }
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$binary": "O0dNMElpWGDmFBO28cy1tA==",
+      "$type": "03"
+    },
+    "email": "fssrepository@gmail.com",
+    "createdDate": {
+      "$date": "2019-01-02T04:17:08.000Z"
+    },
+    "group": {
+      "$binary": "PkoHFjkq6xouVW/lzz01pQ==",
+      "$type": "03"
+    },
+    "profile": {
+      "$ref": "profiles",
+      "$id": {
+        "$binary": "Gz2mxt9RQ0i7jM/dAc8l2w==",
+        "$type": "03"
+      }
+    },
+    "profiles": [
+      {
+        "$ref": "profiles",
+        "$id": {
+          "$binary": "Gz2mxt9RQ0i7jM/dAc8l2w==",
+          "$type": "03"
+        }
+      },
+      {
+        "$ref": "profiles",
+        "$id": {
+          "$binary": "L3VWbLpPSeuZZcjIFMQjUQ==",
+          "$type": "03"
+        }
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$binary": "HkApg7VHrwUxGyR7b9OcrA==",
+      "$type": "03"
+    },
+    "email": "myscoutee@gmail.com",
+    "createdDate": {
+      "$date": "2019-01-02T04:17:08.000Z"
+    },
+    "group": {
+      "$binary": "NkaorobBPrNUDApiL0o1tg==",
+      "$type": "03"
+    },
+    "profile": {
+      "$ref": "profiles",
+      "$id": {
+        "$binary": "8r2G5Lj5TmmGtJ3xBX0QZQ==",
+        "$type": "03"
+      }
+    },
+    "profiles": [
+      {
+        "$ref": "profiles",
+        "$id": {
+          "$binary": "8r2G5Lj5TmmGtJ3xBX0QZQ==",
+          "$type": "03"
+        }
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$binary": "rUwwlWrmoBvgDh95DJxihA==",
+      "$type": "03"
+    },
+    "email": "sophia@gmail.com",
+    "createdDate": {
+      "$date": "2019-01-02T04:17:08.000Z"
+    },
+    "group": {
+      "$binary": "NkaorobBPrNUDApiL0o1tg==",
+      "$type": "03"
+    },
+    "profile": {
+      "$ref": "profiles",
+      "$id": {
+        "$binary": "vldSpDImQDm8GnsRzFMYJQ==",
+        "$type": "03"
+      }
+    },
+    "profiles": [
+      {
+        "$ref": "profiles",
+        "$id": {
+          "$binary": "vldSpDImQDm8GnsRzFMYJQ==",
+          "$type": "03"
+        }
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$binary": "tU0CPtosJNLoCHkZOJp3pQ==",
+      "$type": "03"
+    },
+    "email": "emma@gmail.com",
+    "createdDate": {
+      "$date": "2019-01-02T04:17:08.000Z"
+    },
+    "group": {
+      "$binary": "NkaorobBPrNUDApiL0o1tg==",
+      "$type": "03"
+    },
+    "profile": {
+      "$ref": "profiles",
+      "$id": {
+        "$binary": "0eEFqfhyTPyMFU6R2cD4BQ==",
+        "$type": "03"
+      }
+    },
+    "profiles": [
+      {
+        "$ref": "profiles",
+        "$id": {
+          "$binary": "0eEFqfhyTPyMFU6R2cD4BQ==",
+          "$type": "03"
+        }
+      }
+    ]
+  }
+]

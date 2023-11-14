@@ -1,86 +1,100 @@
 [
+  {
+    "$match": {
+      "id": ":#{#eventId}"
+    }
+  },
+  {
+    "$unwind": "$members"
+  },
+  {
+    "$match": {
+      "$expr": { "$eq": ["$members.status", "A"] }
+    }
+  },
+  {
+    "$lookup": {
+      "from": "profiles",
+      "let": { "p_id": "$members.profile.$id", "p_members": "$members" },
+      "pipeline": [
         {
-            "$match": {
-                "$expr": {
-                    "$and": [
-                        { "$in": [ "$_id", ":#{#eventIds}" ] }
-                    ]
-                }
+          "$match": {
+            "$expr": {
+              "$and": [
+                { "$eq": ["$$p_id", "$_id"] },
+                { "$in": ["$status", ["A", "F"]] }
+              ]
             }
-        },
-        {
-            "$unwind": "$info.members"
-        },
-        {
-            "$match": {
-                "$expr": { "$eq": [ "$info.members.status", "A"] }
-            }
-        },
-        {
-            "$lookup": {
-                "from": "profiles",
-                "let": { "p_id": "$info.members.profile.$id", "p_members": "$info.members" },
-                "pipeline": [
-                    {
-                        "$match": {
-                            "$expr": {
-                                "$and": [
-                                    { "$eq": [ "$$p_id", "$_id" ] },
-                                    { "$eq": [ "$status", "A" ] },
-                                    { "$ne": [ "$mqtt", true ] }
-                                ]
-                            }
-                        }
-                    }
-                ],
-                "as": "profiles"
-            }
-        },
-        {
-            "$unwind": "$profiles"
-        },
-        {
-            "$lookup": {
-                "from": "users",
-                "let": { "p_id": "$profiles._id" },
-                "pipeline": [
-                    {
-                        "$match": {
-                            "$expr": {
-                                "$in": [ "$$p_id", "$profiles.$id" ]
-                            }
-                        }
-                    }
-                ],
-                "as": "users"
-            }
-        },
-        {
-            "$unwind": "$users"
-        },
-        {
-            "$lookup": {
-                "from": "tokens",
-                "let": { "u_id": "$users._id" },
-                "pipeline": [
-                    {
-                        "$match": {
-                            "$expr": {
-                                "$eq": [ "$$u_id", "$uuid" ]
-                            }
-                        }
-                    }
-                ],
-                "as": "tokens"
-            }
-        },
-        {
-            "$unwind": "$tokens"
-        },
-        {
-            "$replaceRoot": {
-                "newRoot": "$tokens"
-            }
+          }
         }
-    ]
-    
+      ],
+      "as": "profiles"
+    }
+  },
+  {
+    "$unwind": "$profiles"
+  },
+  {
+    "$lookup": {
+      "from": "users",
+      "let": { "p_id": "$profiles._id" },
+      "pipeline": [
+        {
+          "$match": {
+            "$expr": {
+              "$in": ["$$p_id", "$profiles.$id"]
+            }
+          }
+        }
+      ],
+      "as": "users"
+    }
+  },
+  {
+    "$unwind": "$users"
+  },
+  {
+    "$lookup": {
+      "from": "tokens",
+      "let": { "u_id": "$users._id" },
+      "pipeline": [
+        {
+          "$match": {
+            "$expr": {
+              "$eq": ["$$u_id", "$uuid"]
+            }
+          }
+        }
+      ],
+      "as": "tokens"
+    }
+  },
+  {
+    "$unwind": "$tokens"
+  },
+  {
+    "$set": {
+      "tokens.type": {
+        "$cond": [
+          {
+            "$and": [
+              {
+                "$eq": ["$profiles.mqtt", true]
+              },
+              {
+                "$eq": ["$profiles._id", "$users.profile.$id"]
+              }
+            ]
+          },
+          "mqtt",
+          "firebase"
+        ]
+      }
+    }
+  },
+  {
+    "$replaceRoot": {
+      "newRoot": "$tokens"
+    }
+  }
+]
