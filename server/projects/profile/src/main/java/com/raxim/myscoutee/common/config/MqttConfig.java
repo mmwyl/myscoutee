@@ -20,7 +20,7 @@ import com.raxim.myscoutee.common.config.properties.MqttProperties;
 import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.converter.MqttMessageConverter;
 import com.raxim.myscoutee.profile.handler.MqttMessageHandler;
-import com.raxim.myscoutee.profile.service.MqttMessageService;
+import com.raxim.myscoutee.profile.service.MessageService;
 
 @Configuration
 @EnableIntegration
@@ -63,7 +63,7 @@ public class MqttConfig {
 
     @Bean
     @ServiceActivator(inputChannel = "mqttInputChannel")
-    public MessageHandler handler(MqttMessageService mqttMessageService) {
+    public MessageHandler handler(MessageService mqttMessageService) {
         return new MqttMessageHandler(mqttMessageService);
     }
 

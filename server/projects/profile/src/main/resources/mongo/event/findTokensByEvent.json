@@ -9,7 +9,16 @@
   },
   {
     "$match": {
-      "$expr": { "$eq": ["$members.status", "A"] }
+      "$expr": {
+        "$and": [
+          {
+            "$eq": ["$members.status", "A"]
+          },
+          {
+            "$ne": ["$members.profile.$id", ":#{#profileId}"]
+          }
+        ]
+      }
     }
   },
   {
@@ -96,7 +105,8 @@
     "$group": {
       "_id": "$_id",
       "name": { "$first": "$name" },
-      "tokens": { "$push": "$tokens" }
+      "tokens": { "$push": "$tokens" },
+      "profiles": { "$push": "$profiles" }
     }
   }
 ]

@@ -4,13 +4,13 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
 
-import com.raxim.myscoutee.profile.service.MqttMessageService;
+import com.raxim.myscoutee.profile.service.MessageService;
 
 public class MqttMessageHandler implements MessageHandler {
 
-    private final MqttMessageService mqttMessageService;
+    private final MessageService mqttMessageService;
 
-    public MqttMessageHandler(MqttMessageService mqttMessageService) {
+    public MqttMessageHandler(MessageService mqttMessageService) {
         this.mqttMessageService = mqttMessageService;
     }
 

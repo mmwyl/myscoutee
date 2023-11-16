@@ -1,11 +1,11 @@
 package com.raxim.myscoutee.profile.data.document.mongo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.threeten.bp.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,8 +19,11 @@ public class DBMessage {
     @JsonProperty(value = "from")
     private UUID from;
 
-    @JsonProperty(value = "tos")
-    private List<Token> tos;
+    @JsonIgnore
+    private List<UUID> tos;
+
+    @JsonIgnore
+    private UUID eventUuid;
 
     // control, mqtt=if profile.mqtt is true, and the topic is the current page url
     // of the profile then does not send as mosquitto handles
@@ -32,7 +35,7 @@ public class DBMessage {
     @JsonProperty(value = "value")
     private String value;
 
-    @JsonIgnore
+    @JsonProperty(value = "createdDate")
     private LocalDateTime createdDate;
 
     public UUID getId() {
@@ -51,11 +54,11 @@ public class DBMessage {
         this.from = from;
     }
 
-    public List<Token> getTos() {
+    public List<UUID> getTos() {
         return tos;
     }
 
-    public void setTos(List<Token> tos) {
+    public void setTos(List<UUID> tos) {
         this.tos = tos;
     }
 
@@ -73,5 +76,21 @@ public class DBMessage {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public UUID getEventUuid() {
+        return eventUuid;
+    }
+
+    public void setEventUuid(UUID eventUuid) {
+        this.eventUuid = eventUuid;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

@@ -1,62 +1,45 @@
 package com.raxim.myscoutee.profile.data.dto.rest;
 
-import java.util.UUID;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.raxim.myscoutee.common.repository.UUIDBase64Deserializer;
-import com.raxim.myscoutee.common.repository.UUIDBase64Serializer;
+import com.raxim.myscoutee.profile.data.document.mongo.DBMessage;
 
 @JsonRootName("message")
-public class MessageDTO {
-    @JsonSerialize(using = UUIDBase64Serializer.class)
-    @JsonDeserialize(using = UUIDBase64Deserializer.class)
-    @JsonProperty(value = "key")
-    private UUID id;
+public class MessageDTO extends PageItemDTO {
 
-    @JsonSerialize(using = UUIDBase64Serializer.class)
-    @JsonDeserialize(using = UUIDBase64Deserializer.class)
+    @JsonProperty(value = "message")
+    private DBMessage message;
+
     @JsonProperty(value = "from")
-    private UUID from;
+    private ImageDTO from;
 
-    // control, mqtt
-    @JsonProperty(value = "type")
-    private String type;
+    // profile icon image urls, who read the message
+    @JsonProperty(value = "reads")
+    private List<ImageDTO> reads;
 
-    @JsonProperty(value = "value")
-    private String value;
-
-    public UUID getId() {
-        return id;
+    public DBMessage getMessage() {
+        return message;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public void setMessage(DBMessage message) {
+        this.message = message;
     }
 
-    public UUID getFrom() {
+    public ImageDTO getFrom() {
         return from;
     }
 
-    public void setFrom(UUID from) {
+    public void setFrom(ImageDTO from) {
         this.from = from;
     }
 
-    public String getType() {
-        return type;
+    public List<ImageDTO> getReads() {
+        return reads;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+    public void setReads(List<ImageDTO> reads) {
+        this.reads = reads;
     }
 }

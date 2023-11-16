@@ -38,21 +38,24 @@ public class EventRepositoryTokenTest {
         public void shouldGetTokensForEvent() {
 
                 Optional<EventWithToken> optEventToken = this.eventRepository
-                                .findTokensByEvent(AppTestConstants.UUID_EVENT_32);
+                                .findTokensByEvent(AppTestConstants.UUID_EVENT_32,
+                                                AppTestConstants.UUID_PROFILE_OLIVER);
                 assertTrue(optEventToken.isPresent());
 
                 EventWithToken eventWithToken = optEventToken.get();
 
-                assertEquals(3, eventWithToken.getTokens().size());
+                assertEquals(2, eventWithToken.getTokens().size());
 
-                assertEquals(AppTestConstants.DEVICE_OLIVER, eventWithToken.getTokens().get(0).getDeviceKey());
-                assertEquals(AppConstants.MQTT, eventWithToken.getTokens().get(0).getType());
+                assertEquals(AppTestConstants.DEVICE_MASON, eventWithToken.getTokens().get(0).getDeviceKey());
+                assertEquals(AppConstants.FIREBASE, eventWithToken.getTokens().get(0).getType());
 
-                assertEquals(AppTestConstants.DEVICE_MASON, eventWithToken.getTokens().get(1).getDeviceKey());
+                assertEquals(AppTestConstants.DEVICE_LUCAS, eventWithToken.getTokens().get(1).getDeviceKey());
                 assertEquals(AppConstants.FIREBASE, eventWithToken.getTokens().get(1).getType());
 
-                assertEquals(AppTestConstants.DEVICE_LUCAS, eventWithToken.getTokens().get(2).getDeviceKey());
-                assertEquals(AppConstants.FIREBASE, eventWithToken.getTokens().get(2).getType());
+                assertEquals(2, eventWithToken.getProfiles().size());
+
+                assertEquals(AppTestConstants.UUID_PROFILE_MASON_2, eventWithToken.getProfiles().get(0).getId());
+                assertEquals(AppTestConstants.UUID_PROFILE_LUCAS, eventWithToken.getProfiles().get(1).getId());
         }
 
 }

@@ -1,0 +1,102 @@
+[
+  {
+    "$match": {
+      "type": "p"
+    }
+  },
+  {
+    "$match": {
+      "$expr": {
+        "$and": [
+          {
+            "$or": [
+              {
+                "$in": ["?#{#param.id}", "$tos"]
+              },
+              {
+                "$eq": ["$from", "?#{#param.id}"]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "$sort": {
+      "createdDate": -1
+    }
+  },
+  {
+    "$group": {
+      "_id": "$eventUuid",
+      "lastMessage": {
+        "$first": "$$ROOT"
+      }
+    }
+  },
+  {
+    "$match": {
+      "$expr": {
+        "$lt": [
+          "$lastMessage.createdDate",
+          {
+            "$toDate": "?#{#param.offset[0]}"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "$sort": {
+      "lastMessage.createdDate": -1
+    }
+  },
+  {
+    "$limit": "?#{#param.limit}"
+  },
+  {
+    "$lookup": {
+      "from": "profiles",
+      "localField": "lastMessage.from",
+      "foreignField": "_id",
+      "as": "profile"
+    }
+  },
+  {
+    "$unwind": "$profile"
+  },
+  {
+    "$replaceRoot": {
+      "newRoot": {
+        "$mergeObjects": [
+          {
+            "message": "$lastMessage"
+          },
+          {
+            "from": {
+              "$cond": {
+                "if": {
+                  "$and": [
+                    { "$isArray": "$profile.images" },
+                    { "$gt": [{ "$size": "$profile.images" }, 0] }
+                  ]
+                },
+                "then": {
+                  "$ifNull": [
+                    { "$arrayElemAt": ["$profile.images.name", 0] },
+                    null
+                  ]
+                },
+                "else": null
+              }
+            }
+          },
+          {
+            "offset": ["$createdDate"]
+          }
+        ]
+      }
+    }
+  }
+]

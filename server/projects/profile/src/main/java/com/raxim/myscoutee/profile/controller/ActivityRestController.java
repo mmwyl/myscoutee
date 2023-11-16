@@ -24,14 +24,17 @@ import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.CloneDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
+import com.raxim.myscoutee.profile.data.dto.rest.MessageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.handler.EventParamHandler;
 import com.raxim.myscoutee.profile.handler.InvitationParamHandler;
+import com.raxim.myscoutee.profile.handler.MessageParamHandler;
 import com.raxim.myscoutee.profile.handler.ParamHandlers;
 import com.raxim.myscoutee.profile.handler.RecommendationParamHandler;
 import com.raxim.myscoutee.profile.handler.TemplateParamHandler;
 import com.raxim.myscoutee.profile.service.EventService;
+import com.raxim.myscoutee.profile.service.MessageService;
 
 enum EventAction {
     lock("A"),
@@ -53,10 +56,13 @@ enum EventAction {
 public class ActivityRestController {
 
     private final EventService eventService;
+    private final MessageService messageService;
     private final ParamHandlers paramHandlers;
 
-    public ActivityRestController(EventService eventService, ParamHandlers paramHandlers) {
+    public ActivityRestController(EventService eventService, MessageService messageService,
+            ParamHandlers paramHandlers) {
         this.eventService = eventService;
+        this.messageService = messageService;
         this.paramHandlers = paramHandlers;
     }
 
@@ -269,10 +275,13 @@ public class ActivityRestController {
     @Transactional
     public ResponseEntity<?> getChannels(PageParam pageParam, Authentication auth) {
         Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
-        // query messages the profile is in + where group by eventId and get the last
-        // createdDate, pagination, order by lastCreatedDate also after grouging
-        // get the current member status of the eventIds -> hence it can color the panel
-        return null;
+
+        pageParam = paramHandlers.handle(profile, pageParam, MessageParamHandler.TYPE);
+
+        List<MessageDTO> messageDTOs = this.messageService.getLastMessagesByChannels(pageParam);
+
+        List<Object> lOffset = CommonUtil.offset(messageDTOs, pageParam.getOffset());
+        return ResponseEntity.ok(new PageDTO<>(messageDTOs, lOffset));
     }
 
     @GetMapping("channels/{channelId}/items")
@@ -280,7 +289,7 @@ public class ActivityRestController {
     public ResponseEntity<?> getChannels(@PathVariable String channelId,
             PageParam pageParam, Authentication auth) {
         Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
-        //query latest reads also by current profile of user
+        // query latest reads also by current profile of user
         return null;
     }
 

@@ -1,0 +1,110 @@
+[
+  {
+    "_id": {
+      "$binary": "vldSpDImQDm8GnsRzFMYJQ==",
+      "$type": "03"
+    },
+    "firstName": "Sophia",
+    "gender": "w",
+    "birthday": {
+      "$date": "1990-09-15T00:00:00Z"
+    },
+    "smoker": false,
+    "marital": "Single",
+    "hasChild": false,
+    "height": 165,
+    "physique": "Slim",
+    "languages": ["English", "Spanish"],
+    "religion": "Christian",
+    "profession": "Teacher",
+    "position": {
+      "type": "Point",
+      "coordinates": [47.496587, 19.044607]
+    },
+    "status": "F",
+    "createdDate": {
+      "$date": "2022-11-01T00:00:00Z"
+    },
+    "group": {
+      "$binary": "NkaorobBPrNUDApiL0o1tg==",
+      "$type": "03"
+    },
+    "score": 75,
+    "lastLogin": {
+      "$date": "2023-06-10T09:15:00Z"
+    },
+    "images": [{ "name": "Sophia - image" }]
+  },
+  {
+    "_id": {
+      "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
+      "$type": "03"
+    },
+    "firstName": "Oliver",
+    "gender": "m",
+    "birthday": {
+      "$date": "1993-02-18T00:00:00Z"
+    },
+    "smoker": false,
+    "marital": "Single",
+    "hasChild": false,
+    "height": 175,
+    "physique": "Average",
+    "languages": ["English", "French"],
+    "religion": "None",
+    "profession": "Software Engineer",
+    "position": {
+      "type": "Point",
+      "coordinates": [47.506953, 19.019821]
+    },
+    "status": "A",
+    "createdDate": {
+      "$date": "2022-09-20T00:00:00Z"
+    },
+    "group": {
+      "$binary": "NkaorobBPrNUDApiL0o1tg==",
+      "$type": "03"
+    },
+    "score": 90,
+    "lastLogin": {
+      "$date": "2023-06-11T15:30:00Z"
+    },
+    "images": [{ "name": "Oliver - image" }]
+  },
+  {
+    "_id": {
+      "$binary": "L3VWbLpPSeuZZcjIFMQjUQ==",
+      "$type": "03"
+    },
+    "firstName": "Ava",
+    "gender": "w",
+    "birthday": {
+      "$date": "1992-05-03T00:00:00Z"
+    },
+    "smoker": true,
+    "marital": "Married",
+    "hasChild": true,
+    "height": 160,
+    "physique": "Curvy",
+    "languages": ["English", "Spanish", "Italian"],
+    "religion": "Christian",
+    "profession": "Nurse",
+    "position": {
+      "type": "Point",
+      "coordinates": [47.495215, 19.032341]
+    },
+    "status": "P",
+    "createdDate": {
+      "$date": "2022-12-05T00:00:00Z"
+    },
+    "group": {
+      "$binary": "NkaorobBPrNUDApiL0o1tg==",
+      "$type": "03"
+    },
+    "score": 82,
+    "lastLogin": {
+      "$date": "2023-06-09T08:45:00Z"
+    },
+    "images": [{ "name": "Ava - image" }]
+  }
+]

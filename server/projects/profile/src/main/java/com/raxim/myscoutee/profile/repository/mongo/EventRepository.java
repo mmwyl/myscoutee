@@ -96,7 +96,8 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
                         @Param("userUid") UUID userUid);
 
         @Aggregation(pipeline = "findTokensByEvent")
-        Optional<EventWithToken> findTokensByEvent(@Param("eventId") UUID eventId);
+        Optional<EventWithToken> findTokensByEvent(@Param("eventId") UUID eventId,
+                        @Param("profileId") UUID profileId);
 
         @Aggregation(pipeline = "findParents")
         List<Event> findParents(
