@@ -68,6 +68,7 @@ public class MessageService {
         }
 
         UUID eventId = UUID.fromString(CommonUtil.getPart(topic, "/", Integer.MAX_VALUE));
+
         Optional<EventWithToken> optEventWithToken = this.eventRepository.findTokensByEvent(eventId,
                 messageDTO.getMessage().getFrom());
 

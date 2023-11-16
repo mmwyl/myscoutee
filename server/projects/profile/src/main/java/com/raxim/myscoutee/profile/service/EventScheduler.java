@@ -1,5 +1,6 @@
 package com.raxim.myscoutee.profile.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Notification;
 import com.raxim.myscoutee.common.config.firebase.FirebaseAuthenticationToken;
+import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Schedule;
 import com.raxim.myscoutee.profile.data.dto.FilteredEdges;
 import com.raxim.myscoutee.profile.repository.mongo.ScheduleRepository;
@@ -137,7 +139,9 @@ public class EventScheduler {
 
         FilteredEdges filteredEdges = likeService.getEdges(Set.of("A"));
 
-        eventGeneratorRandomService.generate(filteredEdges, flags);
+        List<Event> genEvents =  eventGeneratorRandomService.generate(filteredEdges, flags);
+
+        //generate messages and save with system, hence the user can see the channels!
 
         sendRandomEventNotification();
 
