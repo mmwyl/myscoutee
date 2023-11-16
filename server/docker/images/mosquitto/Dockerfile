@@ -5,7 +5,7 @@ COPY plugins /mosquitto/plugins
 RUN set -x && \
     apk --no-cache add --virtual build-deps \
         build-base \
-        cmake curl-dev; \
+        cmake curl-dev cjson-dev; \
     find /mosquitto/plugins \( -name "CMakeFiles" -type d -o \
               -name "CMakeCache.txt" -o \
               -name "cmake_install.cmake" -o \
@@ -19,7 +19,7 @@ RUN set -x && \
         /mosquitto/plugins/mosquitto_external_auth/mosquitto_external_auth.so \
         /usr/lib/mosquitto_external_auth.so; \
     apk del build-deps; \
-    apk add curl; \
+    apk add curl cjson; \
     rm -rf /mosquitto/plugins;
 
 VOLUME ["/mosquitto/data", "/mosquitto/log"]

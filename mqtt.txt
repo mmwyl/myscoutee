@@ -11,9 +11,6 @@ but message being sent by them remains. event.members have to have a updatedTime
 10) if the route has mqtt, the spring server shouldn't send push to mqtt. (message.type=mqtt + currentPage = topic to be sent)
 
 mqtt
-1) auth call -> username = profileId, password is token -> call into spring -> set mqtt on profile to true -> profileId returned from the server, verify that the sent username = profileId. (libjwt)
-2) on disconnect with param username -> call into spring -> set mqtt on profile false
-3) mqtt server sends username always in the payload (sprintf - add on message and forward)
 ------
 4) no acl for the time being -> acl sends url as topic param also (chat window url param) -> spring server verifies that url is for the profile.
 (mongo query without limit, but with additional id param in the where close 
@@ -48,23 +45,3 @@ ssl:
 (future)
 spring:
 1) upgrade to spring boot 3.2 (when it is released), and set spring to virtual threads (when it's released)
-
-done:
-3) set mqtt flag true on auth, false on disconnect for the profile, and on auth return back profileId for later validation on mqtt
-(disconnect hasn't got x-firebase-auth header)
-the problem is token kept changing, don't want to reconnect
-4) acl, disconnect should get profileId param also => X-Authorization-User on FirebaseFilter
-acl should get url as topic param and action param (mqtt access flag - subscribe/unsubscribe/push/receive message)
-5) username is the userId, not the profileId??, as active mqtt connection can't be changed,
-and the server knows the current profileid for the user.
-6) message table should contain, which member the message has been sent (type is mqtt or firebase)
-
-1) spring server, handle message -> save (ignore keyUp message - action=writing (on keyUp), type=control)
-3) who sent the message, the spring server sends back /channels/profile/pofileId, that the message has been sent (either firebase or mqtt)
-
-5) check profile mqtt flag and based on that push the message to firebase notification or mqtt -> ui will handle the rest
-a) when message gets saved to the db, lookup for eventid to get the members deviceId to send the notification to the devices
-
-(on mqtt it needs to be pushed to channels/profiles/(profileId) independently -> 6 push in a row, deviceId lookup is not needed)
-
-1) create first message for event, hence it can be listed on channels page (generating random events)
