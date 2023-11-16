@@ -1,6 +1,5 @@
 spring server:
-2) read by eventId to list channel
-
+1) create first message for event, hence it can be listed on channels page (generating random events)
 ----------------------
 5) b) event / car -> car changed, then send notification for the event to the members of the event
 6) => acl mqtt 4) => change mongo queries to make it without limit but passing an id in the where close.
@@ -42,12 +41,14 @@ angular cache:
 3) Add output hashing every time you build your angular app.
 4) ng build --outputHashing=all
 
-spring:
-1) upgrade to spring boot 3.2 (when it is released), and set spring to virtual threads (when it's released)
-
+(jovohet)
 ssl:
 1) dummy ssl for nginx on localhost -> check wss
 2) certbot
+
+(future)
+spring:
+1) upgrade to spring boot 3.2 (when it is released), and set spring to virtual threads (when it's released)
 
 done:
 3) set mqtt flag true on auth, false on disconnect for the profile, and on auth return back profileId for later validation on mqtt
