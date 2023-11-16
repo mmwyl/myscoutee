@@ -39,6 +39,7 @@ Contributors:
 #include "mosquitto.h"
 #include "mqtt_protocol.h"
 #include <curl/curl.h>
+#include <cjson/cJSON.h>
 
 #define TOPIC "topic"
 #define ACTION "action"
@@ -79,10 +80,10 @@ char *itoa(int num)
     return result;
 }
 
-static int external_auth_callback(int event, void *event_data, void *userdata)
+static int external_msg_callback(int event, void *event_data, void *userdata)
 {
-    struct mosquitto_evt_basic_auth *ed = event_data;
-    const char *username = ed->username;
+    struct mosquitto_evt_message *ed = event_data;
+    const char *username = ed->client->id;
 
     if (username == NULL)
     {
@@ -93,24 +94,88 @@ static int external_auth_callback(int event, void *event_data, void *userdata)
     UNUSED(event);
     UNUSED(userdata);
 
+    const char *json_str = (const char *)ed->payload;
+
+    // Parse the JSON payload
+    cJSON *json_root = cJSON_Parse(json_str);
+    if (json_root != NULL)
+    {
+        cJSON *name = cJSON_CreateString(username);
+
+        cJSON *message = cJSON_GetObjectItem(json_root, "message");
+        cJSON_AddItemToObject(message, "from", name);
+
+        char *payload = cJSON_Print(json_root);
+
+        ed->payload = payload;
+        ed->payloadlen = (uint32_t)(strlen(payload) + 1);
+
+        // Free the cJSON structure
+        cJSON_Delete(json_root);
+    }
+
+    return MOSQ_ERR_SUCCESS;
+}
+
+static size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    size_t realsize = size * nmemb;
+    char *data = (char *)userp;
+
+    // Resize the buffer to accommodate the new data
+    data = realloc(data, strlen(data) + realsize + 1);
+    if (data == NULL)
+    {
+        // Handle memory allocation failure
+        return 0;
+    }
+
+    // Append the received data to the buffer
+    strncat(data, (const char *)contents, realsize);
+
+    return realsize;
+}
+
+static int external_auth_callback(int event, void *event_data, void *userdata)
+{
+    struct mosquitto_evt_basic_auth *ed = event_data;
+    const char *username = ed->username;
+    const char *password = ed->password;
+
+    if (username == NULL || password == NULL)
+    {
+        mosquitto_log_printf(MOSQ_LOG_ERR, "username and/or password is missing");
+        return MOSQ_ERR_AUTH;
+    }
+
+    UNUSED(event);
+    UNUSED(userdata);
+
     mosquitto_log_printf(MOSQ_LOG_INFO, "client: %s\n;", username);
 
-    //allow athentication on localhost for 'spring' server
-    const char * ip_address = mosquitto_client_address(ed->client);
+    // allow athentication on localhost for 'spring' server
+    const char *ip_address = mosquitto_client_address(ed->client);
     mosquitto_log_printf(MOSQ_LOG_INFO, "ip_address: %s\n;", ip_address);
 
-	if(!strcmp(ip_address, allowed_ip) && !strcmp(username, allowed_user)){
-		return MOSQ_ERR_SUCCESS;
-	}
+    if (!strcmp(ip_address, allowed_ip) && !strcmp(username, allowed_user))
+    {
+        return MOSQ_ERR_SUCCESS;
+    }
 
     CURL *curl = curl_easy_init();
     if (curl)
     {
         // header
         struct curl_slist *chunk = NULL;
-        const char *firebase = string_concat(auth_header, username, ": ");
+        const char *firebase = string_concat(auth_header, password, ": ");
         chunk = curl_slist_append(chunk, firebase);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+        char *response_buffer = malloc(1);
+        response_buffer[0] = '\0';
+
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, response_buffer);
 
         // url
         curl_easy_setopt(curl, CURLOPT_URL, auth_url);
@@ -118,7 +183,7 @@ static int external_auth_callback(int event, void *event_data, void *userdata)
         CURLcode res = curl_easy_perform(curl);
 
         long response_code;
-        if (res != CURLE_OK)
+        if (res != CURLE_OK && strcmp(response_buffer, username))
         {
             fprintf(stderr, "curl_easy_perform() failed: %s\n",
                     curl_easy_strerror(res));
@@ -135,6 +200,7 @@ static int external_auth_callback(int event, void *event_data, void *userdata)
         // cleanup
         curl_easy_cleanup(curl);
         curl_slist_free_all(chunk);
+        free(response_buffer);
 
         if (res != CURLE_OK || response_code != 200)
         {
@@ -160,11 +226,12 @@ static int external_disconnect_callback(int event, void *event_data, void *userd
 
     mosquitto_log_printf(MOSQ_LOG_DEBUG, "client: %s\n;", username);
 
-    //allow disconnect on localhost for 'spring' server
-    const char * ip_address = mosquitto_client_address(ed->client);
-	if(!strcmp(ip_address, allowed_ip) && !strcmp(username, allowed_user)){
-		return MOSQ_ERR_SUCCESS;
-	}
+    // allow disconnect on localhost for 'spring' server
+    const char *ip_address = mosquitto_client_address(ed->client);
+    if (!strcmp(ip_address, allowed_ip) && !strcmp(username, allowed_user))
+    {
+        return MOSQ_ERR_SUCCESS;
+    }
 
     CURL *curl = curl_easy_init();
     if (curl)
@@ -225,11 +292,12 @@ static int external_acl_callback(int event, void *event_data, void *userdata)
 
     mosquitto_log_printf(MOSQ_LOG_DEBUG, "client: %s\n; topic: %s\n;", username, topic);
 
-    //allow subscribe/unsubscribe on localhost for 'spring' server
-    const char * ip_address = mosquitto_client_address(ed->client);
-	if(!strcmp(ip_address, allowed_ip) && !strcmp(username, allowed_user)){
-		return MOSQ_ERR_SUCCESS;
-	}
+    // allow subscribe/unsubscribe on localhost for 'spring' server
+    const char *ip_address = mosquitto_client_address(ed->client);
+    if (!strcmp(ip_address, allowed_ip) && !strcmp(username, allowed_user))
+    {
+        return MOSQ_ERR_SUCCESS;
+    }
 
     CURL *curl = curl_easy_init();
     if (curl)
@@ -365,6 +433,13 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
     {
         mosquitto_log_printf(MOSQ_LOG_INFO, "auth_url is configured in mosquitto.conf -> register auth!");
         rc = register_callback(plg_id, MOSQ_EVT_BASIC_AUTH, external_auth_callback);
+        if (rc != MOSQ_ERR_SUCCESS)
+        {
+            return rc;
+        }
+
+        mosquitto_log_printf(MOSQ_LOG_INFO, "msg callback registered!");
+        rc = register_callback(plg_id, MOSQ_EVT_MESSAGE, external_msg_callback);
         if (rc != MOSQ_ERR_SUCCESS)
         {
             return rc;

@@ -7,9 +7,9 @@ set_target_properties(mosquitto_external_auth PROPERTIES
 	POSITION_INDEPENDENT_CODE 1
 )
 set_target_properties(mosquitto_external_auth PROPERTIES PREFIX "")
-target_link_libraries(mosquitto_external_auth curl)
+target_link_libraries(mosquitto_external_auth curl cjson)
 if(WIN32)
-	target_link_libraries(mosquitto_external_auth mosquitto curl)
+	target_link_libraries(mosquitto_external_auth mosquitto curl cjson)
 endif(WIN32)
 
 # Don't install, these are example plugins only.
