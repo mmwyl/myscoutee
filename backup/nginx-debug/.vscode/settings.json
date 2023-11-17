@@ -1,6 +1,8 @@
 {
     "files.associations": {
-        "ngx_config.h": "c"
+        "ngx_config.h": "c",
+        "ngx_thread_pool.h": "c",
+        "pthread.h": "c"
     },
     "makefile.launchConfigurations": [
         {
@@ -36,5 +38,5 @@
             ]
         }
     ],
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled"   
 }

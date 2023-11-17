@@ -12,10 +12,14 @@
             "-c", "${workspaceFolder}/conf/nginx.conf",  // Specify the path to your custom Nginx configuration file
           ],
         "stopAtEntry": true,
-        "cwd": "${workspaceFolder}",
+        "cwd": "${workspaceFolder}/objs",
         "environment": [],
-        "externalConsole": true,
+        "externalConsole": false,
         "MIMode": "gdb",
+        "sourceFileMap": {
+          "/objs": "${workspaceFolder}",
+          "/objs/src": "${workspaceFolder}/src"
+        },
         "setupCommands": [
           {
             "description": "Enable pretty-printing for gdb",
