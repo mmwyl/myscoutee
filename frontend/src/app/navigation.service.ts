@@ -15,6 +15,7 @@ export class NavigationService {
   private _selected: any;
   private _groupName: any;
   private _groupType: any;
+  private _user: any;
 
   private _notif: any;
 
@@ -52,6 +53,14 @@ export class NavigationService {
 
   set token(token) {
     this._token = token;
+  }
+
+  get user(): string {
+    return this._user;
+  }
+
+  set user(user) {
+    this._user = user;
   }
 
   get prevUrl(): string {

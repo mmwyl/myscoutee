@@ -38,6 +38,7 @@ public class MqttConfig {
     public MqttPahoClientFactory mqttPahoClientFactory() {
         MqttPahoClientFactory mqttPahoClientFactory = new DefaultMqttPahoClientFactory();
         mqttPahoClientFactory.getConnectionOptions().setUserName(mqttProperties.getUsername());
+        mqttPahoClientFactory.getConnectionOptions().setPassword(mqttProperties.getPassword().toCharArray());
         mqttPahoClientFactory.getConnectionOptions().setServerURIs(new String[] { mqttProperties.getUrl() });
         mqttPahoClientFactory.getConnectionOptions().setCleanSession(false);
         mqttPahoClientFactory.getConnectionOptions().setConnectionTimeout(30);

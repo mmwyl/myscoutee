@@ -17,15 +17,16 @@ services:
     #  - apparmor:unconfined
     ports:
       - "1883:1883" #default mqtt port
+      - "8883:8883"
     volumes:
       - ../../../docker/conf/mosquitto:/mosquitto/config:rw
       #- ./plugins:/mosquitto/plugins:rw
     networks:
       - mqtt
-  #mqtt-web:
-  #  image: ${EMQX_WEB_CLIENT}
-  #  container_name: mqtt-web
-  #  ports:
-  #    - "80:80"
-  #  networks:
-  #    - mqtt
+  mqtt-web:
+    image: ${EMQX_WEB_CLIENT}
+    container_name: mqtt-web
+    ports:
+      - "80:80"
+    networks:
+      - mqtt

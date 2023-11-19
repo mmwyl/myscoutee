@@ -24,6 +24,7 @@ import { slideInAnimation } from './animation';
 import { NavigationService } from './navigation.service';
 import { HttpService } from './services/http.service';
 import { ListService } from './services/list.service';
+import { MqttService } from './services/mqtt.service';
 
 // pdf js file upload
 // https://codepen.io/Shiyou/pen/JNLwVO?html-preprocessor=pug
@@ -71,7 +72,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     private httpService: HttpService,
     private activatedRoute: ActivatedRoute,
     private listService: ListService,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private mqttService: MqttService
   ) {
     // this.initFacebookService();
 
@@ -94,7 +96,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     this.navService.online.next({ online: navigator.onLine });
   }
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void { }
 
   @HostListener('window:online', ['$event'])
   @HostListener('window:offline', ['$event'])
@@ -103,6 +105,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+
+    //this.mqttService.init({url: "wss://localhost:1883", options : {username: , password: }});
+
     navigator.geolocation.getCurrentPosition((position) => {
       this.navService.pos = [
         position.coords.longitude,
@@ -126,7 +131,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         error: (error) => {
           console.log('Server is down!');
         },
-        complete: () => {},
+        complete: () => { },
       });
     }
 
@@ -183,7 +188,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
               }
             } else {
-              if(links.length === 1 && links[0].data.icon === undefined) {
+              if (links.length === 1 && links[0].data.icon === undefined) {
                 this.subLinks = undefined;
               } else {
                 this.subLinks = links;
@@ -234,7 +239,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
             .then((token) => {
               this.navService.token = token;
             })
-            .catch((error) => {});
+            .catch((error) => { });
 
           if (this.timer !== undefined) {
             clearInterval(this.timer);
@@ -247,7 +252,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
               .then((token) => {
                 this.navService.token = token;
               })
-              .catch((error) => {});
+              .catch((error) => { });
           }, 25 * 60 * 1000);
         }
       });
@@ -260,11 +265,16 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
             .getIdToken()
             .then((token) => {
               this.navService.token = token;
-              
+
               console.log("/user");
               this.httpService.get('/user').subscribe({
                 next: (value) => {
+
                   console.log(value);
+                  this.navService.user = value['user'];
+
+                  let username = value['user'].profile.key;
+                  this.mqtt(username, token);
 
                   this.msg().then((x) => {
                     console.log('Messaging initialized!');
@@ -327,6 +337,19 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.router.navigate(['test']);
   }
 
+  mqtt(username, password) {
+    this.mqttService.init(
+      {
+        url: "ws://localhost:8883",
+        options:
+          { username: username, password: password }
+      });
+
+      this.mqttService.register("channels/users/" + username, (str) =>  {
+        console.log(str);
+      });
+  }
+
   async msg() {
     const registration = await navigator.serviceWorker.ready;
 
@@ -364,7 +387,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 
   back(): void {
     this.items = new Array();

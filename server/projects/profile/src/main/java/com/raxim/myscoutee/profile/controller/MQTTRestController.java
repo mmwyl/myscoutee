@@ -31,7 +31,7 @@ public class MQTTRestController {
 
         this.profileService.saveProfile(profile.getId().toString(), profile);
 
-        return ResponseEntity.ok(CommonUtil.asBase64(firebasePrincipal.getUser().getId()));
+        return ResponseEntity.ok(profile.getId().toString());
     }
 
     // 1-4 subscribe/unsubscribe/publish(write)/receive(read)

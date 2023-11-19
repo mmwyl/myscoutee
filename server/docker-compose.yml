@@ -28,6 +28,7 @@ services:
       - 27017-27019:27017-27019
       - 5005:5005
       - 1883:1883
+      - 8883:8883
     volumes:
       - ./docker/conf/nginx/conf/http:/etc/nginx/conf.d/
       - ./docker/conf/nginx/conf/stream:/etc/nginx/stream_conf.d/

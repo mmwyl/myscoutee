@@ -9,6 +9,7 @@ public class MqttProperties {
     private String clientId;
     private String url;
     private String username;
+    private String password;
     private String defaultTopic;
     private long timeout;
     private String serverIp;
@@ -59,5 +60,13 @@ public class MqttProperties {
 
     public void setServerIp(String serverIp) {
         this.serverIp = serverIp;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

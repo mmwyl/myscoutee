@@ -48,7 +48,8 @@ static mosquitto_plugin_id_t *plg_id = NULL;
 static char *auth_url = NULL;
 static char *acl_url = NULL;
 static char *disconnect_url = NULL;
-static char *auth_header = NULL;
+static char *auth_token_header = NULL;
+static char *auth_user_header = NULL;
 
 static char *allowed_ip = NULL;
 static char *allowed_user = NULL;
@@ -113,25 +114,46 @@ static int external_msg_callback(int event, void *event_data, void *userdata)
         // Free the cJSON structure
         cJSON_Delete(json_root);
     }
+    else
+    {
+        printf("JSON is not valid!\n");
+
+        // Optionally, print the error before exiting
+        const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL)
+        {
+            printf("Error before: %s\n", error_ptr);
+        }
+
+        return MOSQ_ERR_INVAL;
+    }
 
     return MOSQ_ERR_SUCCESS;
 }
 
+struct MemoryStruct
+{
+    char *memory;
+    size_t size;
+};
+
 static size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp)
 {
     size_t realsize = size * nmemb;
-    char *data = (char *)userp;
+    struct MemoryStruct *mem = (struct MemoryStruct *)userp;
 
-    // Resize the buffer to accommodate the new data
-    data = realloc(data, strlen(data) + realsize + 1);
-    if (data == NULL)
+    char *ptr = realloc(mem->memory, mem->size + realsize + 1);
+    if (!ptr)
     {
-        // Handle memory allocation failure
+        /* out of memory! */
+        printf("not enough memory (realloc returned NULL)\n");
         return 0;
     }
 
-    // Append the received data to the buffer
-    strncat(data, (const char *)contents, realsize);
+    mem->memory = ptr;
+    memcpy(&(mem->memory[mem->size]), contents, realsize);
+    mem->size += realsize;
+    mem->memory[mem->size] = 0;
 
     return realsize;
 }
@@ -142,6 +164,8 @@ static int external_auth_callback(int event, void *event_data, void *userdata)
     const char *username = ed->username;
     const char *password = ed->password;
 
+    mosquitto_log_printf(MOSQ_LOG_INFO, "client: %s\n;%s\n", username, password);
+
     if (username == NULL || password == NULL)
     {
         mosquitto_log_printf(MOSQ_LOG_ERR, "username and/or password is missing");
@@ -151,9 +175,6 @@ static int external_auth_callback(int event, void *event_data, void *userdata)
     UNUSED(event);
     UNUSED(userdata);
 
-    mosquitto_log_printf(MOSQ_LOG_INFO, "client: %s\n;%s\n", username, password);
-
-    /*
     // allow athentication on localhost for 'spring' server
     const char *ip_address = mosquitto_client_address(ed->client);
     mosquitto_log_printf(MOSQ_LOG_INFO, "ip_address: %s\n;", ip_address);
@@ -168,23 +189,29 @@ static int external_auth_callback(int event, void *event_data, void *userdata)
     {
         // header
         struct curl_slist *chunk = NULL;
-        const char *firebase = string_concat(auth_header, password, ": ");
+        const char *firebase = string_concat(auth_token_header, password, ": ");
         chunk = curl_slist_append(chunk, firebase);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 
-        char *response_buffer = malloc(1);
-        response_buffer[0] = '\0';
+        struct MemoryStruct response_buffer;
+
+        response_buffer.memory = malloc(1); /* will be grown as needed by the realloc above */
+        response_buffer.size = 0;
 
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, response_buffer);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&response_buffer);
 
         // url
         curl_easy_setopt(curl, CURLOPT_URL, auth_url);
 
         CURLcode res = curl_easy_perform(curl);
 
+        mosquitto_log_printf(MOSQ_LOG_INFO, "!!!response!!!: %s\n;", response_buffer.memory);
+
+        int isUsernameValid = strcmp(response_buffer.memory, username) == 0;
+
         long response_code;
-        if (res != CURLE_OK && strcmp(response_buffer, username))
+        if (res != CURLE_OK && !isUsernameValid)
         {
             fprintf(stderr, "curl_easy_perform() failed: %s\n",
                     curl_easy_strerror(res));
@@ -199,15 +226,15 @@ static int external_auth_callback(int event, void *event_data, void *userdata)
         }
 
         // cleanup
-        curl_easy_cleanup(curl);
+        free(response_buffer.memory);
         curl_slist_free_all(chunk);
-        free(response_buffer);
+        curl_easy_cleanup(curl);
 
-        if (res != CURLE_OK || response_code != 200)
+        if (res != CURLE_OK || response_code != 200 || !isUsernameValid)
         {
             return MOSQ_ERR_AUTH;
         }
-    }*/
+    }
     return MOSQ_ERR_SUCCESS;
 }
 
@@ -227,7 +254,6 @@ static int external_disconnect_callback(int event, void *event_data, void *userd
 
     mosquitto_log_printf(MOSQ_LOG_DEBUG, "client: %s\n;", username);
 
-    /*
     // allow disconnect on localhost for 'spring' server
     const char *ip_address = mosquitto_client_address(ed->client);
     if (!strcmp(ip_address, allowed_ip) && !strcmp(username, allowed_user))
@@ -240,7 +266,7 @@ static int external_disconnect_callback(int event, void *event_data, void *userd
     {
         // header
         struct curl_slist *chunk = NULL;
-        const char *firebase = string_concat(auth_header, username, ": ");
+        const char *firebase = string_concat(auth_user_header, username, ": ");
         chunk = curl_slist_append(chunk, firebase);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 
@@ -272,7 +298,7 @@ static int external_disconnect_callback(int event, void *event_data, void *userd
         {
             return MOSQ_ERR_NO_CONN;
         }
-    }*/
+    }
     return MOSQ_ERR_SUCCESS;
 }
 
@@ -306,7 +332,7 @@ static int external_acl_callback(int event, void *event_data, void *userdata)
     {
         // header
         struct curl_slist *chunk = NULL;
-        const char *firebase = string_concat(auth_header, username, ": ");
+        const char *firebase = string_concat(auth_user_header, username, ": ");
         chunk = curl_slist_append(chunk, firebase);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 
@@ -413,9 +439,14 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
             disconnect_url = opts[i].value;
         }
 
-        if (!strcasecmp(opts[i].key, "header_auth"))
+        if (!strcasecmp(opts[i].key, "header_auth_token"))
         {
-            auth_header = opts[i].value;
+            auth_token_header = opts[i].value;
+        }
+
+        if (!strcasecmp(opts[i].key, "header_auth_user"))
+        {
+            auth_user_header = opts[i].value;
         }
 
         if (!strcasecmp(opts[i].key, "allowed_ip"))
