@@ -1,5 +1,3 @@
-(the pages should make channels/pages/{pageUrl}) -> channels/pages/# -> multi level subscription by the browser
-
 spring server:
 ----------------------
 5) b) event / car -> car changed, then send notification for the event to the members of the event
@@ -20,7 +18,10 @@ mqtt
 5) Popup notification, if you are inside chat window for different chat channel.
 
 ui:
-1) on chat window route, flag mqtt: true, it will subscribe for the channel being identified as the route name.
+1) on chat window route, flag mqtt: true,
+it will subscribe for the channel being identified as the route name. (channels/pages/{route})
+channels/pages/# -> multi level subscription by the browser
+
 2) on keyup send message
 4) channel list screen and chat window ui
 -----
