@@ -1,3 +1,5 @@
+serviceWorker = true in angular json in dev section missing!!!
+
 spring server:
 ----------------------
 5) b) event / car -> car changed, then send notification for the event to the members of the event
