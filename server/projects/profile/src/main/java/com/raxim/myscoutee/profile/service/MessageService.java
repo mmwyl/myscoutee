@@ -75,35 +75,27 @@ public class MessageService {
             return;
         }
 
-        Optional<User> fromUser = this.userRepository.findById(messageDTO.getMessage().getFrom());
+        UUID eventId = UUID.fromString(CommonUtil.getPart(topic, "/", Integer.MAX_VALUE));
 
-        if (fromUser.isPresent()) {
+        Optional<EventWithToken> optEventWithToken = this.eventRepository.findTokensByEvent(eventId,
+                messageDTO.getMessage().getFrom());
 
-            UUID profileFromId = fromUser.get().getProfile().getId();
+        // save message to the message table
+        DBMessage dbMessage = saveMessage(optEventWithToken, messageDTO, messageDTO.getMessage().getFrom());
 
-            UUID eventId = UUID.fromString(CommonUtil.getPart(topic, "/", Integer.MAX_VALUE));
+        // send message to participants
+        // if it fails, it might need to check the db again and retry -> DBMessage has
+        // no flag for it yet
+        // filter out control messages
+        if (!AppConstants.MQTT_CONTROL.contains(messageDTO.getMessage().getType())) {
+            sendToMembers(optEventWithToken, messageDTO);
 
-            Optional<EventWithToken> optEventWithToken = this.eventRepository.findTokensByEvent(eventId,
-                    messageDTO.getMessage().getFrom());
+            // it might need UUID to Base64 serialization
+            MessageDTO respMsgDTO = new MessageDTO();
+            dbMessage.setType(AppConstants.MQTT_SENT);
+            respMsgDTO.setMessage(dbMessage);
 
-            // save message to the message table
-            DBMessage dbMessage = saveMessage(optEventWithToken, messageDTO, profileFromId);
-
-            // send message to participants
-            // if it fails, it might need to check the db again and retry -> DBMessage has
-            // no flag for it yet
-            // filter out control messages
-            if (!AppConstants.MQTT_CONTROL.contains(messageDTO.getMessage().getType())) {
-                sendToMembers(optEventWithToken, messageDTO);
-
-                // it might need UUID to Base64 serialization
-                MessageDTO respMsgDTO = new MessageDTO();
-                dbMessage.setType(AppConstants.MQTT_SENT);
-                respMsgDTO.setMessage(dbMessage);
-
-                sendToMqtt("channels/users/" + messageDTO.getMessage().getFrom(), respMsgDTO);
-            }
-
+            sendToMqtt("channels/users/" + messageDTO.getMessage().getFrom(), respMsgDTO);
         }
     }
 
