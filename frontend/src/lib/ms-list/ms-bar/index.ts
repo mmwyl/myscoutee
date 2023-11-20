@@ -64,7 +64,7 @@ export class MsBar implements OnInit, OnDestroy {
 
         let msgObj = JSON.parse(msg);
         if (msgObj.message.type === "p") {
-            if(msgObj.message.from === this.navService.user["profile"].key) {
+            if (msgObj.message.from === this.navService.user["profile"].key) {
                 return;
             }
 
@@ -83,7 +83,12 @@ export class MsBar implements OnInit, OnDestroy {
 
     send() {
         let fromImage = this.navService.user["profile"]["images"][0];
-        let payload = { from: fromImage, message: { type: "p", value: this.message, ref: uuid.v4(), key: uuid.v4(), from: this.navService.user["profile"].key } };
+        let payload = {
+            from: fromImage, message: {
+                type: "p", value: this.message, ref: uuid.v4(),
+                key: uuid.v4(), from: this.navService.user["profile"].key
+            }
+        };
         this.add.emit(payload);
 
         this.mqttService.publish(this.url, JSON.stringify(payload));

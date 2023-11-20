@@ -423,6 +423,7 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
       if (event instanceof NavigationEnd) {
         const inbox =
           this.itemsRef.element.nativeElement.parentElement.parentElement;
+        console.log("scrollHeight" + inbox.scrollHeight);
         inbox.scrollTo({ top: this.scrollTop });
       }
     });
@@ -1036,8 +1037,10 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
                 if (filteredData.length > 0) {
                   let lastData = filteredData[filteredData.length - 1];
                   lastData.message.type = "r";
+                  lastData.reads = new Array<string>();
+                  lastData.reads.push(this.navService.user["profile"]["images"][0]);
 
-                  this.mqttService.publish(PREFIX + this.url, JSON.stringify(lastData));
+                  this.mqttService.publish(PREFIX + this.itemUrl, JSON.stringify(lastData));
                 }
               }
             } else {
@@ -1131,44 +1134,32 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
     let ref = this.refs[item.value.ref];
     if (ref !== undefined) {
       if (item.value.type === "r") {
-        for(let read of item.reads) {
+        for (let read of item.reads) {
           let lRead = this.lReads[read];
-          if(lRead !== undefined) {
+          if (lRead !== undefined) {
             this.items[lRead].info.reads = this.items[lRead].info.reads.filter((r) => r !== read);
-            (this.items[lRead].component.instance as MsChat).onEnter(ref, this.items[lRead].info);    
+            (this.items[lRead].component.instance as MsChat).onEnter(ref, this.items[lRead].info);
           }
           this.lReads[read] = ref;
         }
 
         this.items[ref].info.reads = this.items[ref].info.reads.concat(item.reads);
         (this.items[ref].component.instance as MsChat).onEnter(ref, this.items[ref].info);
-        
+
       }
       return;
     }
 
     if (item.value.type === "w") {
       console.log("writing");
+      if (this.navService.user["profile"].key === item.value.from) {
+        const scrollView = this.itemsRef.element.nativeElement.parentElement;
+        const inbox = scrollView.parentElement;
+        inbox.scrollTo({ top: inbox.scrollHeight });
+      }
+
       return;
     }
-
-    /*if (isUpdate) {
-      if (item.value.type !== "p") {
-        for (let oldItem in this.items) {
-          if (this.items[oldItem].info.value.ref === item.value.ref) {
-            this.items[oldItem].info.reads.concat(item.reads);
-            (this.items[oldItem].component.instance as MsChat).onEnter(oldItem, this.items[oldItem].info);
-          }
-        }
-        return;
-      } else {
-        for (let oldItem in this.items) {
-          if (this.items[oldItem].info.value.ref === item.value.ref) {
-            return;
-          }
-        }
-      }
-    }*/
 
     if (this.items.length === 0) {
       this.extra = item.extra;
@@ -1213,10 +1204,16 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
       this.refs[item.value.ref] = item.id;
     }
 
-    if(item.reads !== undefined) {
-      for(let read of item.reads) {
+    if (item.reads !== undefined) {
+      for (let read of item.reads) {
         this.lReads[read] = item.id;
       }
+    }
+
+    if (isUpdate) {
+      const scrollView = this.itemsRef.element.nativeElement.parentElement;
+      const inbox = scrollView.parentElement;
+      inbox.scrollTo({ top: inbox.scrollHeight });
     }
 
     this.observer.observe(viewRef.rootNodes[0]);
