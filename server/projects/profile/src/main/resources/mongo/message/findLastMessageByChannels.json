@@ -67,11 +67,22 @@
     "$unwind": "$profile"
   },
   {
+    "$lookup": {
+      "from": "events",
+      "localField": "lastMessage.eventId",
+      "foreignField": "_id",
+      "as": "event"
+    }
+  },
+  {
     "$replaceRoot": {
       "newRoot": {
         "$mergeObjects": [
           {
             "message": "$lastMessage"
+          },
+          {
+            "name": "$event.name"
           },
           {
             "from": {

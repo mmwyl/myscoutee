@@ -4,7 +4,11 @@
         <div class="avatar_top_bar">
             <img class="avatar_top" [src]="data.header.image">
         </div>
-        <div class="msg_div" [innerHTML]="data.desc">
+        <div [ngClass]="{msg_div: data.header.main === undefined, header_div: data.header.main !== undefined}">
+            <div *ngIf="data.header.main !== undefined" [innerHTML]="data.header.main" class="title_div">
+            </div>
+            <div [innerHTML]="data.desc">
+            </div>
         </div>
         <div class="avatar_bottom_bar">
             <img *ngFor="let avatarBottom of data.reads" class="avatar_bottom" [src]="avatarBottom">

@@ -214,7 +214,7 @@ export class TransformService {
     const data = {
       id: lId,
       type: 'msg',
-      header: { main: "Event 1", image: image },
+      header: { main: item.name, image: image },
       desc: value['value'],
       url: url + '/' + lId,
       children: !isChild,

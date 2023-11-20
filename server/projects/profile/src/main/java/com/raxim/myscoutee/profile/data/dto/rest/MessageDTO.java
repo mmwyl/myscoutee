@@ -15,6 +15,9 @@ public class MessageDTO extends PageItemDTO {
     @JsonProperty(value = "from")
     private ImageDTO from;
 
+    @JsonProperty(value = "name")
+    private String name;
+
     // profile icon image urls, who read the message
     @JsonProperty(value = "reads")
     private List<ImageDTO> reads;
@@ -41,5 +44,13 @@ public class MessageDTO extends PageItemDTO {
 
     public void setReads(List<ImageDTO> reads) {
         this.reads = reads;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
