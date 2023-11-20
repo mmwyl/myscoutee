@@ -345,7 +345,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
           { username: username, password: password }
       });
 
-      this.mqttService.register("channels/users/" + username, (str) =>  {
+      this.mqttService.register("channels/users/" + username, (msg) =>  {
+        msg = msg.substring(0, msg.length - 1);
+        this.listService.add.emit(JSON.parse(msg));
         //console.log(str);
       });
   }

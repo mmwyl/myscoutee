@@ -195,6 +195,7 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
   join: Subscription;
   recommend: Subscription;
   delete: Subscription;
+  add: Subscription;
 
   isAdmin = false;
 
@@ -228,6 +229,12 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
     private _snackBar: MatSnackBar,
     private mqttService: MqttService
   ) {
+    this.add = this.listService.add.subscribe({
+      next: (evt) => {
+        this.addToList(1, evt, true);
+      }
+    });
+
     this.share = this.listService.share.subscribe({
       next: (evt) => {
         const idx = this.actions.findIndex((action) => action.type === 'share');
@@ -810,6 +817,7 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
     this.code.unsubscribe();
     this.join.unsubscribe();
     this.recommend.unsubscribe();
+    this.add.unsubscribe();
     this.sub.unsubscribe();
   }
 
@@ -1144,9 +1152,11 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
         }
 
         this.items[ref].info.reads = this.items[ref].info.reads.concat(item.reads);
-        (this.items[ref].component.instance as MsChat).onEnter(ref, this.items[ref].info);
-
+      } else if (item.value.type === "s") {
+        this.items[ref].info.isSent = true;
       }
+
+      (this.items[ref].component.instance as MsChat).onEnter(ref, this.items[ref].info);
       return;
     }
 

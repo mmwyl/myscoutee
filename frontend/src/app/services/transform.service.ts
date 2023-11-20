@@ -197,9 +197,9 @@ export class TransformService {
     let isChild = url.indexOf('items') !== -1
     let lId = isChild ? id : value["eventId"];
 
-    let image = location.origin
+    let image = item["from"] ? location.origin
       + '/backend/user/profile/images/'
-      + item["from"].name;
+      + item["from"].name : undefined;
 
     let reads = (item['reads'] !== undefined
       ? (item['reads'] as Array<string>)
