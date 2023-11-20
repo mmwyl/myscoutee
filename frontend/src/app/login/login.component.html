@@ -17,6 +17,8 @@
     <div id="loader">{{ msg['expl.loading'] }}</div>
   </div>
 
+  <div class="mat-into-panel" *ngIf="msg" [innerHtml]="msg['expl.gdpr']"></div>
+  
   <div class="mat-into-panel" *ngIf="msg" [innerHtml]="msg['expl.howto']"></div>
 
   <!--<div *ngIf="msg" class="mat-into-panel">
