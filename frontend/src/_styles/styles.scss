@@ -12,6 +12,10 @@
 @import './icons_cp.scss';
 @import '~firebaseui/dist/firebaseui.css';
 
+.mat-mdc-dialog-actions {
+  justify-content: center !important;
+}
+
 body {
   margin: 0px;
   background: white;

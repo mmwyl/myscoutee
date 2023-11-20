@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import firebase from 'firebase/compat/app';
 import * as firebaseui from 'firebaseui';
 import { NavigationService } from '../navigation.service';
 import { HttpService } from '../services/http.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MsDialog } from 'src/lib';
 
 const uiConfig = {
   callbacks: {
@@ -37,8 +39,9 @@ export class LoginComponent implements OnInit {
   constructor(
     private navService: NavigationService,
     private httpService: HttpService,
-    private domSanitizer: DomSanitizer
-  ) {}
+    private domSanitizer: DomSanitizer,
+    public dialog: MatDialog,
+  ) { }
   ngOnInit(): void {
     if (this.navService.locale === undefined) {
       this.httpService.get('/i18n_messages').subscribe({
@@ -59,12 +62,49 @@ export class LoginComponent implements OnInit {
         error: (error) => {
           console.log('Server is down!');
         },
-        complete: () => {},
+        complete: () => { },
       });
     } else {
       this.msg = this.navService.locale;
       this.initFirebase();
     }
+  }
+
+  private deferredPrompt: any;
+
+  @HostListener('window:beforeinstallprompt', ['$event'])
+  onBeforeInstallPrompt(event: any) {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    event.preventDefault();
+    // Stash the event so it can be triggered later
+    this.deferredPrompt = event;
+
+    // Show a custom message or button to the user using a dialog
+    const dialogRef = this.dialog.open(MsDialog, {
+      data: {
+        msg: 'Add to home screen to enable notification!',
+        btn: 'Yes'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        // User clicked "OK," trigger the add-to-home-screen prompt
+        this.deferredPrompt.prompt();
+        this.deferredPrompt.userChoice
+          .then((choiceResult: any) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the A2HS prompt');
+            } else {
+              console.log('User dismissed the A2HS prompt');
+            }
+            // Reset the deferred prompt variable
+            this.deferredPrompt = null;
+          });
+      } else {
+        // User clicked "Cancel," do something else or nothing
+      }
+    });
   }
 
   initFirebase() {
