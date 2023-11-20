@@ -18,11 +18,15 @@
         "$type": "03"
       }
     ],
-    "eventUuid": {
+    "eventId": {
       "$binary": "oEy7pm3PAx0lyLoCFSX6kg==",
       "$type": "03"
     },
-    "type": "msg",
+    "type": "p",
+    "ref" : {
+      "$binary": "wKnFYIM7T4K2D0sbUUlx4Q==",
+      "$type": "03"
+    },
     "createdDate": {
       "$date": "2022-11-25T00:00:00Z"
     },
@@ -47,11 +51,11 @@
         "$type": "03"
       }
     ],
-    "eventUuid": {
+    "eventId": {
       "$binary": "oEy7pm3PAx0lyLoCFSX6kg==",
       "$type": "03"
     },
-    "type": "msg",
+    "type": "p",
     "createdDate": {
       "$date": "2023-10-23T00:00:00Z"
     },
@@ -76,11 +80,11 @@
         "$type": "03"
       }
     ],
-    "eventUuid": {
+    "eventId": {
       "$binary": "jEzsC2l500NzJTdJoWk7ow==",
       "$type": "03"
     },
-    "type": "msg",
+    "type": "p",
     "createdDate": {
       "$date": "2022-10-25T00:00:00Z"
     },
@@ -105,13 +109,45 @@
         "$type": "03"
       }
     ],
-    "eventUuid": {
+    "eventId": {
       "$binary": "oEy7pm3PAx0lyLoCFSX6kg==",
       "$type": "03"
     },
-    "type": "read",
+    "type": "r",
     "ref" : {
-      "$binary": "WkxRhS39n2DLYC9a2C/Png==",
+      "$binary": "wKnFYIM7T4K2D0sbUUlx4Q==",
+      "$type": "03"
+    },
+    "createdDate": {
+      "$date": "2023-11-01T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$binary": "QVzopgl2TUiN9zD3CJIJAQ==",
+      "$type": "03"
+    },
+    "from": {
+      "$binary": "vldSpDImQDm8GnsRzFMYJQ==",
+      "$type": "03"
+    },
+    "tos": [
+      {
+        "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
+        "$type": "03"
+      },
+      {
+        "$binary": "L3VWbLpPSeuZZcjIFMQjUQ==",
+        "$type": "03"
+      }
+    ],
+    "eventId": {
+      "$binary": "oEy7pm3PAx0lyLoCFSX6kg==",
+      "$type": "03"
+    },
+    "type": "r",
+    "ref" : {
+      "$binary": "wKnFYIM7T4K2D0sbUUlx4Q==",
       "$type": "03"
     },
     "createdDate": {

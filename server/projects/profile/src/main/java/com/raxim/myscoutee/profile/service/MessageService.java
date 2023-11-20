@@ -75,7 +75,7 @@ public class MessageService {
             return;
         }
 
-        UUID eventId = UUID.fromString(CommonUtil.getPart(topic, "/", Integer.MAX_VALUE));
+        UUID eventId = UUID.fromString(CommonUtil.getPart(topic, "/", -1));
 
         Optional<EventWithToken> optEventWithToken = this.eventRepository.findTokensByEvent(eventId,
                 messageDTO.getMessage().getFrom());
@@ -102,13 +102,14 @@ public class MessageService {
     private DBMessage saveMessage(Optional<EventWithToken> optEventWithToken, MessageDTO messageDTO,
             UUID profileFromId) {
 
-        if (!optEventWithToken.isPresent()) {
+        if (optEventWithToken.isPresent()) {
             EventWithToken eventWithToken = optEventWithToken.get();
 
             DBMessage dbMessage = new DBMessage();
             dbMessage.setId(UUID.randomUUID());
             dbMessage.setEventId(eventWithToken.getId());
             dbMessage.setType(messageDTO.getMessage().getType());
+            dbMessage.setValue(messageDTO.getMessage().getValue());
             dbMessage.setFrom(profileFromId);
             dbMessage.setRef(messageDTO.getMessage().getRef());
             dbMessage.setCreatedDate(LocalDateTime.now());
@@ -123,11 +124,14 @@ public class MessageService {
 
     private void sendToMembers(Optional<EventWithToken> optEventWithToken, MessageDTO messageDTO) {
 
-        if (!optEventWithToken.isPresent()) {
+        if (optEventWithToken.isPresent()) {
             EventWithToken eventWithToken = optEventWithToken.get();
 
             List<Token> fbTokens = eventWithToken.getTokens().stream()
                     .filter(token -> AppConstants.FIREBASE.equals(token.getType())).toList();
+
+            if (fbTokens.isEmpty())
+                return;
 
             List<String> fbKeys = fbTokens.stream().map(token -> token.getDeviceKey()).toList();
 

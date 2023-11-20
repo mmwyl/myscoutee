@@ -5,7 +5,7 @@
 ></mat-progress-bar>
 <div
   class="int_scroll"
-  [ngClass]="{'snap' : !isLoading && !isRefreshed && isSelected}"
+  [ngClass]="{'snap' : !isLoading && !isRefreshed && isSelected}" [style]="mqtt !== undefined ? 'height: calc(100% - 48px);' : ''"
 >
   <mat-icon *ngIf="filter" mat-group (click)="setting()">settings</mat-icon>
   <div class="panel_t">
@@ -54,6 +54,7 @@
     </div>
   </div>
 </div>
+<ms-bar *ngIf="mqtt !== undefined" (add)="addToList(1, $event);"></ms-bar>
 <ng-template #divider let-title="title">
   <div class="mat-divider">&nbsp;&nbsp;{{title}}</div>
 </ng-template>

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
 import com.raxim.myscoutee.common.config.properties.ConfigProperties;
-import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.JsonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Group;
 import com.raxim.myscoutee.profile.data.document.mongo.Link;
@@ -50,13 +49,13 @@ public class FirebaseService {
         this.objectMapper = objectMapper;
     }
 
-    public UserDetails loadUserById(String userid) {
-        Optional<User> userOpt = this.userRepository.findById(UUID.fromString(CommonUtil.asUUID(userid)));
-        if(userOpt.isPresent()) {
+    public UserDetails loadUserById(String profileId) {
+        Optional<User> userOpt = this.userRepository.findUserByProfile(UUID.fromString(profileId));
+        if (userOpt.isPresent()) {
             User user = userOpt.get();
             String role = (user.getProfile() != null
-                && user.getProfile().getRole() != null) ? user.getProfile().getRole()
-                        : "U";
+                    && user.getProfile().getRole() != null) ? user.getProfile().getRole()
+                            : "U";
             return new FirebasePrincipal(user, role);
         }
         return null;

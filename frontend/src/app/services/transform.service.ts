@@ -1,12 +1,13 @@
 import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
+import { NavigationService } from '../navigation.service';
 
 const physiques = { s: 'Slim', a: 'Average', sp: 'Sum plus', m: 'Muscular' };
 @Injectable({
   providedIn: 'any',
 })
 export class TransformService {
-  constructor(private datePipe: DatePipe) { }
+  constructor(private datePipe: DatePipe, private navService: NavigationService) { }
 
   transform(value, url?, inList = false, refresh = false, table = false): any {
     // for mixed type of list, we need to identify profile
@@ -200,6 +201,16 @@ export class TransformService {
       + '/backend/user/profile/images/'
       + item["from"].name;
 
+    let reads = (item['reads'] !== undefined
+      ? (item['reads'] as Array<string>)
+      : []
+    ).map(
+      (image) =>
+        location.origin
+        + '/backend/user/profile/images/'
+        + image['name']);
+
+    let profile = this.navService.user["profile"];
     const data = {
       id: lId,
       type: 'msg',
@@ -208,7 +219,8 @@ export class TransformService {
       url: url + '/' + lId,
       children: !isChild,
       value,
-      isOwn: true
+      isOwn: value.from === profile.key,
+      reads
     };
 
     return data;

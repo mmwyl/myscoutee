@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -20,6 +22,7 @@ import com.raxim.myscoutee.common.AppTestConstants;
 import com.raxim.myscoutee.common.config.RepositoryConfig;
 import com.raxim.myscoutee.common.repository.MongoDataLoaderTestExecutionListener;
 import com.raxim.myscoutee.common.repository.TestData;
+import com.raxim.myscoutee.profile.data.document.mongo.DBMessage;
 import com.raxim.myscoutee.profile.data.dto.rest.ImageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.MessageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
@@ -60,11 +63,10 @@ public class MessageRepositoryTest {
 
         @Test
         public void shouldMessagesByChannel() {
-                LocalDate createdDate = LocalDate.of(1901, 1, 1);
-                String createdDateF = createdDate.atStartOfDay(ZoneId.systemDefault())
+                String createdDate = LocalDateTime.now().atZone(ZoneId.systemDefault())
                                 .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
-                String[] tOffset = new String[] { createdDateF };
+                Object[] tOffset = new Object[] { createdDate };
 
                 PageParam pageParam = new PageParam(tOffset);
                 pageParam.setId(AppTestConstants.UUID_PROFILE_AVA);

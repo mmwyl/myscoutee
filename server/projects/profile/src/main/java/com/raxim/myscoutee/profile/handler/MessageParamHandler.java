@@ -1,6 +1,6 @@
 package com.raxim.myscoutee.profile.handler;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
@@ -21,17 +21,17 @@ public class MessageParamHandler implements IParamHandler {
 
     @Override
     public PageParam handle(Profile profile, PageParam pageParam) {
-        LocalDate updatedDateFrom = LocalDate.now();
+        LocalDateTime updatedDateFrom = LocalDateTime.now();
 
         if (pageParam.getOffset() != null && pageParam.getOffset().length == 1) {
-            updatedDateFrom = LocalDate.parse(CommonUtil.decode((String) pageParam.getOffset()[0]),
+            updatedDateFrom = LocalDateTime.parse(CommonUtil.decode((String) pageParam.getOffset()[0]),
                     DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         }
 
-        String createdDateFromF = updatedDateFrom.atStartOfDay(ZoneId.systemDefault())
+        String updatedDateFromF = updatedDateFrom.atZone(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
-        Object[] tOffset = new Object[] { createdDateFromF };
+        Object[] tOffset = new Object[] { updatedDateFromF };
 
         pageParam.setId(profile.getId());
         pageParam.setOffset(tOffset);

@@ -1,5 +1,13 @@
-<div class="chat" [id]="alias" [ngClass]="{'chat_right' : data.isOwn}">
-  <mat-card (click)="content()" matRipple>
-    {{data.desc}}
-  </mat-card>
+<div class="chat" [id]="alias" [ngClass]="{answer: !data.isOwn, question : data.isOwn}">
+    <div class="main_div" (click)="content()" [ngClass]="{answer: !data.isOwn, question : data.isOwn}">
+        <div *ngIf="data.time" class="msg_time">{{data.createdDate | date : 'H:mm MMM d'}}</div>
+        <div class="avatar_top_bar">
+            <img class="avatar_top" [src]="data.header.image">
+        </div>
+        <div class="msg_div" [innerHTML]="data.desc">
+        </div>
+        <div class="avatar_bottom_bar">
+            <img *ngFor="let avatarBottom of data.reads" class="avatar_bottom" [src]="avatarBottom">
+        </div>
+    </div>
 </div>

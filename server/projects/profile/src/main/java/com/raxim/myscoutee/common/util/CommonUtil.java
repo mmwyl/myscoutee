@@ -115,6 +115,11 @@ public class CommonUtil {
         return Base64.getEncoder().encodeToString(data);
     }
 
+    public static String asBase64v4(UUID uuid) {
+        byte[] data = new BsonBinary(uuid, UuidRepresentation.STANDARD).getData();
+        return Base64.getEncoder().encodeToString(data);
+    }
+
     public static Point point(GeoJsonPoint point) {
         return new Point(new Position(point.getCoordinates()));
     }

@@ -1,7 +1,7 @@
 [
   {
     "$match": {
-      "type": "msg"
+      "type": "p"
     }
   },
   {

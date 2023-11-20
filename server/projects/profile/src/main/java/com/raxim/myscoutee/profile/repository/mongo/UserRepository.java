@@ -1,6 +1,7 @@
 package com.raxim.myscoutee.profile.repository.mongo;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.mongodb.repository.Aggregation;
@@ -20,6 +21,8 @@ public interface UserRepository extends MongoRepository<User, UUID>, UserExtRepo
 
         @Query("{email: ?0}")
         User findUserByEmail(String email);
+
+        Optional<User> findUserByProfile(@Param("profileId") UUID profileId);
 
         @Aggregation(pipeline = "findUsersByProfiles")
         List<User> findUsersByProfiles(

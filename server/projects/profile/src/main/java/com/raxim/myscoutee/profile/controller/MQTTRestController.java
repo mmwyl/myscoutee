@@ -9,18 +9,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.raxim.myscoutee.common.config.firebase.dto.FirebasePrincipal;
-import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
-import com.raxim.myscoutee.profile.service.ProfileService;
+import com.raxim.myscoutee.profile.repository.mongo.ProfileRepository;
 
 @RestController
 @RequestMapping("mqtt")
 public class MQTTRestController {
 
-    private final ProfileService profileService;
+    private final ProfileRepository profileRepository;
 
-    public MQTTRestController(ProfileService profileService) {
-        this.profileService = profileService;
+    public MQTTRestController(ProfileRepository profileRepository) {
+        this.profileRepository = profileRepository;
     }
 
     @GetMapping("auth")
@@ -29,7 +28,7 @@ public class MQTTRestController {
         Profile profile = firebasePrincipal.getUser().getProfile();
         profile.setMqtt(true);
 
-        this.profileService.saveProfile(profile.getId().toString(), profile);
+        this.profileRepository.save(profile);
 
         return ResponseEntity.ok(profile.getId().toString());
     }
@@ -52,8 +51,8 @@ public class MQTTRestController {
         FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();
         Profile profile = firebasePrincipal.getUser().getProfile();
         profile.setMqtt(false);
-        
-        this.profileService.saveProfile(profile.getId().toString(), profile);
+
+        this.profileRepository.save(profile);
 
         return ResponseEntity.ok().build();
     }

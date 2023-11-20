@@ -68,7 +68,7 @@ export class SettingComponent implements OnInit {
       }),
     });
 
-    const groups = [];
+    /*const groups = [];
     for (const item of data['groups']) {
       groups.push({
         value: item.group.key,
@@ -78,7 +78,7 @@ export class SettingComponent implements OnInit {
     }
     this.groups = groups;
 
-    this.onSelect({ value: data['user'].group });
+    this.onSelect({ value: data['user'].group });*/
   }
 
   leave() {

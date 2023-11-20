@@ -9,10 +9,13 @@ export class MqttService {
 
   private handlers: Array<any>;
 
+  private topicsDeleted: Array<string>;
+
   private isConnected: boolean;
 
   constructor() {
     this.handlers = new Array();
+    this.topicsDeleted = new Array();
     this.isConnected = false;
   }
 
@@ -40,6 +43,12 @@ export class MqttService {
         this.client.subscribe(topic);
         console.log("subscibed to: " + topic);
       }
+
+      for (const topic of this.topicsDeleted) {
+        this.client.unsubscribe(topic);
+      }
+
+      this.topicsDeleted = [];
     });
 
     this.client.on("message", (topic, payload) => {
@@ -54,6 +63,14 @@ export class MqttService {
     this.handlers[topic] = callback;
     if (this.isConnected) {
       this.client.subscribe(topic);
+    }
+  }
+
+  unregister(topic) {
+    delete this.handlers[topic];
+    this.topicsDeleted.push(topic);
+    if (this.isConnected) {
+      this.client.unsubscribe(topic);
     }
   }
 

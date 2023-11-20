@@ -1,7 +1,7 @@
 [
   {
     "$match": {
-      "type": "msg",
+      "type": "p",
       "eventId": ":#{#eventId}"
     }
   },
@@ -77,7 +77,7 @@
                         "$eq": ["$from", "$$profileId"]
                       },
                       {
-                        "$eq": ["$type", "read"]
+                        "$eq": ["$type", "r"]
                       }
                     ]
                   }
@@ -103,7 +103,7 @@
                   "$gt": [{ "$size": "$lastRead" }, 0]
                 },
                 {
-                  "$ne": [{ "$arrayElemAt": ["$lastRead.ref", 0] }, "$$msg._id"]
+                  "$eq": [{ "$arrayElemAt": ["$lastRead.ref", 0] }, "$$msg.ref"]
                 }
               ]
             }

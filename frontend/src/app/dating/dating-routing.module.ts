@@ -53,7 +53,8 @@ const routes: Routes = [
               actions: [
               ],
               animation: 'One1',
-              type: 'chat'
+              type: 'chat',
+              mqtt: true
             },
           }
         ]

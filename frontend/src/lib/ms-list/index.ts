@@ -2,6 +2,7 @@ export * from './ms-action';
 export * from './ms-calendar';
 export * from './ms-panel';
 export * from './ms-chat';
+export * from './ms-bar';
 
 const months = [
   'Jan',
@@ -51,6 +52,7 @@ import { MsDialog } from '../ms-dialog';
 import { ILazy } from './interface';
 import { MsPanel } from './ms-panel';
 import { MsChat } from './ms-chat';
+import { MqttService } from 'src/app/services/mqtt.service';
 
 //import("./ms-panel").then(({MsPanel}) => {}
 
@@ -63,6 +65,8 @@ import { MsChat } from './ms-chat';
 //paging - scroll page up / down
 
 const MAX_INT = 2147483647;
+
+const PREFIX = "channels/pages"
 
 const panelInjector = Injector.create({
   providers: [{ provide: MsPanel, deps: [] }, { provide: DatePipe }],
@@ -159,6 +163,7 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
   group = undefined;
   filter = undefined;
   type = undefined;
+  mqtt = false;
 
   range: { from: Date; to: Date } = { from: new Date(), to: new Date() };
 
@@ -217,7 +222,8 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
     private datePipe: DatePipe,
     private cd: ChangeDetectorRef,
     private listService: ListService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private mqttService: MqttService
   ) {
     this.share = this.listService.share.subscribe({
       next: (evt) => {
@@ -838,6 +844,7 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
       this.group = v.group;
       this.filter = v.filter;
       this.type = v.type;
+      this.mqtt = v.mqtt;
     });
 
     // subscribe for DATA channel
@@ -912,7 +919,7 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
     });
 
     let cmp;
-    if(this.type === "chat") {
+    if (this.type === "chat") {
       cmp = MsChat;
     } else {
       cmp = MsPanel;
@@ -1017,6 +1024,19 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
               data['values'].forEach((obj, idx) => {
                 this.addToList(direction, obj);
               });
+
+              if (this.mqtt === true && this.offset === undefined) {
+                let filteredData = data['values']
+                  .filter((value) =>
+                    value.message.from !== this.navService.user['profile'].key);
+
+                if (filteredData.length > 0) {
+                  let lastData = filteredData[filteredData.length - 1];
+                  lastData.message.type = "r";
+
+                  this.mqttService.publish(PREFIX + this.url, JSON.stringify(lastData));
+                }
+              }
             } else {
               const date = new Date(this.offset[0]);
 
@@ -1102,7 +1122,7 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private addToList(direction: number, data?) {
+  public addToList(direction: number, data?) {
     const item = this.transformService.transform(data, this.itemUrl, true);
 
     if (this.items.length === 0) {

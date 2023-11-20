@@ -41,6 +41,7 @@ public class TokenRestController {
             tokenToSave.setId(UUID.randomUUID());
             tokenToSave.setUuid(user.getId());
             tokenToSave.setType(AppConstants.FIREBASE);
+            tokenToSave.setDeviceKey(token.getDeviceKey());
             tokenObj = tokenRepository.save(tokenToSave);
         }
 
