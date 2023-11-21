@@ -23,7 +23,7 @@ import { MsAction } from '../ms-action';
   selector: 'ms-chat',
   templateUrl: './index.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styles: [':host { grid-column: 1 / span 2 }']
+  styles: [':host { grid-column: 1 / span max }']
 })
 export class MsChat implements OnDestroy, OnInit, ILazy {
 

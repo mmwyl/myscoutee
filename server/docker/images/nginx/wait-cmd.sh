@@ -1,8 +1,9 @@
 #! /bin/bash
 
-#while :; do 
-#    sleep 6h & wait $${!}; nginx -s reload; 
-#done &
+while true; do
+    inotifywait -r -e modify,create,delete /etc/nginx
+    nginx -s reload
+done &
 
 if [[ -z "$WAIT_FOR" ]]; then 
     nginx -g 'daemon off;'; 

@@ -11,9 +11,14 @@ services:
   #   hostname: certbot
   #   networks:
   #     - myscoutee
+  #   environment:
+  #     - RENEWAL_INTERVAL=12h
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep $${RENEWAL_INTERVAL} & wait $${!}; done;'"
   #   volumes:
-  #     - ./data/certbot/conf:/etc/letsencrypt
-  #     - ./data/certbot/www:/var/www/certbot
+  #    - ./data/certbot/conf:/etc/letsencrypt
+  #    - ./data/certbot/www:/var/www/certbot
+  #   depends_on:
+  #     - nginx
   nginx:
     #build:
     #   context: docker/images/nginx
@@ -34,6 +39,7 @@ services:
       - ./docker/conf/nginx/conf/stream:/etc/nginx/stream_conf.d/
       - ./docker/conf/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./docker/conf/nginx/app/myscoutee:/usr/share/nginx/html
+      - ./docker/conf/nginx/keys:/etc/nginx/keys
       #- ./docker/scripts:/scripts
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot

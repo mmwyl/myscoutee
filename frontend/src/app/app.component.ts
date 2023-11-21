@@ -338,9 +338,10 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   mqtt(username, password) {
+    let wsUrl = this.isSecure() ? "wss://localhost:8883" :"ws://localhost:9001";
     this.mqttService.init(
       {
-        url: "ws://localhost:8883",
+        url: wsUrl,
         options:
           { username: username, password: password }
       });
@@ -426,5 +427,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.listService.overlay.emit(this.overlayData);
+  }
+
+  isSecure(): boolean {
+    return window.location.protocol === 'https:';
   }
 }

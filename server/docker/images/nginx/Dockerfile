@@ -1,7 +1,7 @@
 FROM nginx:1.21.0
 
 RUN apt-get update &&\
-    apt-get install -y cron nano curl &&\
+    apt-get install -y cron nano curl inotify-tools &&\
     apt-get clean
 
 #wait

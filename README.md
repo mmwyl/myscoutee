@@ -20,7 +20,7 @@ docker-compose build --no-cache (build context)
 docker-compose up
 
 cd /home/raxim/workspace/myscoutee/server/docker/images/mosquitto/
-docker build -t eclipse-mosquitto:2.0.18-ext_auth .
+docker build --no-cache -t eclipse-mosquitto:2.0.18-ext_auth .
 
 sudo lsof -t -i :1883 | xargs -I {} sudo kill -9 {}
 
