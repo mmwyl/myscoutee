@@ -21,6 +21,7 @@ docker-compose up
 
 cd /home/raxim/workspace/myscoutee/server/docker/images/mosquitto/
 docker build --no-cache -t eclipse-mosquitto:2.0.18-ext_auth .
+docker build --no-cache -t myscoutee-nginx:0.1.0 .
 
 sudo lsof -t -i :1883 | xargs -I {} sudo kill -9 {}
 
