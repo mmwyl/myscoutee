@@ -56,3 +56,5 @@ bug:
 client token expired => refresh (firebase)
 
 jwt auth plugin in go and c does exist (check implementation)
+
+car - autocompleter on model
