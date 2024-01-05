@@ -30,7 +30,13 @@ public class Member implements Cloneable, Comparable<Member> {
     @JsonProperty(value = "status")
     private String status;
 
-    // User (U), Admin (A), Promoter (P), Manager (M)
+    //Candidate can show interest to event creator by rating an event, (a new member record has been added)
+    //The promoter can rate the candidate back, and when the capacity
+    //startTime of event + gracePeriod, it will notify the candidate for success based on promoter preference (rating) - on event list screen the event will be green, anyway it will be yellow
+    //you can filter by status on event screen, the members has been ordered by rate added
+    //on the promoter screen, if new candidate has been arrived, it will be a notification
+    //so it will be a candidate record and a user record (added when promoter rates candidate or accepts)
+    // User (U), Admin (A), Promoter (P), Manager (M), Candidate (C)
     @JsonProperty(value = "role")
     private String role;
 

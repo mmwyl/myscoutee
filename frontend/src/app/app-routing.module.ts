@@ -8,6 +8,10 @@ import { LoginComponent } from './login/login.component';
 // https://github.com/mebjas/html5-qrcode - qr code scanning
 
 // filter, add, attach
+
+// business also can attach event organizer's event as a group event -
+// can set random - (groups has been rated together as in the case of dating)
+// jobs, group invite, idea sharing
 const routes: Routes = [
   {
     path: 'login',
@@ -20,10 +24,7 @@ const routes: Routes = [
       import('./dating/dating.module').then((m) => m.DatingModule),
     canLoad: [AuthGuard],
   },
-  // business also can attach event organizer's event as a group event -
-  // can set random - (groups has been rated together as in the case of dating)
-  // jobs, group invite, idea sharing
-  /*{
+  {
     path: 'business',
     loadChildren: () =>
       import('./business/business.module').then((m) => m.BusinessModule),
@@ -34,7 +35,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./job/job.module').then((m) => m.JobModule),
     canLoad: [AuthGuard],
-  },*/
+  },
 ];
 
 @NgModule({

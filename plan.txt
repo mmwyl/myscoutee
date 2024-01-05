@@ -1,0 +1,36 @@
+I) Event
+
+   1) add activity/invitations (next to channels - notification icon) tab (direct invitations only, what you can accept, reject)
+   2) event calendar screen has filters (own promotional event, normal event etc.)
+      - with coloring showing whether it's active, under pre-selection etc.
+   3) on event calendar screen you have + button and select button
+      (second on is showing recommendations using filters - it's listing out promotional + group events, what you can clone and edit)
+   4) enable back event calendar screen
+   5) verify event (qrcode - ticket)
+   6) eligible to create group event (admin role)
+   7) for geolocation, enter an address -> db will pick up geo cordinates
+   8) event form to be reorganized - no separate campaign/template screen. (just simple event)
+      -
+
+II) Rate
+
+   1) Add double rate tab (5th one on heart main menu)
+   2) both rated tab (add filter - already met)
+   3) both rated tab - logical grouping (team) -> group by team on filter page
+
+III) cars/schools tab on profile menu
+
+IV) Group (on logout screen)
+   
+   1) invite/join group
+   2) switch to different group (same screen as dating)
+   3) create group/select group (public recommendation list screen)
+   4) set role of a member in a group (shared admin)
+   5) set status of member (kick, accept etc.)
+   6) members can see each other or discreet within a group
+   7) group name should be added to the notification
+
+Optional:
+
+V) Badge
+   1) you can buy something with discounts etc.
