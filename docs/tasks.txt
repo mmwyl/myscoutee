@@ -1,3 +1,8 @@
+1) event form upgrade
+2) group tab on profile screen
+3) invitation screen
+
+
 bugs:
 -----
 
