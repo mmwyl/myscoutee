@@ -14,9 +14,9 @@
 
 Just notify me about your website to let me know that my effort is not wasted, as i'm unable to continue based on my tricky situation.
 
-You need to have a firebase project. (cloud messaging + web app -> relevant files are empty or keys are simply deactivated)
-
 #server folder
+
+You need to have a firebase project. (cloud messaging + web app -> relevant files are empty or keys are simply deactivated)
 
 docker:
 -------
