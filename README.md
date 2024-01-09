@@ -4,7 +4,7 @@ Licence is BSD. (only one thing, i ask for, just notify me about your website, t
 It's benefitial to fork instead of clone to track down the variations.
 
 I) The reason why i make this project public, beacuse of my tricky situation, i can't continue,
-but I strongly believe that project can make the world a better place and i don't want to waste years of work of mine.
+but I strongly believe that project can make the world a better place.
 (lots of refactoring, lots of technology upgrade, cleanup and many more etc., it was also up and running on domain myscoutee.com, and has promo videos under docs/videos)
 
 I try to fix the UI for the time being to ease the understanding. Server side has lots of very detailed tests.
