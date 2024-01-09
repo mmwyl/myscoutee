@@ -16,7 +16,7 @@ config:
 
 fcm:
   url: "https://fcm.googleapis.com/fcm/send"
-  apiKey: "AAAAG3Mpsps:APA91bGHmlddqM17gjNjbeLfKtKWqBoYJ-dqbLpw5FI8EAikazsg_V-sXAsV1iXotM7ldjO-teoSCzjtfvpUX7eYj8PzR7GG8HrBvX6uVdGN7fR8ekXglj9LAB8H-KaKGrm-YBjNHgig"
+  apiKey: "TODO"
 
 spring:
   servlet:
