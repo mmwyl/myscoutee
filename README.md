@@ -12,6 +12,8 @@
 2) Some menu has been commented out, as functionality needs to be fixed. (don't remove)
 3) Some documentation is under docs folder and in the entity files.
 
+Just notify me about your website to let me know that my effort is not wasted.
+
 #server folder
 
 docker:
