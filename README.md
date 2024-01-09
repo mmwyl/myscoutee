@@ -1,12 +1,42 @@
 # myscoutee
 
+I) The reason why i make this project public, as my country is not that supportive to create business,
+but I do feel that project can make the world a better place and i don't want to waste years of work of mine.
+(lots of refactoring, lots of technology upgrade etc., it was also up and running)
+
+I try to fix the UI for the time being to ease the understanding. Server side has lots of very detailed tests.
+Naturally a project like that never can be finished, however MVP is almost finished.
+
+II) I don't want try to explain the whole functionality, but I tried to open a world for you about the possibilities:
+
+1) The project aim is to create fairness into the dating world, which makes less exhaustive experience in both end.
+   Instead of swipe, you rate people 1-10 and based on that you will be placed in a graph.
+   (stronger connections are going to be grouped together)
+   Based on priority each person is being assigned to a random event. (graph algorithm)
+   After meeting with each other they can re-prioritize themselves, hence the priority graph will be improved. (AI)
+   Business model is less dependent on subscription fees and more dependent on affiliate systems. (e.g.: Booking.com)
+   As the dating is a group dating, the possibility for various type of events can be better and events are always full.
+   When you want to create an event, then you call people based on mutual priority instead of inviting individually.
+2) Some menu has been commented out, as functionality needs to be fixed. (don't remove)
+3) Some documentation is under docs folder and in the entity files.
+
+Lots of refactoring has happened lately:
+1) mysql/neo4j -> mongodb (to make the MVP faster)
+2) kotlin -> java
+3) mosquitto project has been customized
+...
+
 #server folder
 
 docker:
 -------
+cd ./server
+
 gradle build -x test
 docker-compose build --no-cache (build context)
 docker-compose up
+
+cd ./frontend
 
 ng serve --ssl
 
