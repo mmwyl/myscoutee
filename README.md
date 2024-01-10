@@ -16,7 +16,7 @@
 2) Some menu has been commented out, as functionality needs to be fixed. (don't remove)
 3) Some documentation is under docs folder and in the entity files.
 
-#server folder
+
 
 firebase:
 ---------
