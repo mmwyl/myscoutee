@@ -4,7 +4,7 @@
 ##### Just notify me about your website to let me know that my effort is not wasted.
 ##### As i'm unable to continue based on my tricky situation, hence pls. try to fork instead of clone!
 
-1) The project aim is to create fairness into the dating world, which makes less exhaustive experience in both end.
+1) The project's aim is to create fairness into the dating world, which makes less exhaustive experience in both end.
    It's not a typical dating site, as even job site or any other site can use the algorithm and technic.
    (even in this project you can rate for events, not only for people)
    Instead of swipe, you rate people 1-10 and based on that you will be placed in a graph.
