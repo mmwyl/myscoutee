@@ -2,6 +2,7 @@
 
 MVP readiness with some issues. (trying to fix for the time being, mostly on UI to ease the understanding)
 Just notify me about your website to let me know that my effort is not wasted, as i'm unable to continue based on my tricky situation.
+--------------------------------------------------------------------------------------------------------------------------------------
 
 1) The project aim is to create fairness into the dating world, which makes less exhaustive experience in both end.
    It's not a typical dating site, as even job site or any other site can use the algorithm and technic.
@@ -22,7 +23,9 @@ firebase:
 
 You need to have a firebase project. (cloud messaging + web app -> relevant files are empty or keys are simply deactivated)
 
-environment.prod.ts/environment.ts/FirebaseConfig.java/application-dev.yaml/....adminsdk.json (under src/main/resources) - don't share these files to the outer world, as it contains your credentials!
+Don't share the following files to the outer world, as it contains your credentials!
+------------------------------------------------------------------------------------
+environment.prod.ts/environment.ts/FirebaseConfig.java/application-dev.yaml/....adminsdk.json (under src/main/resources)
 
 docker:
 -------
