@@ -1,6 +1,7 @@
 # myscoutee
 
 MVP readiness with some issues. (trying to fix for the time being, mostly on UI to ease the understanding)
+Just notify me about your website to let me know that my effort is not wasted, as i'm unable to continue based on my tricky situation.
 
 1) The project aim is to create fairness into the dating world, which makes less exhaustive experience in both end.
    It's not a typical dating site, as even job site or any other site can use the algorithm and technic.
@@ -14,9 +15,10 @@ MVP readiness with some issues. (trying to fix for the time being, mostly on UI 
 2) Some menu has been commented out, as functionality needs to be fixed. (don't remove)
 3) Some documentation is under docs folder and in the entity files.
 
-Just notify me about your website to let me know that my effort is not wasted, as i'm unable to continue based on my tricky situation.
-
 #server folder
+
+firebase:
+---------
 
 You need to have a firebase project. (cloud messaging + web app -> relevant files are empty or keys are simply deactivated)
 
