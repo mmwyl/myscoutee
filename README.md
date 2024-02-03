@@ -19,7 +19,7 @@ https://github.com/fssrepository/myscoutee/assets/45578746/e3e2323b-ca66-48eb-90
 Contribution:
 -------------
 
-##### MVP readiness with some issues. As i'm unable to continue based on my tricky situation, pls. just notify me about your website to let me know that my effort is not wasted.
+##### MVP readiness with some issues. Pls. just notify me about your website to let me know that my effort is not wasted.
 ##### You need to have a firebase project and configure it properly in the repo. (cloud messaging + web app)
 
 docker:
