@@ -170,7 +170,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
                 data: route.data,
               }));
 
-            if (routeConfig.path.indexOf(':id') !== -1) {
+            if (routeConfig.path.indexOf(':id') !== -1 || routeConfig.data['dialog'] === true) {
               this.prevUrl =
                 this.navService.prevUrl !== undefined
                   ? this.navService.prevUrl

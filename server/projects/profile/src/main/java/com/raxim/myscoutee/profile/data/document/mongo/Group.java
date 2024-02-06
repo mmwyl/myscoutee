@@ -22,23 +22,22 @@ public class Group implements Cloneable {
     @JsonProperty(value = "key")
     private UUID id;
 
-    //T = Team, G = Group
-    //inside project list out Teams, show Unassigned Team as base etc.
-    @JsonProperty(value = "type")
-    private String type;
-
-    /*
-     * values: dating
-     */
-    @JsonProperty(value = "name")
-    private String name;
-
     @JsonProperty(value = "category")
     private String category;
 
-    // public
-    @JsonProperty(value = "access")
-    private String access;
+    //independent (separate profile - e.g.: facebook dating) or sub group (facebook generic groups)
+    @JsonProperty(value = "type")
+    private String type;
+
+    @JsonProperty(value = "name")
+    private String name;
+
+    // public, private
+    @JsonProperty(value = "visibility")
+    private String visibility;
+
+    @JsonProperty(value = "discreet")
+    private Boolean discreet;
 
     @JsonProperty(value = "images")
     private List<Image> images;
@@ -70,13 +69,12 @@ public class Group implements Cloneable {
     private UUID updatedBy;
 
     @JsonProperty(value = "status")
-    private String status = "P";
+    private String status = "A";
 
-    //isDescreet / discreet level (school is visible for others???)
-    @JsonProperty(value = "privacy")
-    private Privacy privacy;
+    @JsonIgnore
+    private UUID group;
 
-    public UUID getId() {
+	public UUID getId() {
         return id;
     }
 
@@ -92,12 +90,12 @@ public class Group implements Cloneable {
         this.name = name;
     }
 
-    public String getAccess() {
-        return access;
+    public String getVisibility() {
+        return visibility;
     }
 
-    public void setAccess(String visibility) {
-        this.access = visibility;
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
     }
 
     public List<Image> getImages() {
@@ -186,11 +184,27 @@ public class Group implements Cloneable {
         this.updatedBy = updatedBy;
     }
 
-    public Privacy getPrivacy() {
-        return privacy;
+    public Boolean getDiscreet() {
+        return discreet;
     }
 
-    public void setPrivacy(Privacy discreet) {
-        this.privacy = discreet;
+    public void setDiscreet(Boolean discreet) {
+        this.discreet = discreet;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public UUID getGroup() {
+		return group;
+	}
+
+	public void setGroup(UUID group) {
+		this.group = group;
+	}
 }

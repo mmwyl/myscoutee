@@ -975,10 +975,13 @@ const statuses: Option[] = [
   { value: 'A', viewValue: 'Active' },
 ];
 
+const groupCategories: Option[] = [
+  { value: 'g', viewValue: 'Generic' },
+];
+
 const groupTypes: Option[] = [
-  { value: 'd', viewValue: 'Dating' },
-  // { value: 'b', viewValue: 'Business' },
-  { value: 't', viewValue: 'Team Building' },
+  { value: 'i', viewValue: 'Separate Profile' },
+  { value: 's', viewValue: 'Sub Group' },
 ];
 
 const groupVisibilities: Option[] = [
@@ -1048,6 +1051,10 @@ export class DataService {
 
   get currencies(): Option[] {
     return currencies;
+  }
+
+  get groupCategories(): Option[] {
+    return groupCategories;
   }
 
   get groupTypes(): Option[] {

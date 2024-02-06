@@ -1,0 +1,32 @@
+[
+    {
+        "_id": {
+            "$binary": "ZkmDZtiQWGodH7qAA3APrA==",
+            "$type": "03"
+        },
+        "email": "enron@gmail.com",
+        "createdDate": {
+            "$date": "2019-01-02T04:17:08.000Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "profile": {
+            "$ref": "profiles",
+            "$id": {
+                "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
+                "$type": "03"
+            }
+        },
+        "profiles": [
+            {
+                "$ref": "profiles",
+                "$id": {
+                    "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
+                    "$type": "03"
+                }
+            }
+        ]
+    }
+]

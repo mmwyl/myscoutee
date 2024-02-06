@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.document.mongo.Topic;
 import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.GroupDTO;
@@ -27,6 +28,10 @@ public interface UserRepository extends MongoRepository<User, UUID>, UserExtRepo
         @Aggregation(pipeline = "findUsersByProfiles")
         List<User> findUsersByProfiles(
                         @Param("profileIds") List<UUID> profileIds);
+
+        @Aggregation(pipeline = "findProfilesByUser")
+        List<Profile> findProfilesByUser(
+                        @Param("userId") UUID userId);
 
         @Aggregation(pipeline = "findGroupsByUser")
         List<GroupDTO> findGroupsByUser(

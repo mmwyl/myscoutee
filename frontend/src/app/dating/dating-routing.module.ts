@@ -269,11 +269,10 @@ const routes: Routes = [
               icon: 'group_add',
             },
             {
-              component: BasketComponent,
-              type: 'explore', //clone a group or promotional event
+              type: 'route', //clone a group or promotional event
               icon: 'explore',
               // only profiles - members url part will be replaced by profiles
-              url: 'user/groups', // backend call - not rate_met, filter out already added members
+              url: 'dating/user/groups/recommendations', // backend call - not rate_met, filter out already added members
             },
             {
               component: GroupFormComponent,
@@ -285,6 +284,29 @@ const routes: Routes = [
             },
           ],
         },
+      },
+      {
+        path: 'groups/recommendations',
+        data: {
+          dialog: true,
+        },
+        children: [
+          {
+            path: '',
+            component: MsList,
+            data: {
+              //icon: 'groups',
+              reuse: true,
+              // icon: 'list',
+              actions: [
+                {
+                  component: ProfileStatusComponent,
+                  type: 'edit',
+                },
+              ],
+            },
+          },
+        ]
       },
       {
         path: 'groups/:id',
@@ -498,4 +520,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class DatingRoutingModule {}
+export class DatingRoutingModule { }

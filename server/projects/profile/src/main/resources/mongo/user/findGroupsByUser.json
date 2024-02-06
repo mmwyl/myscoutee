@@ -6,7 +6,7 @@
     },
     {
         "$lookup": {
-            "from": "users",
+            "from": "profiles",
             "localField": "profiles.$id",
             "foreignField": "_id",
             "as": "profiles"
@@ -31,12 +31,20 @@
             "pipeline": [
                 {
                     "$match": {
-                        "$expr": {
-                            "$eq": [
-                                "$$g_id",
-                                "$_id"
-                            ]
-                        }
+                        "$or": [
+                            {
+                                "$and": [
+                                    {
+                                        "$expr": {
+                                            "$eq": [
+                                                "$$g_id",
+                                                "$_id"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 }
             ],
@@ -66,8 +74,10 @@
                             },
                             {
                                 "$lt": [
-                                    "$updatedDate",
-                                    "?#{#param.offset[1]}"
+                                    "$createdDate",
+                                    {
+                                        "$toDate": "?#{#param.offset[1]}"
+                                    }
                                 ]
                             }
                         ]
@@ -79,7 +89,7 @@
     {
         "$sort": {
             "role": 1,
-            "updatedDate": -1
+            "createdDate": -1
         }
     },
     {
@@ -96,7 +106,7 @@
                         "role": "$role",
                         "offset": [
                             "$role",
-                            "$updatedDate"
+                            "$createdDate"
                         ]
                     }
                 ]

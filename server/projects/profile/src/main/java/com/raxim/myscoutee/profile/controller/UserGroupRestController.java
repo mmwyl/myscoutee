@@ -78,21 +78,32 @@ public class UserGroupRestController {
     }
 
     // system groups are discreet, only admin profiles and me will be shown
-    @GetMapping({ "groups", "{type}/groups" })
-    @Transactional
-    public ResponseEntity<Object> groups(PageParam pageParam, @PathVariable String type, Authentication auth) {
+    @GetMapping({ "/groups" })
+    public ResponseEntity<Object> groupsByType(PageParam pageParam, Authentication auth) {
+
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         User user = principal.getUser();
         Profile profile = user.getProfile();
 
         pageParam = paramHandlers.handle(profile, pageParam, UserParamHandler.TYPE);
-        List<GroupDTO> groupDTOs = null;
+        List<GroupDTO> groupDTOs = this.userService.getGroupsByUser(user.getId(), pageParam);
 
-        if (type == null) {
-            groupDTOs = this.userService.getGroupsByUser(user.getId(), pageParam);
-        } else {
-            groupDTOs = this.profileService.getGroupsByProfile(profile.getId(), pageParam);
-        }
+        List<Object> lOffset = CommonUtil.offset(groupDTOs, pageParam.getOffset());
+
+        return ResponseEntity.ok(
+                new PageDTO<>(groupDTOs, lOffset, 0));
+    }
+
+    // system groups are discreet, only admin profiles and me will be shown
+    @GetMapping({ "/groups/recommendations" })
+    public ResponseEntity<Object> recommendations(PageParam pageParam, Authentication auth) {
+
+        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
+        User user = principal.getUser();
+        Profile profile = user.getProfile();
+
+        pageParam = paramHandlers.handle(profile, pageParam, UserParamHandler.TYPE);
+        List<GroupDTO> groupDTOs = this.userService.getGroupsByUser(user.getId(), pageParam);
 
         List<Object> lOffset = CommonUtil.offset(groupDTOs, pageParam.getOffset());
 
@@ -101,8 +112,8 @@ public class UserGroupRestController {
     }
 
     // add button on the group list screen
-    @PostMapping({ "profile/groups" })
-    public ResponseEntity<GroupDTO> saveGroup(@PathVariable String type,
+    @PostMapping({ "/groups" })
+    public ResponseEntity<GroupDTO> saveGroup(
             Authentication auth,
             @RequestBody Group group) {
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
@@ -115,7 +126,21 @@ public class UserGroupRestController {
         return response;
     }
 
-    @PatchMapping({ "profile/groups/{id}" })
+    @PostMapping({ "/groups/recommendations/{id}/join" })
+    public ResponseEntity<GroupDTO> joinGroup(
+            @PathVariable String id,
+            Authentication auth) {
+        FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
+        User user = principal.getUser();
+
+        ResponseEntity<GroupDTO> response = ControllerUtil.handle(
+                (g, u) -> this.groupService.joinGroup(g, u),
+                UUID.fromString(id), user,
+                HttpStatus.CREATED);
+        return response;
+    }
+
+    @PatchMapping({ "/groups/{id}" })
     @Transactional
     public ResponseEntity<GroupDTO> patchGroup(
             Authentication auth,
@@ -124,6 +149,8 @@ public class UserGroupRestController {
 
         FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
         User user = principal.getUser();
+
+        group.setId(UUID.fromString(id));
 
         ResponseEntity<GroupDTO> response = ControllerUtil.handle(
                 (g, u) -> this.groupService.saveGroup(g, u),
@@ -135,7 +162,7 @@ public class UserGroupRestController {
     // consider discreet group also
     // clicking on + button, show the "met" tab, hence you can choose members
     // already met to invite
-    @GetMapping({ "/profile/groups/{groupId}/profiles" })
+    @GetMapping({ "/groups/{groupId}/profiles" })
     public ResponseEntity<PageDTO<ProfileDTO>> getProfilesByGroup(@PathVariable String groupId, PageParam pageParam,
             Authentication auth) {
         Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();
@@ -150,7 +177,7 @@ public class UserGroupRestController {
                 new PageDTO<>(profileDTOs, lOffset, 0));
     }
 
-    @PostMapping({ "/profile/groups/{groupId}/profiles/{profileId}/{type}" })
+    @PostMapping({ "/groups/{groupId}/profiles/{profileId}/{type}" })
     public ResponseEntity<ProfileDTO> manage(@PathVariable String groupId, @PathVariable String profileId,
             @PathVariable String type,
             Authentication auth) {
@@ -163,7 +190,7 @@ public class UserGroupRestController {
                 HttpStatus.OK);
     }
 
-    @PostMapping({ "/profile/groups/{groupId}/profiles" })
+    @PostMapping({ "/groups/{groupId}/profiles" })
     public ResponseEntity<List<ProfileDTO>> invite(@PathVariable String groupId, @RequestBody List<String> profileids,
             Authentication auth) {
         Profile profile = ((FirebasePrincipal) auth.getPrincipal()).getUser().getProfile();

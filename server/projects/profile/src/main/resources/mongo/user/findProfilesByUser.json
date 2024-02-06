@@ -1,0 +1,25 @@
+[
+    {
+        "$match": {
+            "_id": ":#{#userId}"
+        }
+    },
+    {
+        "$lookup": {
+            "from": "profiles",
+            "localField": "profiles.$id",
+            "foreignField": "_id",
+            "as": "profiles"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$profiles"
+        }
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": "$profiles"
+        }
+    }
+]

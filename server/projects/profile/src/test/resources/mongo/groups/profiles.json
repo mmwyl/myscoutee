@@ -1,0 +1,44 @@
+[
+    {
+        "_id": {
+            "$binary": "8EtHJWvMTFOkPpQ5p9yRrQ==",
+            "$type": "03"
+        },
+        "firstName": "Oliver 1",
+        "gender": "m",
+        "birthday": {
+            "$date": "1993-02-18T00:00:00Z"
+        },
+        "smoker": false,
+        "marital": "Single",
+        "hasChild": false,
+        "height": 175,
+        "physique": "Average",
+        "languages": [
+            "English",
+            "French"
+        ],
+        "religion": "None",
+        "profession": "Software Engineer",
+        "position": {
+            "type": "Point",
+            "coordinates": [
+                47.506953,
+                19.019821
+            ]
+        },
+        "status": "A",
+        "mqtt": true,
+        "createdDate": {
+            "$date": "2022-09-20T00:00:00Z"
+        },
+        "group": {
+            "$binary": "NkaorobBPrNUDApiL0o1tg==",
+            "$type": "03"
+        },
+        "score": 90,
+        "lastLogin": {
+            "$date": "2023-06-11T15:30:00Z"
+        }
+    }
+]

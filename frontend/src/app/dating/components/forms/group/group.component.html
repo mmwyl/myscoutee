@@ -29,6 +29,21 @@
           <mat-panel-title>Group data</mat-panel-title>
         </mat-expansion-panel-header>
         <mat-form-field>
+          <mat-label>Enter name</mat-label>
+          <input matInput [formControlName]="'name'" />
+          <mat-error *ngIf="formGroup.controls.data.get('name').invalid"
+            >Name is required!</mat-error
+          >
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Category</mat-label>
+          <mat-select [formControlName]="'category'">
+            <mat-option *ngFor="let category of categories" [value]="category.value">
+              {{ category.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
           <mat-label>Type</mat-label>
           <mat-select [formControlName]="'type'">
             <mat-option *ngFor="let type of types" [value]="type.value">
@@ -43,13 +58,6 @@
               {{ visibility.viewValue }}
             </mat-option>
           </mat-select>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Enter name</mat-label>
-          <input matInput [formControlName]="'name'" />
-          <mat-error *ngIf="formGroup.controls.data.get('name').invalid"
-            >Name is required!</mat-error
-          >
         </mat-form-field>
         <fieldset>
           <legend>Description (min. 10, max. 160)</legend>
@@ -68,6 +76,11 @@
             >
           </mat-form-field>
         </fieldset>
+        <mat-slide-toggle
+          [formControlName]="'discreet'"
+          labelPosition="before"
+          >Discreet</mat-slide-toggle
+        >
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header

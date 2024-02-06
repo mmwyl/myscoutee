@@ -7,6 +7,8 @@ import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
 
 public class AppTestConstants {
+    public static final UUID UUID_USER_OLIVER = UUID.fromString("6a5890d8-6683-4966-ac0f-700380ba1f1d");
+
     public static final UUID UUID_PROFILE_OLIVER = UUID.fromString("534ccc6b-2547-4bf0-ad91-dca739943ea4");
     public static final UUID UUID_PROFILE_EMMA = UUID.fromString("fc4c72f8-a905-e1d1-05f8-c0d9914e158c");
     public final static UUID UUID_PROFILE_AVA = UUID.fromString("eb494fba-6c56-752f-5123-c414c8c86599");

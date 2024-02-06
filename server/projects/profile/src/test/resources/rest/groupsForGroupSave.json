@@ -1,0 +1,20 @@
+[
+    {
+        "category": "g",
+        "type": "i",
+        "name": "Dating Group 2",
+        "visibility": "pr",
+        "discreet": true,
+        "system": false,
+        "desc": "Dating Group 2"
+    },
+    {
+        "category": "g",
+        "type": "s",
+        "name": "Dating Group 2",
+        "visibility": "pr",
+        "discreet": true,
+        "system": false,
+        "desc": "Dating Group 2"
+    }
+]

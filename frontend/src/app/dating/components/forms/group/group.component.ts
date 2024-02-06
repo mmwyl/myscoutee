@@ -20,6 +20,7 @@ export class GroupFormComponent implements OnInit {
 
   images: any;
 
+  categories: any;
   types: any;
   visibilities: any;
 
@@ -35,6 +36,7 @@ export class GroupFormComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
 
+    this.categories = this.dataService.groupCategories;
     this.types = this.dataService.groupTypes;
     this.visibilities = this.dataService.groupVisibilities;
 
@@ -45,9 +47,10 @@ export class GroupFormComponent implements OnInit {
   ngOnInit(): void {
     this.formGroup = this.fb.group({
       data: this.fb.group({
+        name: [this.data.name, Validators.required],
+        category: [this.data.category, Validators.required],
         type: [this.data.type, Validators.required],
         visibility: [this.data.visibility, Validators.required],
-        name: [this.data.name, Validators.required],
         desc: [
           this.data.desc !== undefined ? this.data.desc : '',
           [
@@ -55,6 +58,10 @@ export class GroupFormComponent implements OnInit {
             Validators.minLength(DESC_MIN),
             Validators.maxLength(DESC_MAX),
           ],
+        ],
+        discreet: [
+          this.data.discreet ? this.data.discreet : false,
+          Validators.required,
         ],
       }),
       images: [

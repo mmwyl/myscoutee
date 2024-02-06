@@ -78,4 +78,6 @@ public class AppConstants {
         }
 
         public static final String MQTT_MSG = "p";
+
+        public static final String SEPARATE_PROFILE = "i";
 }

@@ -112,8 +112,9 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     @JsonProperty(value = "rule")
     private Rule rule = new Rule();
 
-    @JsonProperty(value = "privacy")
-    private Privacy privacy;
+    //people don't see each other
+    @JsonProperty(value = "discreet")
+    private Boolean discreet;
 
     // qr code generation
     @JsonProperty(value = "ticket")
@@ -723,6 +724,14 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
         this.stage = stage;
     }
 
+    public Boolean getDiscreet() {
+        return discreet;
+    }
+
+    public void setDiscreet(Boolean discreet) {
+        this.discreet = discreet;
+    }
+
     public Boolean getMultislot() {
         return multislot;
     }
@@ -761,14 +770,6 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
 
     public void setSlotCnt(int slotIdx) {
         this.slotCnt = slotIdx;
-    }
-
-    public Privacy getPrivacy() {
-        return privacy;
-    }
-
-    public void setPrivacy(Privacy discreet) {
-        this.privacy = discreet;
     }
 
     @Override

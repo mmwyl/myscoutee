@@ -1,11 +1,5 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
-/**/android/android.iml
-
-/**/android/app/build
-/**/android/app/app.iml
-/**/android/app/**/assets
-
 /**/.gradle
 /**/build
 /**/.idea
