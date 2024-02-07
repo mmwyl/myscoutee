@@ -400,44 +400,53 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'events',
-    component: MsList,
+    path: 'history',
     data: {
       reuse: true,
       icon: 'event',
-      actions: [
-        {
-          component: EventFormComponent,
-          type: 'add',
-          icon: 'add',
-        },
-        {
-          component: BasketComponent,
-          type: 'explore', //clone a group or promotional event
-          icon: 'explore',
-          // only profiles - members url part will be replaced by profiles
-          url: 'events', // backend call - not rate_met, filter out already added members
-        },
-        {
-          // component: EventFormComponent,
-          component: QrcodeComponent,
-          type: 'verify',
-        },
-        {
-          // component: EventFormComponent,
-          component: QrcodeComponent,
-          type: 'code',
-        },
-        {
-          component: EventFormComponent,
-          type: 'edit',
-        },
-      ],
-      multiple: true,
-      event: true, //temporary
-      animation: 'One',
-      group: 'date',
     },
+    children: [
+      { path: '', redirectTo: 'events', pathMatch: 'full' },
+      {
+        path: 'events',
+        component: MsList,
+        data: {
+          reuse: true,
+          actions: [
+            {
+              component: EventFormComponent,
+              type: 'add',
+              icon: 'add',
+            },
+            {
+              component: BasketComponent,
+              type: 'explore', //clone a group or promotional event
+              icon: 'explore',
+              // only profiles - members url part will be replaced by profiles
+              url: 'events', // backend call - not rate_met, filter out already added members
+            },
+            {
+              // component: EventFormComponent,
+              component: QrcodeComponent,
+              type: 'verify',
+            },
+            {
+              // component: EventFormComponent,
+              component: QrcodeComponent,
+              type: 'code',
+            },
+            {
+              component: EventFormComponent,
+              type: 'edit',
+            },
+          ],
+          multiple: true,
+          event: true, //temporary
+          animation: 'One',
+          group: 'date',
+        }
+      }
+    ]
   },
   {
     path: 'events/:id',
