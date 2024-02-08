@@ -318,6 +318,17 @@ public class EventService {
                 lEvent.setCreatedBy(profile.getId());
                 lEvent.setStatus(pEvent.getStatus());
 
+                LocalDateTime lNow = LocalDateTime.now();
+
+                Member newMember = new Member();
+                newMember.setProfile(profile);
+                newMember.setStatus("A");
+                newMember.setUpdatedDate(lNow);
+                newMember.setCreatedDate(lNow);
+                newMember.setRole("A");
+                lEvent.getMembers().add(newMember);
+                lEvent.setNumOfMembers(lEvent.getMembers().size());
+
             } else {
                 Event dbEvent = dbEvents.get(0);
 
@@ -327,6 +338,7 @@ public class EventService {
                 lEvent.setCreatedBy(dbEvent.getCreatedBy());
                 lEvent.setStatus(dbEvent.getStatus());
                 lEvent.setParentId(dbEvent.getParentId());
+                lEvent.setMembers(dbEvent.getMembers());
 
                 lEvent.shift();
                 lEvent.sync();

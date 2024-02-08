@@ -50,14 +50,14 @@ public class EventGeneratorByScore extends GeneratorBase<Event> {
                 List<Event> currStageEvents;
 
                 if (event.isStageFinished()) {
-                    currStageEvents = event.getItemsByStage(event.getStage());
-                    int nextStage = event.getStage() + 1;
-                    event.setStage(nextStage);
+                    currStageEvents = event.getItemsByStage(event.getStageIdx());
+                    int nextStage = event.getStageIdx() + 1;
+                    event.setStageIdx(nextStage);
                 } else {
                     currStageEvents = List.of(event);
                 }
 
-                nextStageEvents = event.getItemsByStage(event.getStage());
+                nextStageEvents = event.getItemsByStage(event.getStageIdx());
 
                 Event nextItem = nextStageEvents.get(0);
 

@@ -55,14 +55,14 @@ enum MemberAction {
 }
 
 @RestController
-@RequestMapping("activity")
-public class ActivityMemberRestController {
+@RequestMapping("history")
+public class EventMemberRestController {
         private final StatusService statusService;
         private final ParamHandlers paramHandlers;
         private final EventService eventService;
         private final SchoolService schoolService;
 
-        public ActivityMemberRestController(
+        public EventMemberRestController(
                         StatusService statusService,
                         ParamHandlers paramHandlers,
                         EventService eventService,
@@ -125,7 +125,7 @@ public class ActivityMemberRestController {
                 }
         }
 
-        @GetMapping(value = { "events/{id}/members", "invitations/{id}/members",
+        @GetMapping(value = { "invitations/{id}/members",
                         "events/{eventId}/items/{id}/members",
                         "events/{eventId}/items/{itemId}/items/{id}/members" })
         public ResponseEntity<PageDTO<MemberDTO>> getMembersForEvent(@PathVariable String eventId,

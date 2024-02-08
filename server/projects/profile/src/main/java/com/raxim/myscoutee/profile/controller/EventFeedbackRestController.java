@@ -27,13 +27,13 @@ import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.FeedbackRepository;
 
 @RestController
-@RequestMapping("activity")
-public class ActivityFeedbackRestController {
+@RequestMapping("history")
+public class EventFeedbackRestController {
     private final EventRepository eventRepository;
     private final FeedbackRepository feedbackRepository;
     private final ObjectMapper objectMapper;
 
-    public ActivityFeedbackRestController(EventRepository eventRepository,
+    public EventFeedbackRestController(EventRepository eventRepository,
             FeedbackRepository feedbackRepository,
             ObjectMapper objectMapper) {
         this.eventRepository = eventRepository;

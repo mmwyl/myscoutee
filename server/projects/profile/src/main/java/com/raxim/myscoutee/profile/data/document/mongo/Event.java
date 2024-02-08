@@ -37,7 +37,6 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     @JsonIgnore
     private UUID parentId;
 
-    // type = event (E) vs template??? (T) vs Item (I = item), slot (S)
     // urlRef -> //car, accomodation etc.
 
     // urlRef is the template
@@ -73,12 +72,6 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     @JsonProperty(value = "access")
     private String access;
 
-    // for individuals vs for groups (for groups does not exist in friends only
-    // access)
-    // "A" = acquaintance is the default, "S" = strangers
-    @JsonProperty(value = "audience")
-    private String audience;
-
     // if access "A", admin can switch to invite, if access "F", creator can switch
     // to invite, in any other case the value is true
     // if access "A" or "F" this kind of event is going directly to the invitation
@@ -90,15 +83,16 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     @JsonProperty(value = "multislot")
     private Boolean multislot;
 
+    //click on ... button on event item (no slot number on event edit screen), "clone as slot" menu item => enter slot number
+
     // based on created date make a slotIdx (sync method)
     // leave it 0, if there is only one item in the slot
     @JsonIgnore
-    private int slotCnt;
+    private int slotIdx;
 
-    // counter of stage - stage should be greater than 0, if it's multistage, on the
-    // main event (promotion, it's the current stage)
+    // in the main event => current Stage idx, in the child event it's and index of the stage => "assign to stage" menu item
     @JsonProperty(value = "stage")
-    private int stage;
+    private int stageIdx;
 
     // ref counter - how many clones are there, hence we can show on the view
     @JsonIgnore
@@ -254,7 +248,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     }
 
     public boolean isPriority() {
-        return getRule() != null && Boolean.TRUE.equals(getRule().getPriority());
+        return getRule() != null && "p".equals(getRule().getType());
     }
 
     public boolean isAutoApprove() {
@@ -270,9 +264,9 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     }
 
     public int getMaxStage() {
-        Optional<Event> event = getItems().stream().max(Comparator.comparing(Event::getStage));
+        Optional<Event> event = getItems().stream().max(Comparator.comparing(Event::getStageIdx));
 
-        return event.isPresent() ? event.get().getStage() : 0;
+        return event.isPresent() ? event.get().getStageIdx() : 0;
     }
 
     public boolean isFinished() {
@@ -280,7 +274,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     }
 
     public boolean isStageFinished() {
-        return getItemsByStage(getStage()).stream().allMatch(item -> item.isFinished());
+        return getItemsByStage(getStageIdx()).stream().allMatch(item -> item.isFinished());
     }
 
     public void syncStatus() {
@@ -290,11 +284,11 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
         }
 
         if (getItems() != null && isMultislot()) {
-            int min = getItems().stream().filter(item -> item.getStage() == getStage())
+            int min = getItems().stream().filter(item -> item.getStageIdx() == getStageIdx())
                     .mapToInt(item -> item.getCapacity().getMin())
                     .min().orElse(0);
 
-            int max = getItems().stream().filter(item -> item.getStage() == getStage())
+            int max = getItems().stream().filter(item -> item.getStageIdx() == getStageIdx())
                     .mapToInt(item -> item.getCapacity().getMax())
                     .sum();
             setCapacity(RangeInt.of(min, max));
@@ -367,7 +361,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
 
     public List<Event> getItemsByStage(int i) {
         return getItems().stream()
-                .filter(item -> item.getStage() == i)
+                .filter(item -> item.getStageIdx() == i)
                 .toList();
     }
 
@@ -386,7 +380,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
                 int counter = getNumOfMembers();
                 for (Event item : getItems()) {
 
-                    if (item.getStage() == getStage() && "P".equals(item.getStatus())) {
+                    if (item.getStageIdx() == getStageIdx() && "P".equals(item.getStatus())) {
                         int availableCapacity = item.getCapacity().getMax() - item.getNumOfMembers();
                         if (counter < item.getCapacity().getMin()) {
                             item.setStatus("T");
@@ -414,15 +408,15 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
             }
 
             boolean allItemsTimedOut = getItems().stream()
-                    .allMatch(item -> item.getStage() == getStage() && "T".equals(item.getStatus()));
+                    .allMatch(item -> item.getStageIdx() == getStageIdx() && "T".equals(item.getStatus()));
             if (allItemsTimedOut) {
                 setStatus("T");
             }
 
             boolean anyActiveItem = getItems().stream()
-                    .anyMatch(item -> item.getStage() == getStage() && "A".equals(item.getStatus()));
+                    .anyMatch(item -> item.getStageIdx() == getStageIdx() && "A".equals(item.getStatus()));
             boolean anyNotFinished = getItems().stream()
-                    .anyMatch(item -> item.getStage() == getStage() && "P".equals(item.getStatus()));
+                    .anyMatch(item -> item.getStageIdx() == getStageIdx() && "P".equals(item.getStatus()));
             if (!anyNotFinished && anyActiveItem) {
                 setStatus("A");
             }
@@ -448,7 +442,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
                         .flatMap(group -> CommonUtil.mapIndexed(
                                 group.stream().sorted(Comparator.comparing(Event::getCreatedDate)).toList(),
                                 (index, item) -> {
-                                    item.slotCnt = ++index;
+                                    item.slotIdx = ++index;
                                     return item;
                                 }))
                         .toList();
@@ -474,7 +468,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
             }
 
             Optional<LocalDateTime> optStart = getItems().stream()
-                    .filter(item -> item.getRange() != null && item.getStage() == getStage())
+                    .filter(item -> item.getRange() != null && item.getStageIdx() == getStageIdx())
                     .map(item -> item.getRange().getStart())
                     .min((cap1, cap2) -> cap1.isBefore(cap2) ? -1 : 1);
 
@@ -487,7 +481,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
             }
 
             Optional<LocalDateTime> optEnd = getItems().stream()
-                    .filter(item -> item.getRange() != null && item.getStage() == getStage())
+                    .filter(item -> item.getRange() != null && item.getStageIdx() == getStageIdx())
                     .map(item -> item.getRange().getEnd())
                     .max((cap1, cap2) -> cap1.isAfter(cap2) ? -1 : 1);
 
@@ -700,14 +694,6 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
         this.access = accessLevel;
     }
 
-    public String getAudience() {
-        return audience;
-    }
-
-    public void setAudience(String audience) {
-        this.audience = audience;
-    }
-
     public Boolean getAutoInvite() {
         return autoInvite;
     }
@@ -716,12 +702,12 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
         this.autoInvite = autoInvite;
     }
 
-    public int getStage() {
-        return stage;
+    public int getStageIdx() {
+        return stageIdx;
     }
 
-    public void setStage(int stage) {
-        this.stage = stage;
+    public void setStageIdx(int stage) {
+        this.stageIdx = stage;
     }
 
     public Boolean getDiscreet() {
@@ -764,12 +750,12 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
         this.matches = matches;
     }
 
-    public int getSlotCnt() {
-        return slotCnt;
+    public int getSlotIdx() {
+        return slotIdx;
     }
 
-    public void setSlotCnt(int slotIdx) {
-        this.slotCnt = slotIdx;
+    public void setSlotIdx(int slotIdx) {
+        this.slotIdx = slotIdx;
     }
 
     @Override

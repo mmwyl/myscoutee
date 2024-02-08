@@ -956,16 +956,31 @@ const currencies: Option[] = [
   },
 ];
 
+const rankTypes: Option[] = [
+  { value: 'none', viewValue: 'None' },
+  { value: 'rate', viewValue: 'Rate' },
+  { value: 'fifa', viewValue: 'Fifa' },
+];
+
+const ruleTypes: Option[] = [
+  { value: 'j', viewValue: 'Join First' },
+  { value: 'p', viewValue: 'Priority' },
+];
+
+const eventVisibilities: Option[] = [
+  { value: 'P', viewValue: 'Private' },
+  { value: 'F', viewValue: 'Friends Only' },
+  { value: 'A', viewValue: 'Public' }
+];
+
 const eventCategories: Option[] = [
-  { value: 'l', viewValue: 'Local' },
-  { value: 't', viewValue: 'Travel' },
+  { value: 'g', viewValue: 'General' }
 ];
 
 const eventTypes: Option[] = [
-  { value: 'g', viewValue: 'General' },
-  { value: 'c', viewValue: 'Car' },
-  { value: 'a', viewValue: 'Accomodation' },
-  { value: 'p', viewValue: 'Private' },
+  { value: 'E', viewValue: 'Event' },
+  { value: 'P', viewValue: 'Promotion' },
+  { value: 'T', viewValue: 'Idea' }, //=> Template
 ];
 
 const statuses: Option[] = [
@@ -1037,12 +1052,24 @@ export class DataService {
     return statuses;
   }
 
+  get eventVisibilities(): Option[] {
+    return eventVisibilities;
+  }
+
   get eventCategories(): Option[] {
     return eventCategories;
   }
 
   get eventTypes(): Option[] {
     return eventTypes;
+  }
+
+  get ruleTypes(): Option[] {
+    return ruleTypes;
+  }
+
+  get rankTypes(): Option[] {
+    return rankTypes;
   }
 
   get templateTypes(): Option[] {

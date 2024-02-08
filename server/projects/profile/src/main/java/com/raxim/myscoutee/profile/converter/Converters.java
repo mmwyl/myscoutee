@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +15,7 @@ public class Converters<T extends Convertable<T>, U extends Convertable<U>> {
         this(new ArrayList<>());
     }
 
+    @Autowired
     public Converters(List<BaseConverter<T, U>> converters) {
         this.converters = converters;
     }

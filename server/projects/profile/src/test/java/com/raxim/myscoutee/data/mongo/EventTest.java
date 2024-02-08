@@ -94,7 +94,7 @@ public class EventTest {
 
         event.sync();
 
-        assertEquals(1, event.getItems().get(0).getSlotCnt());
-        assertEquals(2, event.getItems().get(1).getSlotCnt());
+        assertEquals(1, event.getItems().get(0).getSlotIdx());
+        assertEquals(2, event.getItems().get(1).getSlotIdx());
     }
 }

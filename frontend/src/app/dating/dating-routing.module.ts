@@ -445,94 +445,94 @@ const routes: Routes = [
           animation: 'One',
           group: 'date',
         }
-      }
-    ]
-  },
-  {
-    path: 'events/:id',
-    data: {
-      icon: 'insert_invitation',
-      dialog: true,
-    },
-    children: [
-      { path: '', redirectTo: 'items', pathMatch: 'full' },
-      {
-        path: 'items',
-        component: MsList,
-        data: {
-          reuse: true,
-          icon: 'list',
-          actions: [
-            {
-              component: EventFormComponent,
-              type: 'add',
-              icon: 'add',
-            },
-            {
-              component: EventFormComponent,
-              type: 'edit',
-            },
-          ],
-          event: true, //temporary
-          animation: 'One1',
-        },
       },
       {
-        path: 'items/:id',
+        path: 'events/:id',
         data: {
           icon: 'insert_invitation',
           dialog: true,
         },
         children: [
-          { path: '', redirectTo: 'members', pathMatch: 'full' },
+          { path: '', redirectTo: 'items', pathMatch: 'full' },
+          {
+            path: 'items',
+            component: MsList,
+            data: {
+              reuse: true,
+              icon: 'list',
+              actions: [
+                {
+                  component: EventFormComponent,
+                  type: 'add',
+                  icon: 'add',
+                },
+                {
+                  component: EventFormComponent,
+                  type: 'edit',
+                },
+              ],
+              event: true, //temporary
+              animation: 'One1',
+            },
+          },
+          {
+            path: 'items/:id',
+            data: {
+              icon: 'insert_invitation',
+              dialog: true,
+            },
+            children: [
+              { path: '', redirectTo: 'members', pathMatch: 'full' },
+              {
+                path: 'members',
+                component: MsList,
+                data: {
+                  reuse: true,
+                  animation: 'Two1',
+                },
+              },
+            ],
+          },
           {
             path: 'members',
             component: MsList,
             data: {
               reuse: true,
-              animation: 'Two1',
+              icon: 'groups',
+              actions: [
+                {
+                  component: BasketComponent,
+                  type: 'add',
+                  icon: 'add',
+                  multiple: true,
+                  // only profiles - members url part will be replaced by profiles
+                  url: '/games/rate_met', // backend call - not rate_met, filter out already added members
+                },
+              ],
+            },
+          },
+          {
+            path: 'feedbacks',
+            component: MsList,
+            data: {
+              reuse: true,
+              icon: 'feedback_ext',
+              actions: [
+                {
+                  component: FeedbackFormComponent,
+                  type: 'add',
+                  icon: 'add',
+                },
+                {
+                  component: FeedbackFormComponent,
+                  type: 'edit',
+                },
+              ],
             },
           },
         ],
       },
-      {
-        path: 'members',
-        component: MsList,
-        data: {
-          reuse: true,
-          icon: 'groups',
-          actions: [
-            {
-              component: BasketComponent,
-              type: 'add',
-              icon: 'add',
-              multiple: true,
-              // only profiles - members url part will be replaced by profiles
-              url: '/games/rate_met', // backend call - not rate_met, filter out already added members
-            },
-          ],
-        },
-      },
-      {
-        path: 'feedbacks',
-        component: MsList,
-        data: {
-          reuse: true,
-          icon: 'feedback_ext',
-          actions: [
-            {
-              component: FeedbackFormComponent,
-              type: 'add',
-              icon: 'add',
-            },
-            {
-              component: FeedbackFormComponent,
-              type: 'edit',
-            },
-          ],
-        },
-      },
-    ],
+    ]
   },
 ];
 

@@ -343,7 +343,7 @@ export class TransformService {
         if (url.indexOf('activity') !== -1) {
           actions = [];
         }
-      } else if (url.indexOf('activity') !== -1) {
+      } else if (url.indexOf('history') !== -1) {
         if (url.indexOf('events') !== -1) {
           if (value['optional'] === true) {
             if (
@@ -360,6 +360,7 @@ export class TransformService {
             }
             children = true;
           }
+          children = true; //TODO: temporary solution, transformEventItem and transformEvent needs to be merged into one
         }
       }
     }
@@ -466,7 +467,7 @@ export class TransformService {
         } else {
           actions = ['E']; // edit
         }
-      } else if (url.indexOf('activity') !== -1) {
+      } else if (url.indexOf('history') !== -1) {
         if (url.indexOf('business') === -1) {
           if ((isPromotion && role === 'P') || (!isPromotion && role === 'M')) {
             actions = ['E']; // edit
@@ -701,7 +702,7 @@ export class TransformService {
           location.origin +
           '/backend' +
           itemUrl +
-          (inList ? '/' + id : '') +
+          (inList ? '/' + value['key'] : '') +
           '/images/' +
           image['name']
       ),

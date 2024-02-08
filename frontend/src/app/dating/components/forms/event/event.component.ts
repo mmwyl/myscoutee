@@ -22,6 +22,9 @@ export class EventFormComponent implements OnInit {
   formGroup: UntypedFormGroup;
 
   categories: any;
+  visibilities: any;
+  ruleTypes: any;
+  rankTypes: any;
   currencies: any;
   types: any;
 
@@ -34,7 +37,9 @@ export class EventFormComponent implements OnInit {
 
   isMain = true;
 
-  category = 'l';
+  category = 'g';
+
+  access = 'P';
 
   // main event flag - only one main event does exist, which contains assign car and signal chat group
   constructor(
@@ -45,7 +50,10 @@ export class EventFormComponent implements OnInit {
     private httpService: HttpService
   ) {
     this.categories = this.dataService.eventCategories;
+    this.visibilities = this.dataService.eventVisibilities;
     this.currencies = this.dataService.currencies;
+    this.ruleTypes = this.dataService.ruleTypes;
+    this.rankTypes = this.dataService.rankTypes;
 
     if (data.extra !== undefined) {
       if (data.extra.main !== undefined) {
@@ -55,11 +63,13 @@ export class EventFormComponent implements OnInit {
       if (data.extra.category !== undefined) {
         this.category = data.extra.category;
       }
+
+      //set choosen group (sub group event)
     }
 
-    if (data.url.indexOf('items') === -1) {
+    if (data.url.indexOf('items') !== -1) {
       this.types = this.dataService.eventTypes.filter((obj) => {
-        return obj.value === 'g';
+        return obj.value === 'E';
       });
     } else {
       this.types = this.dataService.eventTypes;
@@ -116,7 +126,10 @@ export class EventFormComponent implements OnInit {
           this.data.ticket ? this.data.ticket : false,
           Validators.required,
         ],
-        chatKey: [this.data.chatKey, [...chatUrlValidators]],
+        discreet: [
+          this.data.discreet ? this.data.discreet : false,
+          Validators.required,
+        ],
         category: [
           {
             value:
@@ -125,12 +138,19 @@ export class EventFormComponent implements OnInit {
           },
           Validators.required,
         ],
-        position: [
-          this.data.position !== undefined
-            ? this.data.position.x + ', ' + this.data.position.y
-            : '',
+        access: [
+          {
+            value:
+              this.access !== undefined ? this.access : this.data.access,
+            disabled: !this.isMain,
+          },
           Validators.required,
         ],
+        /*position: [
+          this.data.position !== undefined
+            ? this.data.position.x + ', ' + this.data.position.y
+            : ''
+        ],*/
         name: [this.data.name, Validators.required],
         urlRef: [this.data.urlRef, [...chatKeyValidators]], // google
         range: this.fb.group(
@@ -171,45 +191,50 @@ export class EventFormComponent implements OnInit {
             Validators.maxLength(DESC_MAX),
           ],
         ],
-        telNum: [
-          this.data.telNum,
-          this.data.type === 'c' ? Validators.required : undefined,
-        ],
-        priority: [
-          this.data.priority ? this.data.priority : false,
+        autoInvite: [
+          this.data.autoInvite ? this.data.autoInvite : false,
           Validators.required,
         ],
       }),
       rule: this.fb.group({
+        type: [this.data.rule && this.data.rule.type ? this.data.rule.type : "j", Validators.required],
+        autoApprove: [
+          this.data.rule && this.data.rule.autoApprove ? this.data.rule.autoApprove : true,
+          Validators.required,
+        ],
+        eventGrace: [
+          this.data.rule && this.data.rule.eventGrace ? this.data.rule.eventGrace : 0,
+          Validators.required,
+        ],
+        memberGrace: [
+          this.data.rule && this.data.rule.memberGrace ? this.data.rule.memberGrace : 0,
+          Validators.required,
+        ],
         balanced: [
           this.data.rule && this.data.rule.balanced
             ? this.data.rule.balanced
             : false,
           Validators.required,
         ],
-        met: [
-          this.data.rule && this.data.rule.met ? this.data.rule.met : false,
+        mutual: [
+          this.data.rule && this.data.rule.mutual
+            ? this.data.rule.mutual
+            : false,
           Validators.required,
         ],
         rate: [
           this.data.rule && this.data.rule.rate ? this.data.rule.rate : 0,
           [Validators.required, Validators.pattern('^[0-9]+$')],
         ],
-        range: this.fb.group(
-          {
-            start: [
-              this.data.rule && this.data.rule.range
-                ? this.data.rule.range.start
-                : undefined,
-            ],
-            end: [
-              this.data.rule && this.data.rule.range
-                ? this.data.rule.range.end
-                : undefined,
-            ],
-          },
-          { validator: DateTimeRangeValidator }
-        ),
+        rankType: [
+          this.data.rule && this.data.rule.rankType ? this.data.rule.rankType : "none",
+          Validators.required,
+        ],
+        from: [
+          this.data.rule && this.data.rule.from
+            ? this.data.rule.range.from
+            : undefined,
+        ],
       }),
       expense: this.fb.group({
         amount: this.fb.group({
@@ -250,9 +275,11 @@ export class EventFormComponent implements OnInit {
       raw.data.rule = raw.rule;
       raw.data.key = this.data.key;
 
-      raw.data.position = raw.data.position
-        .split(',')
-        .map((item) => item.trim());
+      if (raw.data.position !== undefined) {
+        raw.data.position = raw.data.position
+          .split(',')
+          .map((item) => item.trim());
+      }
 
       this.httpService.save(this.url, raw.data).subscribe({
         next: (value) => {

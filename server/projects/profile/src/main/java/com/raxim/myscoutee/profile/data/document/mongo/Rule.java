@@ -18,8 +18,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Document(collection = "rules")
 public class Rule {
     // join first vs priority (rate based)
-    @JsonProperty(value = "priority")
-    private Boolean priority;
+    @JsonProperty(value = "type")
+    private String type;
 
     // only when it's join first and simple event
     @JsonProperty(value = "autoApprove")
@@ -44,11 +44,6 @@ public class Rule {
     @JsonProperty(value = "rankType")
     private String rankType;
 
-    /*
-     * kesobb boviteni lehet
-     * met field has been removed we might need to look at one level down,
-     * (ismeros ismerosei)
-     */
     /*
      * in the case of competition it has a different meaning
      * -> defines the most liked person inside an event can go to the next stage
@@ -100,12 +95,12 @@ public class Rule {
         this.from = from;
     }
 
-    public Boolean getPriority() {
-        return priority;
+    public String getType() {
+        return type;
     }
 
-    public void setPriority(Boolean priority) {
-        this.priority = priority;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public int getEventGrace() {

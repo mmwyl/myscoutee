@@ -22,6 +22,9 @@ public abstract class EventBase {
     @JsonProperty(value = "range")
     private RangeLocal range = new RangeLocal();
 
+    @JsonProperty(value = "optional")
+    private Boolean optional;
+
     // Active (A), Deleted (D), Timed Out (T), Pending (P)
     @JsonProperty(value = "status")
     private String status = "P";
@@ -38,7 +41,9 @@ public abstract class EventBase {
     @JsonIgnore
     private UUID updatedBy; // can be system uuid also, not only a valid profile
 
-    //type: E (Event), T (Template), P (Promotion)
+    //E (Event) => own event
+    //T (Template) = idea
+    //P (Promotion) => organized event for groups
     @JsonProperty(value = "type")
     private String type;
 
@@ -170,5 +175,13 @@ public abstract class EventBase {
 
     public void setUpdatedBy(UUID updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public Boolean getOptional() {
+        return optional;
+    }
+
+    public void setOptional(Boolean optional) {
+        this.optional = optional;
     }
 }

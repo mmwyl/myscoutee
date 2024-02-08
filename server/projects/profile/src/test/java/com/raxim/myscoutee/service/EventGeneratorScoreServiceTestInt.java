@@ -69,7 +69,7 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 int graceCnt = 60;
                 event.getItems().stream().forEach(item -> {
                         RangeLocal lRangeLocal = new RangeLocal(
-                                        LocalDateTime.now().plusMinutes((item.getStage() + 1) * graceCnt),
+                                        LocalDateTime.now().plusMinutes((item.getStageIdx() + 1) * graceCnt),
                                         LocalDateTime.now().plusHours(2));
                         item.setRange(lRangeLocal);
                         this.eventRepository.save(item);
@@ -85,9 +85,9 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 List<Event> events = eventGeneratorByScoreService.generate(filteredEdges, null);
 
                 Event parentEvent = events.get(0);
-                assertEquals(0, parentEvent.getStage());
+                assertEquals(0, parentEvent.getStageIdx());
 
-                List<Event> currEvents = parentEvent.getItemsByStage(parentEvent.getStage());
+                List<Event> currEvents = parentEvent.getItemsByStage(parentEvent.getStageIdx());
                 assertEquals(2, currEvents.size());
 
                 Event event1 = currEvents.get(0);
@@ -101,7 +101,7 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 // timed out
                 List<Event> eventsToSave = currEvents.stream().map(item -> {
                         RangeLocal lRangeLocal = new RangeLocal(
-                                        LocalDateTime.now().plusMinutes(item.getStage() * graceCnt),
+                                        LocalDateTime.now().plusMinutes(item.getStageIdx() * graceCnt),
                                         LocalDateTime.now().plusHours(2));
                         item.setRange(lRangeLocal);
 
@@ -114,9 +114,9 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 events = eventGeneratorByScoreService.generate(filteredEdges, null);
 
                 parentEvent = events.get(0);
-                assertEquals(0, parentEvent.getStage());
+                assertEquals(0, parentEvent.getStageIdx());
 
-                currEvents = parentEvent.getItemsByStage(parentEvent.getStage());
+                currEvents = parentEvent.getItemsByStage(parentEvent.getStageIdx());
                 assertEquals(2, currEvents.size());
 
                 event1 = currEvents.get(0);
@@ -136,8 +136,8 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                         item.setMembers(members);
 
                         RangeLocal lRangeLocal = new RangeLocal(
-                                        LocalDateTime.now().plusMinutes(item.getStage() * graceCnt),
-                                        LocalDateTime.now().plusMinutes(item.getStage() * graceCnt));
+                                        LocalDateTime.now().plusMinutes(item.getStageIdx() * graceCnt),
+                                        LocalDateTime.now().plusMinutes(item.getStageIdx() * graceCnt));
                         item.setRange(lRangeLocal);
 
                         return item;
@@ -149,9 +149,9 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 events = eventGeneratorByScoreService.generate(filteredEdges, null);
 
                 parentEvent = events.get(0);
-                assertEquals(1, parentEvent.getStage());
+                assertEquals(1, parentEvent.getStageIdx());
 
-                List<Event> prevEvents = parentEvent.getItemsByStage(parentEvent.getStage() - 1);
+                List<Event> prevEvents = parentEvent.getItemsByStage(parentEvent.getStageIdx() - 1);
 
                 assertEquals(2, prevEvents.size());
 
@@ -163,7 +163,7 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 assertEquals("F", event2.getStatus());
                 assertEquals(5, event2.getMembers().size());
 
-                List<Event> nextEvents = parentEvent.getItemsByStage(parentEvent.getStage());
+                List<Event> nextEvents = parentEvent.getItemsByStage(parentEvent.getStageIdx());
                 assertEquals(1, nextEvents.size());
 
                 event1 = nextEvents.get(0);

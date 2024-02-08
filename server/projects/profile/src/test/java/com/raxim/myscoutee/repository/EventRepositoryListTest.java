@@ -161,12 +161,12 @@ public class EventRepositoryListTest {
                 // the createdDate for the second EventItem32 is +1 millisec (while adding more
                 // than one clone can happen)
 
-                String nameWithSlot = eventItemDTOs.get(0).getItem().getSlotCnt() + ". " + "EventItem32";
+                String nameWithSlot = eventItemDTOs.get(0).getItem().getSlotIdx() + ". " + "EventItem32";
                 assertEquals(nameWithSlot, eventItemDTOs.get(0).getItem().getName());
                 assertEquals("U", eventItemDTOs.get(0).getRole());
                 assertEquals("1. 2020-01-31 - 2020-10-17", eventItemDTOs.get(0).getGroupKey());
 
-                nameWithSlot = eventItemDTOs.get(1).getItem().getSlotCnt() + ". " + "EventItem32";
+                nameWithSlot = eventItemDTOs.get(1).getItem().getSlotIdx() + ". " + "EventItem32";
                 assertEquals(nameWithSlot, eventItemDTOs.get(1).getItem().getName());
                 assertEquals("P", eventItemDTOs.get(1).getRole());
                 assertEquals("1. 2020-01-31 - 2020-10-17", eventItemDTOs.get(1).getGroupKey());
