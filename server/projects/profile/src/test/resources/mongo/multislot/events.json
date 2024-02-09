@@ -449,7 +449,7 @@
         },
         "type": "S",
         "stage": 1,
-        "slotCnt": 1,
+        "slotIdx": 1,
         "name": "EventItem32",
         "range": {
             "start": {
@@ -534,7 +534,7 @@
         },
         "type": "S",
         "stage": 1,
-        "slotCnt": 2,
+        "slotIdx": 2,
         "name": "EventItem32",
         "range": {
             "start": {

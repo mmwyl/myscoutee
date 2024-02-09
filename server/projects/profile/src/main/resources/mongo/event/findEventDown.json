@@ -2,6 +2,7 @@
     {
         "$match": {
             "type": "E",
+            "parentId": null,
             "members": {
                 "$elemMatch": {
                     "profile.$id": "?#{#param.id}",

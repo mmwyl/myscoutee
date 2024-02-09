@@ -299,10 +299,6 @@ const routes: Routes = [
               reuse: true,
               // icon: 'list',
               actions: [
-                {
-                  component: ProfileStatusComponent,
-                  type: 'edit',
-                },
               ],
             },
           },
@@ -419,11 +415,10 @@ const routes: Routes = [
               icon: 'add',
             },
             {
-              component: BasketComponent,
-              type: 'explore', //clone a group or promotional event
+              type: 'route', //clone a group or promotional event
               icon: 'explore',
               // only profiles - members url part will be replaced by profiles
-              url: 'events', // backend call - not rate_met, filter out already added members
+              url: 'dating/history/events/recommendations', // backend call - not rate_met, filter out already added members
             },
             {
               // component: EventFormComponent,
@@ -445,6 +440,25 @@ const routes: Routes = [
           animation: 'One',
           group: 'date',
         }
+      },
+      {
+        path: 'events/recommendations',
+        data: {
+          dialog: true,
+        },
+        children: [
+          {
+            path: '',
+            component: MsList,
+            data: {
+              //icon: 'groups',
+              reuse: true,
+              // icon: 'list',
+              actions: [
+              ],
+            },
+          },
+        ]
       },
       {
         path: 'events/:id',

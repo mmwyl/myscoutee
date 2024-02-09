@@ -50,8 +50,8 @@ public interface EventRepository extends MongoRepository<Event, UUID> {
                         @Param("param") PageParam param,
                         @Param("status") String[] status);
 
-        @Aggregation(pipeline = "findRecommendation")
-        List<EventDTO> findRecommendation(
+        @Aggregation(pipeline = "findRecEvents")
+        List<EventDTO> findRecEvents(
                         @Param("param") PageParam param,
                         @Param("loc") Point loc,
                         @Param("groupId") UUID groupId,

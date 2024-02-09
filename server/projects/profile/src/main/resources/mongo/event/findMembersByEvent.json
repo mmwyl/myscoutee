@@ -210,7 +210,7 @@
                         },
                         "groupKey" : {
                             "$ifNull": [
-                                "$members.stage",
+                                "$members.stageIdx",
                                 null
                             ]
                         },

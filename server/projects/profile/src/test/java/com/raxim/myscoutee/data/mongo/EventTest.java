@@ -72,7 +72,7 @@ public class EventTest {
     }
 
     @Test
-    public void shouldSyncSlotCnt() {
+    public void shouldSyncSlotIdx() {
         Event event = new Event();
         event.setMultislot(true);
 

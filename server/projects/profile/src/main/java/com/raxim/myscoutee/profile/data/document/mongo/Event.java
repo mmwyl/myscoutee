@@ -129,7 +129,7 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
     // kell-e ez az optimalizacio
     @DBRef
     @JsonIgnore
-    private List<Feedback> feedbacks;
+    private List<Feedback> feedbacks = new ArrayList<>();
 
     // it is used to calculate absolute score of the members
     @DBRef
@@ -706,8 +706,8 @@ public class Event extends EventBase implements Convertable<Event>, Tree<Event> 
         return stageIdx;
     }
 
-    public void setStageIdx(int stage) {
-        this.stageIdx = stage;
+    public void setStageIdx(int stageIdx) {
+        this.stageIdx = stageIdx;
     }
 
     public Boolean getDiscreet() {

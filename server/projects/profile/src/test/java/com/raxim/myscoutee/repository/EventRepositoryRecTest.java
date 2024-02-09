@@ -53,14 +53,14 @@ public class EventRepositoryRecTest {
                 pageParam.setId(AppTestConstants.UUID_PROFILE_OLIVER);
                 pageParam.setOffset(tOffset);
 
-                List<EventDTO> events = this.eventRepository.findRecommendation(pageParam,
+                List<EventDTO> events = this.eventRepository.findRecEvents(pageParam,
                                 AppTestConstants.LOCATION_PROFILE_OLIVER,
                                 AppTestConstants.UUID_GROUP_DATING, "A");
                 assertEquals(2, events.size());
                 assertEquals("Event1", events.get(0).getItem().getName());
                 assertEquals("Event2", events.get(1).getItem().getName());
 
-                events = this.eventRepository.findRecommendation(pageParam,
+                events = this.eventRepository.findRecEvents(pageParam,
                                 AppTestConstants.LOCATION_PROFILE_OLIVER,
                                 AppTestConstants.UUID_GROUP_DATING, "F");
                 assertEquals(1, events.size());

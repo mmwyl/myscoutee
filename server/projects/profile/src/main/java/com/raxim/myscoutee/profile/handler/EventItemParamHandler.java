@@ -21,8 +21,8 @@ public class EventItemParamHandler implements IParamHandler {
     @Override
     public PageParam handle(Profile profile, PageParam pageParam) {
 
-        LocalDate from = LocalDate.now();
-        LocalDate createdDateFrom = LocalDate.now();
+        LocalDate from = DATE_MIN;
+        LocalDate createdDateFrom = DATE_MIN;
         Integer stage = 0;
 
         if (pageParam.getOffset() != null && pageParam.getOffset().length == 3) {

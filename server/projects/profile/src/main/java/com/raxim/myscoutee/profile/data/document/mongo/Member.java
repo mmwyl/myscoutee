@@ -57,7 +57,7 @@ public class Member implements Cloneable, Comparable<Member> {
     // (it shows the maxStage, what the member reached),
     // the stage will be added to the group key before the status if it does exist
     @JsonProperty(value = "stage")
-    private int stage;
+    private int stageIdx;
 
     @JsonProperty(value = "score")
     private Double score = 0.0d;
@@ -175,12 +175,12 @@ public class Member implements Cloneable, Comparable<Member> {
         return true;
     }
 
-    public int getStage() {
-        return stage;
+    public int getStageIdx() {
+        return stageIdx;
     }
 
-    public void setStage(int stage) {
-        this.stage = stage;
+    public void setStageIdx(int stageIdx) {
+        this.stageIdx = stageIdx;
     }
 
     @Override

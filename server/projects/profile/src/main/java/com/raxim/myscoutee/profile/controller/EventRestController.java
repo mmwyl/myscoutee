@@ -21,6 +21,7 @@ import com.raxim.myscoutee.common.util.CommonUtil;
 import com.raxim.myscoutee.common.util.ControllerUtil;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
+import com.raxim.myscoutee.profile.data.document.mongo.User;
 import com.raxim.myscoutee.profile.data.dto.rest.CloneDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.ErrorDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.EventDTO;
@@ -29,7 +30,7 @@ import com.raxim.myscoutee.profile.data.dto.rest.PageDTO;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 import com.raxim.myscoutee.profile.handler.EventItemParamHandler;
 import com.raxim.myscoutee.profile.handler.EventParamHandler;
-import com.raxim.myscoutee.profile.handler.InvitationParamHandler;
+import com.raxim.myscoutee.profile.handler.EventRecParamHandler;
 import com.raxim.myscoutee.profile.handler.MemberParamHandler;
 import com.raxim.myscoutee.profile.handler.ParamHandlers;
 import com.raxim.myscoutee.profile.service.EventService;
@@ -86,6 +87,24 @@ public class EventRestController {
                 return response;
         }
 
+        @GetMapping({ "events/recommendations" })
+        public ResponseEntity<Object> recommendations(PageParam pageParam, Authentication auth) {
+
+                FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
+                User user = principal.getUser();
+                Profile profile = user.getProfile();
+
+                pageParam = paramHandlers.handle(profile, pageParam, EventRecParamHandler.TYPE);
+                List<EventDTO> eventDTOs = this.eventService.getRecEvents(pageParam,
+                                CommonUtil.point(profile.getPosition()),
+                                user.getGroup(), "F");
+
+                List<Object> lOffset = CommonUtil.offset(eventDTOs, pageParam.getOffset());
+
+                return ResponseEntity.ok(
+                                new PageDTO<>(eventDTOs, lOffset, 0));
+        }
+
         // can lock event, filter for own events (organized by me)
         @PatchMapping({ "events/{id}" })
         @Transactional
@@ -93,6 +112,22 @@ public class EventRestController {
                         Authentication auth) {
                 FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
                 Profile profile = principal.getUser().getProfile();
+
+                ResponseEntity<EventDTO> response = ControllerUtil.handle((p, e) -> eventService.save(p, e), profile,
+                                event,
+                                HttpStatus.OK);
+                return response;
+        }
+
+        @DeleteMapping({ "events/{id}" })
+        @Transactional
+        public ResponseEntity<?> deleteEvent(@PathVariable String id,
+                        Authentication auth) {
+                FirebasePrincipal principal = (FirebasePrincipal) auth.getPrincipal();
+                Profile profile = principal.getUser().getProfile();
+
+                Event event = new Event(UUID.fromString(id));
+                event.setStatus("D");
 
                 ResponseEntity<EventDTO> response = ControllerUtil.handle((p, e) -> eventService.save(p, e), profile,
                                 event,

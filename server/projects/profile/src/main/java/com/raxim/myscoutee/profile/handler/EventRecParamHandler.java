@@ -11,8 +11,8 @@ import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.data.dto.rest.PageParam;
 
 @Component
-public class RecommendationParamHandler implements IParamHandler {
-    public static final String TYPE = "rec";
+public class EventRecParamHandler implements IParamHandler {
+    public static final String TYPE = "eventRec";
 
     public static final LocalDate DATE_MIN = LocalDate.of(1900, 1, 1);
 

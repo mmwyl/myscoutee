@@ -7,7 +7,7 @@
   <ng-container *ngIf="data" [ngSwitch]="data.type">
     <div
       class="panel_content panel_default"
-      [ngClass]="{'panel_large': enlarged, 'panel_removable': removable}"
+      [ngClass]="{'panel_height': data.type !== 'evt', 'panel_large': enlarged, 'panel_removable': removable}"
     >
       <ng-container *ngSwitchCase="'evt'">
         <mat-card

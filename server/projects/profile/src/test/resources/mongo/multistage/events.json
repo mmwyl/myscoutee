@@ -275,7 +275,7 @@
         },
         "type": "S",
         "stage": 0,
-        "slotCnt": 1,
+        "slotIdx": 1,
         "name": "EventItem32",
         "capacity": {
             "min": 2,
@@ -308,7 +308,7 @@
         },
         "type": "S",
         "stage": 0,
-        "slotCnt": 2,
+        "slotIdx": 2,
         "name": "EventItem32",
         "capacity": {
             "min": 2,

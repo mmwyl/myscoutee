@@ -197,8 +197,8 @@ public class EventService {
         return events;
     }
 
-    public List<EventDTO> getRecommendations(PageParam pageParam, Point position, UUID groupId, String status) {
-        return this.eventRepository.findRecommendation(pageParam, position, groupId, status);
+    public List<EventDTO> getRecEvents(PageParam pageParam, Point position, UUID groupId, String status) {
+        return this.eventRepository.findRecEvents(pageParam, position, groupId, status);
     }
 
     public List<EventDTO> getInvitations(PageParam pageParam, String[] status) {
