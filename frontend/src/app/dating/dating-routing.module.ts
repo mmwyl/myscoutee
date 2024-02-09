@@ -167,7 +167,14 @@ const routes: Routes = [
           icon: 'groups',
           double: true,
           group: 'dist',
-          filter: true
+          filter: true,
+          actions: [
+            {
+              component: BasketComponent,
+              type: 'add',
+              icon: 'group_add',
+            },
+          ]
         }
       },
     ],
