@@ -149,6 +149,7 @@ public class EventScheduler {
         List<Event> genEvents = eventGeneratorRandomService.generate(filteredEdges, flags);
 
         // generate messages and save with system, hence the user can see the channels!
+        //on accept invitation it is the same
         List<DBMessage> dbMessages = genEvents.stream().map(event -> {
             DBMessage dbMessage = new DBMessage();
             dbMessage.setId(UUID.randomUUID());
