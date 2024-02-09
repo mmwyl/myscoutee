@@ -1013,7 +1013,7 @@ export class MsList implements OnInit, OnDestroy, AfterViewInit {
 
       this.httpService.get(this.url, params).subscribe({
         next: (data) => {
-          if (data['role'] !== undefined && data['role'] !== 'M') {
+          if (data['role'] !== undefined && (data['role'] !== 'M' && data['role'] !== 'A')) {
             this.actions = this.actions.filter(
               (action) => action.type !== 'add'
             );

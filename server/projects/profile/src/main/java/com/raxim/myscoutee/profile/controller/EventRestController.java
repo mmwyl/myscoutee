@@ -177,7 +177,7 @@ public class EventRestController {
         }
 
         @GetMapping(value = { "events/{id}/members" })
-        public ResponseEntity<PageDTO<MemberDTO>> getMembersForEvent2(@PathVariable String id, PageParam pageParam,
+        public ResponseEntity<PageDTO<MemberDTO>> getMembersForEvent(@PathVariable String id, PageParam pageParam,
                         Authentication auth) {
 
                 FirebasePrincipal firebasePrincipal = (FirebasePrincipal) auth.getPrincipal();

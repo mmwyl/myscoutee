@@ -96,7 +96,8 @@ const routes: Routes = [
             data: {
               reuse: true,
               icon: 'groups',
-              actions: [],
+              actions: [
+              ],
             },
           },
           {
@@ -324,7 +325,7 @@ const routes: Routes = [
                   component: ProfileStatusComponent,
                   type: 'route',
                   icon: 'group_add',
-                  url: 'dating/user/groups/profiles?excludeGroupId=:id' //list out profiles in parent group which is not assigned to this sub group
+                  url: 'dating/user/groups/profiles' //?excludeGroupId=:id list out profiles in parent group which is not assigned to this sub group
                 },
                 {
                   component: ProfileStatusComponent,
@@ -517,10 +518,10 @@ const routes: Routes = [
                 {
                   component: BasketComponent,
                   type: 'add',
-                  icon: 'add',
+                  icon: 'group_add',
                   multiple: true,
                   // only profiles - members url part will be replaced by profiles
-                  url: '/games/rate_met', // backend call - not rate_met, filter out already added members
+                  url: '/games/rate_both', // backend call - not rate_met, filter out already added members
                 },
               ],
             },
