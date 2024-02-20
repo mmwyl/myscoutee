@@ -5,7 +5,7 @@
             "$type": "03"
         },
         "type": "E",
-        "stage": 0,
+        "stageIdx": 0,
         "name": "Event1",
         "range": {
             "start": {
@@ -56,7 +56,7 @@
             "$type": "03"
         },
         "type": "E",
-        "stage": 0,
+        "stageIdx": 0,
         "name": "Event11",
         "range": {
             "start": {
@@ -107,7 +107,7 @@
             "$type": "03"
         },
         "type": "E",
-        "stage": 0,
+        "stageIdx": 0,
         "name": "Event12",
         "range": {
             "start": {
@@ -158,7 +158,7 @@
             "$type": "03"
         },
         "type": "E",
-        "stage": 0,
+        "stageIdx": 0,
         "name": "Event2",
         "range": {
             "start": {
@@ -212,7 +212,7 @@
             "$type": "03"
         },
         "type": "E",
-        "stage": 0,
+        "stageIdx": 0,
         "name": "Event31",
         "range": {
             "start": {
@@ -266,7 +266,7 @@
             "$type": "03"
         },
         "type": "E",
-        "stage": 0,
+        "stageIdx": 0,
         "multislot": true,
         "name": "Event32",
         "range": {
@@ -394,7 +394,7 @@
             "$type": "03"
         },
         "type": "E",
-        "stage": 0,
+        "stageIdx": 0,
         "name": "Event33",
         "range": {
             "start": {
@@ -448,7 +448,7 @@
             "$type": "03"
         },
         "type": "S",
-        "stage": 1,
+        "stageIdx": 1,
         "slotIdx": 1,
         "name": "EventItem32",
         "range": {
@@ -533,7 +533,7 @@
             "$type": "03"
         },
         "type": "S",
-        "stage": 1,
+        "stageIdx": 1,
         "slotIdx": 2,
         "name": "EventItem32",
         "range": {
@@ -618,7 +618,7 @@
             "$type": "03"
         },
         "type": "S",
-        "stage": 2,
+        "stageIdx": 2,
         "name": "EventItem33",
         "range": {
             "start": {
