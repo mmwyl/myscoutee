@@ -24,6 +24,7 @@ import com.raxim.myscoutee.common.repository.TestData;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.RangeLocal;
+import com.raxim.myscoutee.profile.filter.ProfileObjGraphFilter;
 import com.raxim.myscoutee.algo.dto.ObjGraph;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
 import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
@@ -57,6 +58,9 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
         @Autowired
         private EventRepository eventRepository;
 
+        @Autowired
+        private ProfileObjGraphFilter profileObjGraphFilter;
+
         @Test
         public void shouldGenerateScoreEventsWithTwoStages() {
                 Event event = this.eventRepository.findById(AppTestConstants.UUID_EVENT_32).get();
@@ -78,7 +82,7 @@ public class EventGeneratorScoreServiceTestInt extends AbstractAlgoTest {
                 LikeService likeService = new LikeService(profileRepository, likeRepository, eventRepository,
                                 sequenceRepository);
                 EventGeneratorByScoreService eventGeneratorByScoreService = new EventGeneratorByScoreService(
-                                eventRepository, scoreMatrixRepository);
+                                eventRepository, profileObjGraphFilter, scoreMatrixRepository);
 
                 ObjGraph filteredEdges = likeService.getEdges(Set.of("A", "F"));
 
