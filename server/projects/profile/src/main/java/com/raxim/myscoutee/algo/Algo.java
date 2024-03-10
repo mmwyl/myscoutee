@@ -22,12 +22,12 @@ public class Algo {
             return new BCTree(cTree, range, fGraph.getIgnoredNodes(), true);
         }).toList();
 
-        List<Set<Node>> membersByGroup = new ArrayList<>();
+        List<Set<Node>> nodesByGroup = new ArrayList<>();
         bcTrees.forEach(bcTree -> bcTree.forEach(cGroup -> {
             Set<Node> nodes = cGroup.stream().collect(Collectors.toSet());
-            membersByGroup.add(nodes);
+            nodesByGroup.add(nodes);
         }));
 
-        return membersByGroup;
+        return nodesByGroup;
     }
 }
