@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class EventGeneratorByRandom extends GeneratorBase<Event, Profile> {
         FGraph fGraph = getObjGraph().getfGraph();
 
         Algo algo = new Algo();
-        List<List<Node>> nodesByEvent = algo.runRandom(fGraph, types, range);
+        List<Set<Node>> nodesByEvent = algo.run(fGraph, types, range);
 
         List<Event> handledEvents = nodesByEvent.stream()
                 .map(nodes -> {

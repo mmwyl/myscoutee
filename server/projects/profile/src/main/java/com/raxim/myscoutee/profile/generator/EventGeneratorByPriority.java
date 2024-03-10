@@ -40,11 +40,11 @@ public class EventGeneratorByPriority extends GeneratorBase<Event, Profile> {
             ObjGraph<Profile> objGraph = this.profileObjGraphFilter.filter(getObjGraph(), event);
 
             Algo algo = new Algo();
-            Set<Node> candidates = algo.runPriority(objGraph.getfGraph(),
+            List<Set<Node>> candidates = algo.run(objGraph.getfGraph(),
                     event.getEvent().getTypes(),
                     event.getEvent().getCapacity());
 
-            Set<Member> newMembers = candidates.stream()
+            Set<Member> newMembers = candidates.get(0).stream()
                     .map(node -> new Member(objGraph.getNodes().get(node.getId()), "I", "U"))
                     .collect(Collectors.toSet());
 
