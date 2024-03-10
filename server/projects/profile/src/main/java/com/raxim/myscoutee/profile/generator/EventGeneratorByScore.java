@@ -1,7 +1,6 @@
 package com.raxim.myscoutee.profile.generator;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,13 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.raxim.myscoutee.algo.Algo;
-import com.raxim.myscoutee.algo.BCTree;
-import com.raxim.myscoutee.algo.BCTreeIterator;
-import com.raxim.myscoutee.algo.CTree;
 import com.raxim.myscoutee.algo.Fifa;
-import com.raxim.myscoutee.algo.dto.CGroup;
-import com.raxim.myscoutee.algo.dto.DGraph;
-import com.raxim.myscoutee.algo.dto.Edge;
 import com.raxim.myscoutee.algo.dto.Node;
 import com.raxim.myscoutee.algo.dto.ObjGraph;
 import com.raxim.myscoutee.algo.dto.Range;
@@ -27,7 +20,6 @@ import com.raxim.myscoutee.profile.data.document.mongo.Rule;
 import com.raxim.myscoutee.profile.data.document.mongo.ScoreMatrix;
 import com.raxim.myscoutee.profile.filter.ProfileObjGraphFilter;
 import com.raxim.myscoutee.profile.util.AppConstants;
-import com.raxim.myscoutee.profile.util.EventUtil;
 
 public class EventGeneratorByScore extends GeneratorBase<Event, Profile> {
 
