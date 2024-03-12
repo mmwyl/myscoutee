@@ -2,11 +2,14 @@ package com.raxim.myscoutee.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,12 +33,13 @@ import com.raxim.myscoutee.common.data.TestLike;
 import com.raxim.myscoutee.common.data.TestProfile;
 import com.raxim.myscoutee.profile.data.document.mongo.Event;
 import com.raxim.myscoutee.profile.data.document.mongo.Like;
+import com.raxim.myscoutee.profile.data.document.mongo.LikeGroup;
 import com.raxim.myscoutee.profile.data.document.mongo.Member;
 import com.raxim.myscoutee.profile.data.document.mongo.Profile;
 import com.raxim.myscoutee.profile.repository.mongo.EventRepository;
+import com.raxim.myscoutee.profile.repository.mongo.LikeRepository;
 import com.raxim.myscoutee.profile.repository.mongo.ScheduleRepository;
 import com.raxim.myscoutee.profile.service.EventGeneratorRandomService;
-import com.raxim.myscoutee.profile.service.LikeService;
 
 @DirtiesContext
 @ExtendWith({ SpringExtension.class })
@@ -50,8 +54,8 @@ public class EventGeneratorRandomServiceTest extends AbstractAlgoTest {
         @Mock
         private ScheduleRepository scheduleRepository;
 
-        @Mock
-        private LikeService likeService;
+        @Spy
+        private LikeRepository likeRepository;
 
         @Mock
         private EventRepository eventRepository;
@@ -71,12 +75,17 @@ public class EventGeneratorRandomServiceTest extends AbstractAlgoTest {
 
                 String flags = jsonToString(FLAGS_DEFAULT, objectMapper);
 
-                /*
-                 * ObjGraph filteredEdges = loadJson(this, "algo/filteredEdges.json",
-                 * ObjGraph.class, objectMapper);
-                 * when(likeService.getEdges(Set.of("A")))
-                 * .thenReturn(filteredEdges);
-                 */
+                Like[] likeArray = loadJson(this, "algo/likes.json",
+                                Like[].class, objectMapper);
+
+                List<LikeGroup> likesBoth = Arrays.asList(likeArray)
+                                .stream().collect(Collectors.groupingBy(Like::getCnt))
+                                .entrySet().stream()
+                                .map(entry -> new LikeGroup(entry.getKey(), entry.getValue()))
+                                .collect(Collectors.toList());
+
+                when(likeRepository.findLikeGroups())
+                                .thenReturn(likesBoth);
 
                 eventGeneratorRandomService.generate(flags);
 
@@ -121,12 +130,17 @@ public class EventGeneratorRandomServiceTest extends AbstractAlgoTest {
 
                 String flags = jsonToString(FLAGS_DEFAULT, objectMapper);
 
-                /*
-                 * ObjGraph filteredEdges = loadJson(this, "algo/filteredEdgesWithIgnored.json",
-                 * ObjGraph.class, objectMapper);
-                 * when(likeService.getEdges(Set.of("A")))
-                 * .thenReturn(filteredEdges);
-                 */
+                Like[] likeArray = loadJson(this, "algo/likesWithIgnored.json",
+                                Like[].class, objectMapper);
+
+                List<LikeGroup> likesBoth = Arrays.asList(likeArray)
+                                .stream().collect(Collectors.groupingBy(Like::getCnt))
+                                .entrySet().stream()
+                                .map(entry -> new LikeGroup(entry.getKey(), entry.getValue()))
+                                .collect(Collectors.toList());
+
+                when(likeRepository.findLikeGroups())
+                                .thenReturn(likesBoth);
 
                 eventGeneratorRandomService.generate(flags);
 
